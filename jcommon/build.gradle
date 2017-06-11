@@ -1,0 +1,13 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.jdom:jdom2:2.0.6'
+    compile 'commons-logging:commons-logging:1.2'
+    compile 'org.apache.commons:commons-lang3:3.5'
+    compile 'com.eaio.uuid:uuid:3.2'
+}
