@@ -1,0 +1,18 @@
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'eclipse-wtp'
+
+    sourceCompatibility = 1.7
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.+'
+    }
+
+    jar {
+        manifest.attributes provider: 'gradle'
+    }
+}
