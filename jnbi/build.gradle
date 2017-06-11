@@ -1,7 +1,44 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-version = '1.0'
+task('increaseBuildNumber') {
+    doLast {
+        def versionPropsFile = file('version.properties')
+    
+        if (versionPropsFile.canRead()) {
+            def Properties versionProps = new Properties()
+    
+            versionProps.load(new FileInputStream(versionPropsFile))
+    
+            def code = versionProps['build_number'].toInteger() + 1
+    
+            versionProps['build_number']=code.toString()
+            versionProps.store(versionPropsFile.newWriter(), null)
+            def version = "1.0" + "." + code.toString()
+            project.setVersion(version)
+/*
+    	    project.getAllprojects().each {p -> 
+                println(p.name)
+    		    if (p.name == 'jnbi') {
+    			    p.setVersion(version)
+    	        }
+            }
+*/
+        }
+    }
+}
+
+/*
+tasks.whenTaskAdded { task ->
+    if (task.name == 'jar') {
+        task.dependsOn 'increaseBuildNumber'
+    }
+}
+*/
+
+jar {
+    dependsOn 'increaseBuildNumber'
+}
 
 repositories {
     mavenCentral()
