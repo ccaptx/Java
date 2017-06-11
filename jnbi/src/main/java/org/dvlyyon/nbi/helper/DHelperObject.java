@@ -6,9 +6,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dvlyyon.helper.HelperException;
-import org.dvlyyon.helper.Variable;
-import org.dvlyyon.helper.HelperException.HelperExceptionType;
+import org.dvlyyon.nbi.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.util.AttributeInfo;
 import org.dvlyyon.nbi.util.RunState;
 

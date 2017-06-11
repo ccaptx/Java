@@ -1,4 +1,4 @@
-package org.dvlyyon.helper;
+package org.dvlyyon.nbi.helper;
 
 public class HelperException extends Exception {
 	HelperExceptionType type;

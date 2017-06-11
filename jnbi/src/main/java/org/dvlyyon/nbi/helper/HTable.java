@@ -8,14 +8,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dvlyyon.helper.HString;
-import org.dvlyyon.helper.HelperException;
-import org.dvlyyon.helper.HelperObject;
-import org.dvlyyon.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.express.Compiler;
 import org.dvlyyon.nbi.express.ExpressionFormatException;
 import org.dvlyyon.nbi.express.MultiLines;
 import org.dvlyyon.nbi.express.Operator;
+import org.dvlyyon.nbi.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.util.AttributeInfo;
 import static org.dvlyyon.nbi.CommonMetadata.*;
 import org.dvlyyon.nbi.SNIMetadata;

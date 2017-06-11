@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.helper.DHelperObject;
-import org.dvlyyon.helper.HelperException;
-import org.dvlyyon.helper.HelperException.HelperExceptionType;
+import org.dvlyyon.nbi.helper.HelperException;
+import org.dvlyyon.nbi.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.util.CommonUtils;
 
 public class HelperEngine {

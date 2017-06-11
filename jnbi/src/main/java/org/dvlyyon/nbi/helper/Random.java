@@ -1,4 +1,4 @@
-package org.dvlyyon.helper;
+package org.dvlyyon.nbi.helper;
 
 public class Random extends HelperObject{
 	Double start = 0d;

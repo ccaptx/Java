@@ -1,4 +1,4 @@
-package org.dvlyyon.helper;
+package org.dvlyyon.nbi.helper;
 
 import java.util.TreeMap;
 

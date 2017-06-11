@@ -1,4 +1,4 @@
-package org.dvlyyon.helper;
+package org.dvlyyon.nbi.helper;
 
 public class HelperObject {
 	String __name = null;
