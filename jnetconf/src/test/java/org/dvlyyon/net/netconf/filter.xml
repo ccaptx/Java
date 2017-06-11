@@ -1,0 +1,5 @@
+<filter type="subtree" xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
+ <ne:ne xmlns:ne="urn:coriant:os:ne">
+ 	<ne:ne-name></ne:ne-name>
+ </ne:ne>
+</filter>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rpc xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="25">
+  <get>
+    <filter type="subtree">
+      <toaster xmlns="http://netconfcentral.org/ns/toaster">
+      </toaster>
+    </filter>
+  </get>
+</rpc>

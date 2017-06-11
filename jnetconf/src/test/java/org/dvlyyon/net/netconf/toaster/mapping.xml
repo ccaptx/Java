@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<netconfDataModel>
+  <class name="com.centeredlogic.net.netconf.toaster.Toaster" xmlPath="" xmlContainer="" xmlTag="toaster" xmlNamespace="http://netconfcentral.org/ns/toaster" keys="">
+    <attribute name="toasterManufacturer" xmlContainer="" xmlTag="toasterManufacturer" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="true" mandatory="true" many="false" />
+    <attribute name="toasterModelNumber" xmlContainer="" xmlTag="toasterModelNumber" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="true" mandatory="true" many="false" />
+    <attribute name="toasterStatus" xmlContainer="" xmlTag="toasterStatus" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="true" mandatory="true" many="false" />
+  </class>
+  <class name="com.centeredlogic.net.netconf.toaster.ToastDone" xmlPath="" xmlContainer="" xmlTag="toastDone" xmlNamespace="http://netconfcentral.org/ns/toaster" keys="">
+    <attribute name="toastStatus" xmlContainer="" xmlTag="toastStatus" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="false" mandatory="false" many="false" />
+  </class>
+  <class name="com.centeredlogic.net.netconf.toaster.MakeToast" xmlPath="" xmlContainer="" xmlTag="make-toast" xmlNamespace="http://netconfcentral.org/ns/toaster" keys="">
+    <attribute name="toasterDoneness" xmlContainer="" xmlTag="toasterDoneness" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="false" mandatory="false" many="false" />
+    <attribute name="toasterToastType" xmlContainer="" xmlTag="toasterToastType" xmlNamespace="http://netconfcentral.org/ns/toaster" readOnly="false" mandatory="false" many="false" />
+  </class>
+  <class name="com.centeredlogic.net.netconf.toaster.CancelToast" xmlPath="" xmlContainer="" xmlTag="cancel-toast" xmlNamespace="http://netconfcentral.org/ns/toaster" keys="" />
+</netconfDataModel>

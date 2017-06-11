@@ -1,0 +1,3 @@
+<ne:ne xmlns:ne="urn:coriant:os:ne" >
+    <ne:ne-name xmlns:xc="urn:ietf:params:xml:ns:netconf:base:1.0" xc:operation="replace">@Tag</ne:ne-name>
+</ne:ne>

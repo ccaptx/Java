@@ -1,0 +1,12 @@
+    <filter type="subtree">
+      <demodevice xmlns="http://centeredlogic.com/ns/demodevice">
+        <firewall>
+          <enabled />
+          <blockIn />
+          <blockOut />
+          <inport />
+          <outport />
+        </firewall>
+      </demodevice>
+    </filter>
+

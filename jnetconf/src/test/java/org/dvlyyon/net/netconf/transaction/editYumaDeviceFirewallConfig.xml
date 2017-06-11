@@ -1,0 +1,13 @@
+      <demodevice xmlns="http://centeredlogic.com/ns/demodevice">
+        <firewall operation="merge">
+          <enabled>true</enabled>
+          <blockIn>false</blockIn>
+          <blockOut>true</blockOut>
+          <inport>@Tag</inport>
+          <outport>3434</outport>
+        </firewall>
+      </demodevice>
+
+
+
+
