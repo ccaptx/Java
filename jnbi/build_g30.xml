@@ -1,0 +1,344 @@
+<project name="driver" default="all" basedir=".">
+
+    <!-- compile class temp Directory -->
+	<property name="project.name" value = "dci"/>
+	<property name="project.main.version" value="4.2"/>
+	<property name="src.dir" location="src"/>
+	<property name="build.classes.dir" value="../bin"/>
+	<property name="thirdparty.lib.dir" value="lib/dci"/>
+	<property name="deploy.dir" location="../deploy/dci"/>
+	<property name="dci.jar" value="${project.name}.jar"/>
+	<property name="dist.jar" location="${thirdparty.lib.dir}/${project.name}.jar"/>
+	<property name="model.file.name" value="DCICli.xml"/>
+	<property name="model.file" location="model\${model.file.name}"/>
+	<loadproperties srcfile="dci_build.properties"/>
+	
+	<tstamp prefix="build-info">
+			<format property="current-date" pattern="yyyy-MM-dd" locale="en"/>
+			<format property="current-time" pattern="hh:mm:ss" locale="en"/>
+	</tstamp>	
+	<buildnumber file="dci.build.number"/>
+	<hostinfo/>
+	<property name="product.version" value="${project.main.version}.${build.number}"/>		
+	<echo>product version: ${product.version}</echo>
+		
+	<path id="project.classpath">
+		<fileset dir="${thirdparty.lib.dir}" includes="*.jar"/>		
+	</path>
+	
+	<manifestclasspath property="thirdparty.lib" jarfile="${dist.jar}">
+		<classpath refid="project.classpath" />
+	</manifestclasspath>
+		
+	<target name="init" depends = "clean" description="Initialize the build directory.">
+		<mkdir dir="${build.classes.dir}"/>
+		<mkdir dir="${deploy.dir}"/>
+	</target>
+	
+	<target name="all" depends="deploy"/>
+	
+	<target name = "clean" description="Delete all files created by this cript.">
+		<delete dir="${build.classes.dir}"/>
+		<delete dir="${deploy.dir}"/>
+		<delete file="${dist.jar}"/>
+	</target>
+	
+	<target name="compile" depends="init" description="compile driver code">
+		<echo message="compile java code begin..."/>
+		<javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" encoding="UTF-8" includeantruntime="false">
+			<classpath refid="project.classpath"/>
+			<include name="coriant/cats/driver/CommonDriverImpl.java"/> 
+			<include name="coriant/cats/driver/dci/DCIDriverFactory.java"/>
+			<include name="coriant/cats/driver/protocols/ssh/*.java"/>
+			<include name="coriant/cats/driver/helper/*.java"/>
+		</javac>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<echo>"jar driver code..."</echo>
+		<jar destfile="${dist.jar}">
+			<fileset dir="${build.classes.dir}"/>
+			<fileset dir="${src.dir}" includes="**/*.xml"/>
+			<manifest>
+				<attribute name="Main-Class" value="coriant/cats/driver/CommonDriverImpl"/>
+				<attribute name="Class-Path" value="${thirdparty.lib}"/>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Built-At" value="${build-info.current-date} ${build-info.current-time}"/>
+				<attribute name="Built-OS" value="${os.name} ${os.version}"/>
+				<attribute name="Built-On" value="${NAME}.${DOMAIN} ${ADDR4}"/>
+				<attribute name="Implementation-Version" value="${product.version}"/>
+			</manifest>
+		</jar>
+		<echo>"copy ${model.file} to ${deploy.dir}"</echo>
+		<copy file="${model.file}" todir="${deploy.dir}"/>
+		<echo>"copy jar files to ${deploy.dir}"</echo>
+		<copy todir="${deploy.dir}">
+			<fileset dir="${thirdparty.lib.dir}" includes="*.jar"></fileset>
+		</copy>
+		<echo>"delete ${dist.jar} file"</echo>
+		<delete file="${dist.jar}"/>
+	</target>
+
+	<target name="deploy.jar.xml" depends="jar">
+		<echo>"scp to remote host 172.29.14.151"</echo>
+		<scp todir="dci:Dci4523@172.29.14.151:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.152"</echo>
+		<scp todir="dci:Dci4523@172.29.14.152:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.153"</echo>
+		<scp todir="dci:Dci4523@172.29.14.153:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>
+		</scp>
+		<echo>"scp to remote host 172.29.14.155"</echo>
+		<scp todir="dci:Dci4523@172.29.14.155:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.156"</echo>
+		<scp todir="dci:Dci4523@172.29.14.156:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.55.195"</echo>
+		<scp todir="dci:Dci4523@172.29.55.195:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.177"</echo>
+		<scp todir="dci:Dci4523@172.29.22.177:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.175"</echo>
+		<scp todir="dci:Dci4523@172.29.22.175:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.176"</echo>
+		<scp todir="dci:Dci4523@172.29.22.176:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.179"</echo>
+		<scp todir="dci:Dci4523@172.29.22.179:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+
+		<echo>"scp to development host ${development.driver.ipaddress}"</echo>
+		<scp todir="dci:Dci4523@${development.driver.ipaddress}:${development.drive.home}" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>scp model file to development test engine ${development.te.ipaddress}</echo>
+		<scp todir="${development.te.username}:${development.te.password}@${development.te.ipaddress}:${development.te.cfg.directory}" 
+			trust="yes" file="${model.file}"/>
+
+		<echo>"scp to remote host ptlisvldci001.dci.co-int.net"</echo>
+		<scp todir="dci:Dci4523@ptlisvldci001.dci.co-int.net:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>scp model file ${model.file} to remote host 172.29.22.132</echo>
+		<scp todir="cxml:cxml01@172.29.22.132:/usr/cats/ta/cfg" trust="yes" file="${model.file}"/>
+
+	</target>
+	
+	<target name="deploy" depends="jar">
+		<echo>"scp to remote host 172.29.14.151"</echo>
+		<scp todir="dci:Dci4523@172.29.14.151:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.152"</echo>
+		<scp todir="dci:Dci4523@172.29.14.152:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.153"</echo>
+		<scp todir="dci:Dci4523@172.29.14.153:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>
+		</scp>
+		<echo>"scp to remote host 172.29.14.155"</echo>
+		<scp todir="dci:Dci4523@172.29.14.155:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.14.156"</echo>
+		<scp todir="dci:Dci4523@172.29.14.156:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.55.195"</echo>
+		<scp todir="dci:Dci4523@172.29.55.195:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.177"</echo>
+		<scp todir="dci:Dci4523@172.29.22.177:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.175"</echo>
+		<scp todir="dci:Dci4523@172.29.22.175:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.176"</echo>
+		<scp todir="dci:Dci4523@172.29.22.176:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.22.179"</echo>
+		<scp todir="dci:Dci4523@172.29.22.179:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host ptlisvldci001.dci.co-int.net"</echo>
+		<scp todir="dci:Dci4523@ptlisvldci001.dci.co-int.net:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+			    <include name="**/*"/>
+			</fileset>			
+		</scp>
+
+		<echo>"scp to development host ${development.driver.ipaddress}"</echo>
+		<scp todir="dci:Dci4523@${development.driver.ipaddress}:${development.drive.home}" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>scp model file to development test engine ${development.te.ipaddress}</echo>
+		<scp todir="${development.te.username}:${development.te.password}@${development.te.ipaddress}:${development.te.cfg.directory}" 
+			trust="yes" file="${model.file}"/>
+
+		<echo>scp model file ${model.file} to remote host 172.29.22.132</echo>
+		<scp todir="cxml:cxml01@172.29.22.132:/usr/cats/ta/cfg" trust="yes" file="${model.file}"/>
+
+	</target>
+	
+	<target name="deploy.internal" depends="jar">
+		<echo>"scp to remote host 172.29.22.178"</echo>
+		<scp todir="dci:Dci4523@172.29.22.178:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>"scp to remote host 172.29.55.196"</echo>
+		<scp todir="dci:Dci4523@172.29.55.196:/home/dci" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+	</target>
+
+	<target name="deploy.xml">
+		<echo>"scp to remote host 172.29.14.151"</echo>
+		<scp todir="dci:Dci4523@172.29.14.151:/home/dci" trust="yes" file="${model.file}"/>
+		
+		<echo>"scp to remote host 172.29.14.152"</echo>
+		<scp todir="dci:Dci4523@172.29.14.152:/home/dci" trust="yes" file="${model.file}"/>
+		
+		<echo>"scp to remote host 172.29.14.153"</echo>
+		<scp todir="dci:Dci4523@172.29.14.153:/home/dci" trust="yes" file="${model.file}"/>
+		
+		<echo>"scp to remote host 172.29.14.155"</echo>
+		<scp todir="dci:Dci4523@172.29.14.155:/home/dci" trust="yes" file="${model.file}"/>
+		
+		<echo>"scp to remote host 172.29.14.156"</echo>
+		<scp todir="dci:Dci4523@172.29.14.156:/home/dci" trust="yes" file="${model.file}"/>
+
+		<echo>"scp to remote host 172.29.22.177"</echo>
+		<scp todir="dci:Dci4523@172.29.22.177:/home/dci" trust="yes" file="${model.file}"/>
+		<echo>"scp to remote host 172.29.22.175"</echo>
+		<scp todir="dci:Dci4523@172.29.22.175:/home/dci" trust="yes" file="${model.file}"/>
+		<echo>"scp to remote host 172.29.22.176"</echo>
+		<scp todir="dci:Dci4523@172.29.22.176:/home/dci" trust="yes" file="${model.file}"/>
+		<echo>"scp to remote host 172.29.22.179"</echo>
+		<scp todir="dci:Dci4523@172.29.22.179:/home/dci" trust="yes" file="${model.file}"/>
+		<echo>"scp to remote host 172.29.55.195"</echo>
+		<scp todir="dci:Dci4523@172.29.55.195:/home/dci" trust="yes" file="${model.file}"/>
+		
+		<echo>scp model file to development test engine ${development.te.ipaddress}</echo>
+		<scp todir="${development.te.username}:${development.te.password}@${development.te.ipaddress}:${development.te.cfg.directory}" 
+			trust="yes" file="${model.file}"/>
+		<echo>"scp to development host ${development.driver.ipaddress}"</echo>
+		<scp todir="dci:Dci4523@${development.driver.ipaddress}:${development.drive.home}" trust="yes" file="${model.file}"/>
+
+		<echo>"scp to remote host ptlisvldci001.dci.co-int.net"</echo>
+		<scp todir="dci:Dci4523@ptlisvldci001.dci.co-int.net:/home/dci" trust="yes" file="${model.file}"/>
+
+		<echo>scp model file ${model.file} to remote host 172.29.22.132</echo>
+		<scp todir="cxml:cxml01@172.29.22.132:/usr/cats/ta/cfg" trust="yes" file="${model.file}"/>
+	</target>
+
+	<target name="debug" depends="jar">
+		<echo>"scp to development host ${development.driver.ipaddress}"</echo>
+		<scp todir="dci:Dci4523@${development.driver.ipaddress}:${development.drive.home}" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="**/*"/>
+			</fileset>			
+		</scp>
+		<echo>scp model file to development test engine ${development.te.ipaddress}</echo>
+		<scp todir="${development.te.username}:${development.te.password}@${development.te.ipaddress}:${development.te.cfg.directory}" 
+			trust="yes" file="${model.file}"/>
+	</target>
+
+	<target name="debug.jar.xml" depends="jar">
+		<echo>"scp to development host ${development.driver.ipaddress}"</echo>
+		<scp todir="dci:Dci4523@${development.driver.ipaddress}:${development.drive.home}" trust="yes">
+			<fileset dir="${deploy.dir}">
+				<include name="${dci.jar}"/>
+				<include name="${model.file.name}"/>
+			</fileset>			
+		</scp>
+		<echo>scp model file to development test engine ${development.te.ipaddress}</echo>
+		<scp todir="${development.te.username}:${development.te.password}@${development.te.ipaddress}:${development.te.cfg.directory}" 
+			trust="yes" file="${model.file}"/>
+	</target>
+	
+	<target name="deploy.model.file">
+		<echo message="copy ${model.file} to dir ${deploy.dir}"/>
+		<copy file="${model.file}" todir="${deploy.dir}"/>
+	</target>
+</project>

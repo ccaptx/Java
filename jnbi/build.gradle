@@ -1,0 +1,33 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':jnetconf')
+    compile 'commons-logging:commons-logging:1.2'
+    compile 'commons-net:commons-net:3.6'
+    compile 'org.dom4j:dom4j:2.0.0'
+    compile 'org.jdom:jdom2:2.0.6'
+    compile 'ch.ethz.ganymed:ganymed-ssh2:262'
+    compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.5.3'
+    compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
+    compile group:'com.jcraft', name:'jsch', version:'0.1.53'
+    testCompile 'junit:junit:4.+'
+}
+
+/*
+uploadArchives {
+    repositories {
+        flatDir {
+            dirs 'dist'
+        }
+    }
+}
+*/
+
+mainClassName = 'org.dvlyyon.nbi.CommonDriverImpl'
