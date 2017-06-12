@@ -1,44 +1,23 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-task('increaseBuildNumber') {
-    doLast {
-        def versionPropsFile = file('version.properties')
+task increaseBuildNumber {
+    def versionPropsFile = file('version.properties')
     
-        if (versionPropsFile.canRead()) {
-            def Properties versionProps = new Properties()
+    if (versionPropsFile.canRead()) {
+        def Properties versionProps = new Properties()
     
-            versionProps.load(new FileInputStream(versionPropsFile))
+        versionProps.load(new FileInputStream(versionPropsFile))
     
-            def code = versionProps['build_number'].toInteger() + 1
+        def code = versionProps['build_number'].toInteger() + 1
     
-            versionProps['build_number']=code.toString()
-            versionProps.store(versionPropsFile.newWriter(), null)
-            def version = "1.0" + "." + code.toString()
-            project.setVersion(version)
-/*
-    	    project.getAllprojects().each {p -> 
-                println(p.name)
-    		    if (p.name == 'jnbi') {
-    			    p.setVersion(version)
-    	        }
-            }
-*/
-        }
+        versionProps['build_number']=code.toString()
+        versionProps.store(versionPropsFile.newWriter(), null)
+        def version = "1.0" + "." + code.toString()
+        project.setVersion(version)
     }
 }
 
-/*
-tasks.whenTaskAdded { task ->
-    if (task.name == 'jar') {
-        task.dependsOn 'increaseBuildNumber'
-    }
-}
-*/
-
-jar {
-    dependsOn 'increaseBuildNumber'
-}
 
 repositories {
     mavenCentral()
@@ -57,14 +36,13 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
-/*
-uploadArchives {
-    repositories {
-        flatDir {
-            dirs 'dist'
-        }
+jar {
+    from configurations.runtime
+    manifest {
+        attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
+                    'Implementation-Version': version,
+                    'Class-Path': configurations.compile.collect { it.getName() }.join(' '))
     }
 }
-*/
 
 mainClassName = 'org.dvlyyon.nbi.CommonDriverImpl'
