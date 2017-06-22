@@ -118,18 +118,15 @@ public class SNMPGet {
 
 	}
 	
-	public static void main(String argv[]) throws Exception {
-		SNMPGet sg = new SNMPGet();
-		sg.connetAgentWithV3NoAuthNoPriv("172.29.132.206", "161", "udp", "administrator");
-		
+	void testAll() throws IOException {
 		String oid = "1.3.6.1.4.1.42229.1.2.2";
-		for (int i = 0; i<20 ; sg.getNext(oid),i++);
+		for (int i = 0; i<20 ; getNext(oid),i++);
 		
 		String [] oidList1 = {
 				"1.3.6.1.4.1.42229.1.2.2.2.1.1.6.1",
 				"1.3.6.1.4.1.42229.1.2.2.2.1.1.7.1"
 		};
-		sg.get(oidList1);
+		get(oidList1);
 		
 //		String [] oidList2 = {
 //				".1.3.6.1.4.1.42229.1.2.2.4.1.1.1",
@@ -145,7 +142,19 @@ public class SNMPGet {
 				".1.3.6.1.4.1.42229.1.2.2.2.1.1.5",
 				".1.3.6.1.4.1.42229.1.2.2.4.1.1.8"
 		};
-		sg.getBulk(oidList3, 2, 6);
+		getBulk(oidList3, 2, 6);		
+	}
+	
+	void testGetNextWithEnd() throws IOException {
+		String oid = ".1.3.6.1.6";
+		String newOID = getNext(oid);
+		for (; !newOID.equals(oid); oid = newOID,newOID = getNext(oid));
+	}
+	
+	public static void main(String argv[]) throws Exception {
+		SNMPGet sg = new SNMPGet();
+		sg.connetAgentWithV3NoAuthNoPriv("172.29.132.206", "161", "udp", "administrator");
+		sg.testGetNextWithEnd();
 	
 	}
 
