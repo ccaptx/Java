@@ -145,16 +145,16 @@ public class SNMPGet {
 		getBulk(oidList3, 2, 6);		
 	}
 	
-	void testGetNextWithEnd() throws IOException {
-		String oid = ".1.3.6.1.6";
+	void testGetNextWithEnd(String oid) throws IOException {
 		String newOID = getNext(oid);
 		for (; !newOID.equals(oid); oid = newOID,newOID = getNext(oid));
 	}
 	
 	public static void main(String argv[]) throws Exception {
 		SNMPGet sg = new SNMPGet();
-		sg.connetAgentWithV3NoAuthNoPriv("172.29.132.206", "161", "udp", "administrator");
-		sg.testGetNextWithEnd();
+		sg.connetAgentWithV3NoAuthNoPriv("172.29.132.208", "161", "udp", "administrator");
+		sg.testGetNextWithEnd(".1.3.6.1.6");
+//		sg.testGetNextWithEnd("1.3.6.1.6.3.16.1.5.2.1.6.6.95.110.111.110.101.95.1.2");
 	
 	}
 
