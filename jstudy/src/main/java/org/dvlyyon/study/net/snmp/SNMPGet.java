@@ -11,6 +11,7 @@ import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
@@ -21,6 +22,7 @@ import org.snmp4j.smi.GenericAddress;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.VariableBinding;
+import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 public class SNMPGet {
@@ -90,10 +92,55 @@ public class SNMPGet {
 			System.out.println(responsePDU.get(i));		
 	}
 	
-	void connetAgentWithV3NoAuthNoPriv(String ipAddress, String port, String protocol, String securityName) 
-		throws IOException {
+	void connectAgentWithV3AuthNoPriv(String ipAddress, String port, String protocol, String securityName,
+			OID authProtocol, String authKey) throws Exception {
 		Address agentAddress = GenericAddress.parse(protocol+":"+ipAddress+"/"+port);
-		TransportMapping transport = new DefaultUdpTransportMapping();
+		TransportMapping transport = null; 
+		if (protocol.equals("udp")) 
+			transport = new DefaultUdpTransportMapping();
+		else if (protocol.equals("tcp"))
+			transport = new DefaultTcpTransportMapping();
+		else 
+			throw new Exception("Identified transport protocol: "+protocol);
+			
+			
+		snmp = new Snmp(transport);
+		USM usm = new USM(SecurityProtocols.getInstance(),
+				new OctetString(MPv3.createLocalEngineID()), 0);
+		SecurityModels.getInstance().addSecurityModel(usm);
+		transport.listen();
+
+		// add user to the USM
+		snmp.getUSM().addUser(new OctetString(securityName),
+				new UsmUser(new OctetString(securityName),
+						authProtocol,
+						new OctetString(authKey),
+						null,
+						null));
+		
+		target = new UserTarget();
+		target.setAddress(agentAddress);
+		target.setRetries(1);
+		target.setTimeout(5000);
+		target.setVersion(SnmpConstants.version3);
+		target.setSecurityLevel(SecurityLevel.AUTH_NOPRIV);
+		target.setSecurityName(new OctetString(securityName));
+
+		
+	}
+	
+	void connectAgentWithV3NoAuthNoPriv(String ipAddress, String port, String protocol, String securityName) 
+		throws Exception {
+		Address agentAddress = GenericAddress.parse(protocol+":"+ipAddress+"/"+port);
+
+		TransportMapping transport = null; 
+		if (protocol.equals("udp")) 
+			transport = new DefaultUdpTransportMapping();
+		else if (protocol.equals("tcp"))
+			transport = new DefaultTcpTransportMapping();
+		else 
+			throw new Exception("Identified transport protocol: "+protocol);
+
 		snmp = new Snmp(transport);
 		USM usm = new USM(SecurityProtocols.getInstance(),
 				new OctetString(MPv3.createLocalEngineID()), 0);
@@ -149,10 +196,11 @@ public class SNMPGet {
 		String newOID = getNext(oid);
 		for (; !newOID.equals(oid); oid = newOID,newOID = getNext(oid));
 	}
-	
+
 	public static void main(String argv[]) throws Exception {
 		SNMPGet sg = new SNMPGet();
-		sg.connetAgentWithV3NoAuthNoPriv("172.29.132.208", "161", "udp", "administrator");
+//		sg.connectAgentWithV3NoAuthNoPriv("172.29.132.208", "161", "udp", "administrator");
+		sg.connectAgentWithV3AuthNoPriv("172.29.132.206", "161", "tcp", "administrator",AuthSHA.ID,"5D7ef*4Ea");
 		sg.testGetNextWithEnd(".1.3.6.1.6");
 //		sg.testGetNextWithEnd("1.3.6.1.6.3.16.1.5.2.1.6.6.95.110.111.110.101.95.1.2");
 	
