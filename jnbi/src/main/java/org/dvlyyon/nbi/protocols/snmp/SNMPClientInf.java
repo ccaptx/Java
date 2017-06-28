@@ -25,6 +25,14 @@ public interface SNMPClientInf {
 	static final String SNMP_PRIV_PROTOCOL  = "privProtocol";
 	static final String SNMP_PRIV_KEY		= "privKey";
 	
+	static final String SNMP_SECURITY_LEVEL_NOAUTHNOPRIV = "noAuthNoPriv";
+	static final String SNMP_SECURITY_LEVEL_AUTHNOPRIV   = "authNoPriv";
+	static final String SNMP_SECURITY_LEVEL_AUTHPRIV	 = "authPriv";
+		
+	static final int 	SNMP_VERSION_1	= 0;
+	static final int	SNMP_VERSION_2c = 1;
+	static final int 	SNMP_VERSION_3	= 3;
+	
 	/**
 	 * Set necessary connecting information
 	 * @param context
@@ -47,6 +55,7 @@ public interface SNMPClientInf {
 	 * @throws ContextInfoException
 	 */
 	public void setContext(Map <String,String> context) throws ContextInfoException;
+	public void connect() throws IOException;
 	public String get(String [] OIDs) throws IOException;
 	public String getNext(String [] OIDs) throws IOException;
 	public String getBulk(String [] OIDs, int noRepeater, int maxRepetition) throws IOException;
