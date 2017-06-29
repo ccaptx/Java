@@ -179,6 +179,9 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 		ResponseEvent response = snmp.send(pdu, target);
 		// extract the response PDU (could be null if timed out)
 		PDU responsePDU = response.getResponse();
+		if (responsePDU == null) {
+			throw new IOException("Connect SNMP agent with time out");
+		}
 		// extract the address used by the agent to send the response:
 		Address peerAddress = response.getPeerAddress();
 		System.out.println(peerAddress.toString());
