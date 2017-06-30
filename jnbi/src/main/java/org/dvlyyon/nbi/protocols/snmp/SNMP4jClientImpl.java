@@ -4,7 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.protocols.ContextInfoException;
+import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
@@ -40,16 +43,22 @@ import static org.dvlyyon.nbi.protocols.snmp.SNMPClientInf.*;
  * @since 1.0
  */
 public class SNMP4jClientImpl implements SNMPClientInf {
+	
 	Map<String,String> context;
 	Snmp snmp;
 	Target target;
 	
 	int snmpVersion;
 	int securityLevel;
+	int retries = 3;
+	int timeout = 5000;
+
 	OID authProtocol = null;
 	OID privProtocol = null;
 	String authKey	 = null;
 	String privkey	 = null;
+
+	private final static Log log = LogFactory.getLog(SNMP4jClientImpl.class);
 
 	private boolean contain(Map<String,String> context, String key) {
 		if (context.containsKey(key) && context.get(key) != null && 
@@ -61,18 +70,18 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 	private void setSNMPVersion() throws ContextInfoException {
 		String version = context.get(SNMP_VERSION);
 		if (version.equals("1") || version.equals("v1"))
-			snmpVersion = SNMP_VERSION_1;
+			snmpVersion = SnmpConstants.version1;
 		else if (version.equals("2c") || version.equals("v2c"))
-			snmpVersion = SNMP_VERSION_2c;
+			snmpVersion = SnmpConstants.version2c;
 		else if (version.equals("3") || version.equals("v3"))
-			snmpVersion = SNMP_VERSION_3;
+			snmpVersion = SnmpConstants.version3;
 		else
 			throw new ContextInfoException("Invalid SNMP version:"+version);
 			
 	}
 	// make sure the context has been initialized
 	private boolean isSNMPV3() {
-		return snmpVersion == SNMP_VERSION_3;
+		return snmpVersion == SnmpConstants.version3;
 	}
 	
 	private void setSecurityLevel() throws ContextInfoException {
@@ -161,56 +170,140 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 	}
 
 	@Override
-	public String get(String[] OIDs) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public String get(String[] oidList) throws IOException {
+		if (oidList == null || oidList.length <= 0) {
+			log.error("The OID list parameter cannot be null or empty");
+			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
+		}
 
-	@Override
-	public String getNext(String[] OIDs) throws IOException {
-		if (OIDs == null || OIDs.length <= 0)
-			return null;
-		// create the PDU
 		PDU pdu = new ScopedPDU();
-		pdu.add(new VariableBinding(new OID(OIDs[0])));
-		pdu.setType(PDU.GETNEXT);
+		pdu.setType(PDU.GET);
+		for (String oid:oidList) pdu.add(new VariableBinding(new OID(oid)));
 
 		// send the PDU
 		ResponseEvent response = snmp.send(pdu, target);
 		// extract the response PDU (could be null if timed out)
 		PDU responsePDU = response.getResponse();
 		if (responsePDU == null) {
+			log.error("The response is null");
 			throw new IOException("Connect SNMP agent with time out");
 		}
 		// extract the address used by the agent to send the response:
 		Address peerAddress = response.getPeerAddress();
-		System.out.println(peerAddress.toString());
-		System.out.println(responsePDU);
-		if (responsePDU.size() == 1) {
-			VariableBinding v = responsePDU.get(0);
-			return v.getOid().format();
-		} else {
-			System.out.println("More than one variables returned");
+		log.debug(peerAddress.toString());
+		log.debug(responsePDU);
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (int i=0; i<responsePDU.size(); i++) {
+			VariableBinding vb = responsePDU.get(i);
+			if (!first) sb.append(SNMP_VB_SEPARATOR);
+			sb.append(vb.getOid())
+			  .append(SNMP_KV_SEPARATOR)
+			  .append(vb.getVariable());
+			first = false;
 		}
-		return null;
+		return sb.toString();
 	}
 
 	@Override
-	public String getBulk(String[] OIDs, int noRepeater, int maxRepetition) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getNext(String[] oidList) throws IOException {
+		if (oidList == null || oidList.length <= 0) {
+			log.error("The OID list parameter cannot be null or empty");
+			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
+		}
+		// create the PDU
+		PDU pdu = new ScopedPDU();
+		pdu.setType(PDU.GETNEXT);
+		for (String oid:oidList) pdu.add(new VariableBinding(new OID(oid)));
+
+		// send the PDU
+		ResponseEvent response = snmp.send(pdu, target);
+		// extract the response PDU (could be null if timed out)
+		PDU responsePDU = response.getResponse();
+		if (responsePDU == null) {
+			log.error("The response is null");
+			throw new IOException("Connect SNMP agent with time out");
+		}
+		// extract the address used by the agent to send the response:
+		Address peerAddress = response.getPeerAddress();
+		log.debug(peerAddress.toString());
+		log.debug(responsePDU);
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (int i=0; i<responsePDU.size(); i++) {
+			VariableBinding vb = responsePDU.get(i);
+			if (!first) sb.append(SNMP_VB_SEPARATOR);
+			sb.append(vb.getOid())
+			  .append(SNMP_KV_SEPARATOR)
+			  .append(vb.getVariable());
+			first = false;
+		}
+		return sb.toString();
+	}
+
+	@Override
+	public String getBulk(String[] oidList, int noRepeater, int maxRepetition) throws IOException {
+		if (oidList == null || oidList.length <= 0) {
+			log.error("The OID list parameter cannot be null or empty");
+			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
+		}
+		// create the PDU
+		PDU pdu = new ScopedPDU();
+		pdu.setType(PDU.GETBULK);
+		pdu.setNonRepeaters(noRepeater);
+		pdu.setMaxRepetitions(maxRepetition);
+
+		for (String oid:oidList)
+			pdu.add(new VariableBinding(new OID(oid)));
+
+		// send the PDU
+		ResponseEvent response = snmp.send(pdu, target);
+		// extract the response PDU (could be null if timed out)
+		PDU responsePDU = response.getResponse();
+		if (responsePDU == null) {
+			log.error("The response is null");
+			throw new IOException("Connect SNMP agent with time out");
+		}
+		// extract the address used by the agent to send the response:
+		Address peerAddress = response.getPeerAddress();
+		log.debug(peerAddress.toString());
+		log.debug(responsePDU);
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (int i=0; i<responsePDU.size(); i++) {
+			VariableBinding vb = responsePDU.get(i);
+			if (!first) sb.append(SNMP_VB_SEPARATOR);
+			sb.append(vb.getOid())
+			  .append(SNMP_KV_SEPARATOR)
+			  .append(vb.getVariable());
+			first = false;
+		}
+		return sb.toString();
+	}
+	
+	private void walk(String oidPre, String oid, StringBuilder sb) throws IOException {
+		String nextVB 	= getNext(new String[]{oid});
+		sb.append(SNMP_VB_SEPARATOR).append(nextVB);
+		int    kvIndex  = nextVB.indexOf(SNMP_KV_SEPARATOR);
+		String nextOID = nextVB.substring(0,kvIndex);
+		if (nextOID.startsWith(oidPre))
+			walk(oidPre,nextOID,sb);
 	}
 
 	@Override
 	public String walk(String oid) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
+		if (oid == null || oid.trim().isEmpty()) {
+			log.error("The oid cannot be null or empty");
+			throw new IllegalArgumentException("The oid cannot be null or empty");
+		}
+		StringBuilder sb = new StringBuilder();
+		walk(oid,oid,sb);
+		return sb.toString().substring(SNMP_VB_SEPARATOR.length());
 	}
 
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-
+		snmp.close();
 	}
 
 	private TransportMapping initTransport() throws IOException{
@@ -237,7 +330,7 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 		target.setAddress(agentAddress);
 		target.setRetries(1);
 		target.setTimeout(5000);
-		target.setVersion(SnmpConstants.version3);
+		target.setVersion(snmpVersion);
 		target.setSecurityLevel(securityLevel);
 		target.setSecurityName(new OctetString(securityName));		
 	}
@@ -258,6 +351,21 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 		initV3Target();
 	}
 	
+	private void connectV1or2cAgent() {
+		String protocol = context.get(this.SNMP_TRANSPORT);
+		String ipAddress = context.get(this.SNMP_AGENT_ADDRESS);
+		String port = context.get(this.SNMP_AGENT_PORT);
+		String securityName = context.get(this.SNMP_SECURITY_NAME);
+		
+		Address agentAddress = GenericAddress.parse(protocol+":"+ipAddress+"/"+port);
+		target = new CommunityTarget();
+		((CommunityTarget)target).setCommunity(new OctetString(securityName));
+		target.setAddress(agentAddress);
+		target.setRetries(retries);
+		target.setTimeout(timeout);
+		target.setVersion(snmpVersion);
+	}
+	
 	@Override
 	public void connect() throws IOException {
 		
@@ -267,7 +375,7 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 		if (this.isSNMPV3()) {
 			connectV3Agent();
 		} else {
-//			connectV1or2cAgent();
+			connectV1or2cAgent();
 		}
 		transport.listen();
 		
@@ -278,16 +386,17 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 		TreeMap<String,String> context = new TreeMap<String,String>();
 		context.put(SNMP_AGENT_ADDRESS, "172.29.132.208");
 		context.put(SNMP_AGENT_PORT, "161");
-		context.put(SNMP_SECURITY_NAME, "aaa");
+		context.put(SNMP_SECURITY_NAME, "administrator");
 		context.put(SNMP_TRANSPORT, "udp");
 		context.put(SNMP_VERSION, "3");
 		context.put(SNMP_SECURITY_LEVEL, SNMP_SECURITY_LEVEL_NOAUTHNOPRIV);
 		client.setContext(context);
 		client.connect();
 		String [] oidList1 = {
-				"1.3.6.1.4.1.42229.1.2.2"
+				"1.8.6.1.4.1.42229.1.2.2"
 		};
-		client.getNext(oidList1);
+		System.out.println(client.getNext(oidList1));
+		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4.1.1"));
 	}
 
 }
