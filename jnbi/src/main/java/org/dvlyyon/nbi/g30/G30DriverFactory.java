@@ -26,12 +26,14 @@ public class G30DriverFactory implements DriverFactoryInf {
 		{NBI_TYPE_CLI_SSH,
 		 NBI_TYPE_NETCONF,
 		 NBI_TYPE_ODL,
-		 NBI_TYPE_RESTCONF};
+		 NBI_TYPE_RESTCONF,
+		 NBI_TYPE_SNMP};
 
 	static final int SSH_INDEX      = 0;
 	static final int NETCONF_INDEX  = 1;
 	static final int ODL_INDEX      = 2;
 	static final int RESTCONF_INDEX = 3;
+	static final int SNMP_INDEX 	= 4;
 
 	boolean isSupportedInterface(String intf) {
 		for (String item:supportedIntfType) {
@@ -60,7 +62,11 @@ public class G30DriverFactory implements DriverFactoryInf {
 	boolean isRestconfInterface(String intf) {
 		return intf.equalsIgnoreCase(supportedIntfType[RESTCONF_INDEX]);
 	}
-	
+
+	boolean isSnmpInterface(String intf) {
+		return intf.equalsIgnoreCase(supportedIntfType[RESTCONF_INDEX]);
+	}
+
 	@Override
 	public DriverEngineInf createEngine(String platformName, DObjectModel objModel) {
 		DriverFunction function = new CommonFunctionImpl();
@@ -93,6 +99,9 @@ public class G30DriverFactory implements DriverFactoryInf {
 					((G30CliStub)cli).setAdapter(cliAdapter);
 				} else if (isRestconfInterface(intfType)) {
 					NBIAdapterInf cliAdapter = new G30RestconfImpl();
+					((G30CliStub)cli).setAdapter(cliAdapter);
+				} else if (isSnmpInterface(intfType)) {
+					NBIAdapterInf cliAdapter = new G30SnmpImpl();
 					((G30CliStub)cli).setAdapter(cliAdapter);
 				} else {
 					err.add(0,"The " + intfType + " is not supported by DCI platform");
@@ -143,6 +152,9 @@ public class G30DriverFactory implements DriverFactoryInf {
 					ret = cli.login(ap);
 				} else if (isRestconfInterface(intfType)) {
 					cli = new G30RestconfImpl();
+					ret = cli.login(ap);
+				} else if (isSnmpInterface(intfType)) {
+					cli = new G30SnmpImpl();
 					ret = cli.login(ap);
 				} else {
 					err.add(0,"The " + intfType + " is not supported by DCI platform");

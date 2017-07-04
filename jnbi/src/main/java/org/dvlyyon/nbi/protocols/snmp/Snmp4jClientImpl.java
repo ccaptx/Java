@@ -34,7 +34,7 @@ import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultTcpTransportMapping;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-import static org.dvlyyon.nbi.protocols.snmp.SNMPClientInf.*;
+import static org.dvlyyon.nbi.protocols.snmp.SnmpClientInf.*;
 
 /**
  * A {@code SNMP4jClientImpl} class implements {@link SNMPclientInf} interface based on SNMP implementation <em>snmp4j</em>. 
@@ -42,7 +42,7 @@ import static org.dvlyyon.nbi.protocols.snmp.SNMPClientInf.*;
  * @version 1.0
  * @since 1.0
  */
-public class SNMP4jClientImpl implements SNMPClientInf {
+public class Snmp4jClientImpl implements SnmpClientInf {
 	
 	Map<String,String> context;
 	Snmp snmp;
@@ -58,7 +58,7 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 	String authKey	 = null;
 	String privkey	 = null;
 
-	private final static Log log = LogFactory.getLog(SNMP4jClientImpl.class);
+	private final static Log log = LogFactory.getLog(Snmp4jClientImpl.class);
 
 	private boolean contain(Map<String,String> context, String key) {
 		if (context.containsKey(key) && context.get(key) != null && 
@@ -303,9 +303,16 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 
 	@Override
 	public void close() throws IOException {
+		if (snmp == null) return;
 		snmp.close();
 	}
 
+	@Override
+	public boolean isConnected() {
+		if (snmp == null) return false;
+		return true;
+	}
+	
 	private TransportMapping initTransport() throws IOException{
 		String protocol = context.get(this.SNMP_TRANSPORT);
 
@@ -382,7 +389,7 @@ public class SNMP4jClientImpl implements SNMPClientInf {
 	}
 	
 	public static void main(String argv[]) throws Exception {
-		SNMP4jClientImpl client = new SNMP4jClientImpl();
+		Snmp4jClientImpl client = new Snmp4jClientImpl();
 		TreeMap<String,String> context = new TreeMap<String,String>();
 		context.put(SNMP_AGENT_ADDRESS, "172.29.132.208");
 		context.put(SNMP_AGENT_PORT, "161");

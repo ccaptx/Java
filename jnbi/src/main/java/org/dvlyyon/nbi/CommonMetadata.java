@@ -37,6 +37,7 @@ public class CommonMetadata {
 	public static final String NBI_TYPE_NETCONF   	= 			"netconf";
 	public static final String NBI_TYPE_ODL       	= 			"odl";
 	public static final String NBI_TYPE_RESTCONF	=			"restconf";
+	public static final String NBI_TYPE_SNMP		= 			"snmp";
 
 	public static final String DYNAMIC_ATTRIBUTE_NAME = 		"dynamic_attr_value";
 	public static final String DRIVER_CONFIGURE_TIMEOUT = 		"__timeout";

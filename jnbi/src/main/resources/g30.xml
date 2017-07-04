@@ -2249,6 +2249,32 @@
       </attribute>
     </action>
   </object>
+  <object name="SnmpCommand" identifierRule="0" auto-create="yes" support="snmp" isSnmpConsole="true">
+    <parent name="DCINode"/>
+    <action type="cli" name="__get" acttype="3">
+      <attribute name="objectOID">
+        <value type="format" format="n1.n1.n1.n1.n1::n2.n2.n2"/>
+      </attribute>
+      <attribute name="resp"/>
+    </action>
+    <action type="cli" name="__getNext" acttype="3">
+      <attribute name="resp"/>
+      <attribute name="objectOID">
+        <value type="format" format="n1.n1.n1.n1.n1::n2.n2.n2"/>
+      </attribute>
+    </action>
+    <action type="cli" name="__getBulk" acttype="3">
+      <attribute name="resp"/>
+      <attribute name="objectOID">
+        <value type="format" format="n1.n1.n1.n1.n1::n2.n2.n2"/>
+      </attribute>
+    </action>
+    <action type="cli" name="__walk" acttype="3">
+      <attribute name="objectOID">
+        <value type="format" format="n.n.n.n.n"/>
+      </attribute>
+    </action>
+  </object> 
   <object name="DCINode" extends="Node" isNode="true" nodeType="container" address="000.000.000.000"> 
     <metaInfo> 
       <metaItem name="prefix" value="ne"/>  

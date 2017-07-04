@@ -12,10 +12,10 @@ import org.dvlyyon.nbi.protocols.ContextInfoException;
  * @version 1.0
  * @since 1.0
  */
-public interface SNMPClientInf {
+public interface SnmpClientInf {
 
 	static final String SNMP_AGENT_ADDRESS 	= "ipAddress";
-	static final String SNMP_AGENT_PORT 	= "port";
+	static final String SNMP_AGENT_PORT 	= "snmpPort";
 	static final String SNMP_VERSION		= "snmpVersion";
 	static final String SNMP_TRANSPORT		= "transportProtocol";
 	static final String SNMP_SECURITY_NAME	= "securityName";
@@ -59,4 +59,5 @@ public interface SNMPClientInf {
 	public String getBulk(String [] OIDs, int noRepeater, int maxRepetition) throws IOException;
 	public String walk(String oid) throws IOException;
 	public void close() throws IOException;
+	boolean isConnected();
 }
