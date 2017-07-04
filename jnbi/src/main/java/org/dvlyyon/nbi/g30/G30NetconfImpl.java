@@ -50,15 +50,15 @@ public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterI
 	private NetconfValidationInf 		netconfValidation    = null;
 	
 	@Override
-	public CommandPatternListInf parseAction(NBIObjectInf obj,
+	public CommandPatternListInf parseAction(NBIMultiProtocolsObjectInf obj,
 			String actionName, String[] params, RunState state, int actType) {
 		parser.setActionName(actionName);
-		parser.setObject((DNetconfBaseObject)obj);
+		parser.setObject((DNetconfObject)obj);
 		return obj.parseAction(actionName, params, state, actType, NBI_TYPE_NETCONF);
 	}
 
 	@Override
-	public String toGetResponse(NBIObjectInf obj, String actionName,
+	public String toGetResponse(NBIMultiProtocolsObjectInf obj, String actionName,
 			CommandPatternListInf cmd, RunState state) {
 		return obj.toGetResponse(actionName, cmd, state, NBI_TYPE_NETCONF);
 	}
@@ -273,7 +273,7 @@ public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterI
 			return (state.getResult() == State.NORMAL)?true:false;
 		}
 		boolean success = convertRPC(result,state);
-		String rpcModuleName = ((DNetconfBaseObject)node.getAncester()).getNBIModuleName();
+		String rpcModuleName = ((DNetconfObject)node.getAncester()).getNBIModuleName();
 		if (success) this.setValidateInfo(rpcModuleName, "rpc-reply", output, state);
 		return success;
 	}
@@ -313,7 +313,7 @@ public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterI
     	}
         state.setResult(State.NORMAL);
         state.setInfo(sb.toString());
-        String neName = ((DNetconfBaseObject)node.getAncester()).getNodeName();
+        String neName = ((DNetconfObject)node.getAncester()).getNodeName();
         setValidateInfo(neName, validateType, output, state);
 		return true;
 	}

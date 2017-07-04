@@ -33,7 +33,7 @@ public class NetconfXMLParser {
 	String actionName;
 	String namespace;
 	NetconfCLIObject mountPointObject;
-	DNetconfBaseObject object;
+	DNetconfObject object;
 	TreeMap<String, Object> properties;
 	String odlNamespacePrefix = null;
 
@@ -55,13 +55,13 @@ public class NetconfXMLParser {
 		this.actionName = actionName;
 	}
 	
-	public void setObject(DNetconfBaseObject object) {
+	public void setObject(DNetconfObject object) {
 		this.object = object;
-		namespace = ((DNetconfBaseObject)object.getAncester()).getNamespace();
+		namespace = ((DNetconfObject)object.getAncester()).getNamespace();
 		mountPointObject = null;
 	}
 	
-	public DNetconfBaseObject getObject() {
+	public DNetconfObject getObject() {
 		return object;
 	}
 
@@ -142,17 +142,17 @@ public class NetconfXMLParser {
 		DObjectAction actObj = object.getObjectType().getAction(actionName);
 		String nbiNS = actObj.getProperty(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (nbiNS == null)
-			nbiNS =	((DNetconfBaseObject)object.getAncester()).getNBINamespace();
+			nbiNS =	((DNetconfObject)object.getAncester()).getNBINamespace();
 		return nbiNS;
 	}
 	
 	private String getNamespacePrefix() {
-		DNetconfBaseObject ne = (DNetconfBaseObject)object.getAncester();
+		DNetconfObject ne = (DNetconfObject)object.getAncester();
 		return ne.getPrefix();
 	}
 
 	private String getNamespace() {
-		DNetconfBaseObject ne = (DNetconfBaseObject)object.getAncester();
+		DNetconfObject ne = (DNetconfObject)object.getAncester();
 		return ne.getNamespace();
 	}
 	
@@ -338,7 +338,7 @@ public class NetconfXMLParser {
 	}
 	
 	private boolean isXPath(String value) {
-		DNetconfBaseObject ne = (DNetconfBaseObject)object.getAncester();
+		DNetconfObject ne = (DNetconfObject)object.getAncester();
 		return (odlNamespacePrefix == null?isXPath(value, ne.getPrefix(), ne.getNodeName()):isXPath(value, odlNamespacePrefix, ne.getNodeName())); //TBD hard code for ODL here
 	}
 	

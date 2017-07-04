@@ -24,7 +24,7 @@ import org.dvlyyon.nbi.util.RunState.State;
 
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class DNetconfBaseObject extends DBaseObject {
+public class DNetconfObject extends DBaseObject {
 	private static final String NETCONF_XML_BASE_PRE_NAMESPACE = NetconfConstants.NETCONF_XML_BASE_PRE_NAMESPACE;
 	private static final String NETCONF_XML_OPERATION_CREATE = NetconfConstants.NETCONF_XML_OPERATION_CREATE;
 	private static final String NETCONF_XML_OPERATION_REPLACE = NetconfConstants.NETCONF_XML_OPERATION_REPLACE;
@@ -40,7 +40,7 @@ public class DNetconfBaseObject extends DBaseObject {
 	TreeMap <String, NetconfAttributeInfo> keyAttributes = new TreeMap <String, NetconfAttributeInfo>();
 	String configOperation = null;
 	
-	private static final Logger logger = Logger.getLogger(DNetconfBaseObject.class.getName());
+	private static final Logger logger = Logger.getLogger(DNetconfObject.class.getName());
 
 	public void clearCache() {
 		super.clearCache();
@@ -290,7 +290,7 @@ public class DNetconfBaseObject extends DBaseObject {
 			if (!attrInfo.isInstanceIdentifier()) {
 				return attrInfo.value;
 			} else {
-				DNetconfBaseObject obj = (DNetconfBaseObject) manager.getObject(attrInfo.value);
+				DNetconfObject obj = (DNetconfObject) manager.getObject(attrInfo.value);
 				if (obj == null) return attrInfo.value;
 				else return obj.getNetconfInstanceID();
 			}
@@ -305,14 +305,14 @@ public class DNetconfBaseObject extends DBaseObject {
 		if (isNode()) {
 			return "/" + getPrefix() + ":" + getNodeName();
 		} else {
-			DNetconfBaseObject parent = (DNetconfBaseObject) getParents().firstElement();
+			DNetconfObject parent = (DNetconfObject) getParents().firstElement();
 			return parent.getNetconfInstanceID(xpath) + "/" + getLocalInstanceID(xpath);
 		}
 	}
 	
 	protected String getLocalInstanceID(boolean xpath) {
 		StringBuilder sb = new StringBuilder();
-		if (xpath) sb.append(((DNetconfBaseObject)this.getAncester()).getPrefix()+":");
+		if (xpath) sb.append(((DNetconfObject)this.getAncester()).getPrefix()+":");
 		sb.append(this.getNodeName());
 		if (this.isNetconfListNode()) { 
 			String keys = this.getMetaData(NetconfConstants.META_NETCONF_NODE_KEYS);
@@ -322,7 +322,7 @@ public class DNetconfBaseObject extends DBaseObject {
 				String key = keyValue[0];
 				String value = keyValuePair.get(key);
 				sb.append("[");
-				if (xpath) sb.append(((DNetconfBaseObject)this.getAncester()).getPrefix() + ":");
+				if (xpath) sb.append(((DNetconfObject)this.getAncester()).getPrefix() + ":");
 				sb.append(key + "='" + value + "']");
 			}
 		}
@@ -331,7 +331,7 @@ public class DNetconfBaseObject extends DBaseObject {
 	
 	protected String getAttributeInstanceID(String attrName) {
 		String objID = getNetconfInstanceID();
-		return objID+"/"+((DNetconfBaseObject)this.getAncester()).getPrefix()+":"+attrName;
+		return objID+"/"+((DNetconfObject)this.getAncester()).getPrefix()+":"+attrName;
 	}
 
 	protected boolean refreshName(DObjectAction actObject, RunState state, String intfType) {
@@ -514,7 +514,7 @@ public class DNetconfBaseObject extends DBaseObject {
 	}
 	
 	protected boolean addSubtree (int indent, StringBuilder sb, RunState state, int depth) {
-		String prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+		String prefix = ((DNetconfObject)getAncester()).getPrefix();
 		boolean success = false;
 		Vector<DNetconfObjectType> children = ((DNetconfObjectType)mOType).getChildren();
 		if (children == null) return true;
@@ -562,7 +562,7 @@ public class DNetconfBaseObject extends DBaseObject {
 	protected String getAttributeValue(AttributeInfo attrInfo) {
 		DObjectAttribute attrObj = attrInfo.getAttrObject();
 		if (attrObj.isObjectName()) {
-			DNetconfBaseObject obj = (DNetconfBaseObject)manager.getObject(attrInfo.getValue());
+			DNetconfObject obj = (DNetconfObject)manager.getObject(attrInfo.getValue());
 			if (obj == null) return attrInfo.getMap2Value();
 			else return obj.getNetconfInstanceID();
 		}
@@ -572,7 +572,7 @@ public class DNetconfBaseObject extends DBaseObject {
 	protected boolean addAttributes (int indent, StringBuilder sb, Vector<AttributeInfo> mappedAttrList, boolean addPrefix) {
 		if (mappedAttrList == null) return true;
 		String prefix = "";
-		if (addPrefix) prefix = ((DNetconfBaseObject)getAncester()).getPrefix() + ":";
+		if (addPrefix) prefix = ((DNetconfObject)getAncester()).getPrefix() + ":";
 		
 		for (AttributeInfo attr: mappedAttrList) {
 			if (attr == null) continue;
@@ -633,7 +633,7 @@ public class DNetconfBaseObject extends DBaseObject {
 		String prefix = objType.getProperty(NetconfConstants.META_NETCONF_PREFIX);
 		String namespace = objType.getProperty(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (prefix == null)
-			prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+			prefix = ((DNetconfObject)getAncester()).getPrefix();
 		
 		for (int i=0; i<indent; i++) sb.append(" ");
 
@@ -651,7 +651,7 @@ public class DNetconfBaseObject extends DBaseObject {
 
 		String prefix = objType.getProperty(NetconfConstants.META_NETCONF_PREFIX);
 		if (prefix == null)
-			prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+			prefix = ((DNetconfObject)getAncester()).getPrefix();
 		sb.append("</"+prefix+ ":" + nodeName + ">\n");
 		return true;
 	}
@@ -691,9 +691,9 @@ public class DNetconfBaseObject extends DBaseObject {
 		if (netActName == null) netActName = actionName;
 		String nbiNS = actObj.getProperty(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (nbiNS == null)
-			nbiNS =	((DNetconfBaseObject)getAncester()).getNBINamespace();
-		String prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
-		String namespace = ((DNetconfBaseObject)getAncester()).getNamespace();
+			nbiNS =	((DNetconfObject)getAncester()).getNBINamespace();
+		String prefix = ((DNetconfObject)getAncester()).getPrefix();
+		String namespace = ((DNetconfObject)getAncester()).getNamespace();
 		String xmlNS = "xmlns:"+prefix+"=\""+namespace+"\"";
 		sb.append("<"+netActName + " ");
 		if (nbiNS == null) {
@@ -723,11 +723,11 @@ public class DNetconfBaseObject extends DBaseObject {
 		String prefix = this.getMetaData(NetconfConstants.META_NETCONF_PREFIX);
 		String namespace = this.getMetaData(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (prefix == null)
-			prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+			prefix = ((DNetconfObject)getAncester()).getPrefix();
 		
 		if (nodeType !=null && ((this.isNetconfContainerNode() || this.isNetconfListNode()))) {
 			if (!this.isNode()) {
-				DNetconfBaseObject parent = (DNetconfBaseObject)getParents().firstElement();
+				DNetconfObject parent = (DNetconfObject)getParents().firstElement();
 				indent = parent.addXMLDataModelHead(sb, state, NETCONF_OPERATION_NONE);
 				if (indent < 0) return indent;
 				indent += NETCONF_FORMAT_TAB_LENGTH;
@@ -770,14 +770,14 @@ public class DNetconfBaseObject extends DBaseObject {
 	}
 	
 	protected boolean addKey(int indent, StringBuilder sb) {
-		String prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+		String prefix = ((DNetconfObject)getAncester()).getPrefix();
 		Set<Entry<String, String>> entries = this.keyValuePair.entrySet();
 		for (Entry<String,String> entry: entries) {
 			for (int i=0; i<indent; i++) sb.append(" ");
 			String ns = "";
 			NetconfAttributeInfo attrInfo = keyAttributes.get(entry.getKey());
 			if (attrInfo != null && attrInfo.isInstanceIdentifier()) {
-				DNetconfBaseObject node = (DNetconfBaseObject)getAncester();
+				DNetconfObject node = (DNetconfObject)getAncester();
 				ns = " xmlns:"+ node.getPrefix() + "=\"" + node.getNamespace() + "\"";
 			}
 			sb.append("<"+prefix+":"+entry.getKey()+ ns + ">"+entry.getValue()+"</"+prefix+":"+entry.getKey()+">\n");
@@ -805,7 +805,7 @@ public class DNetconfBaseObject extends DBaseObject {
 		}
 		addXMLDataAsTail((DNetconfObjectType)mOType, indent, sb, state);
 		if (!isNode()) {
-			DNetconfBaseObject parent = (DNetconfBaseObject) getParents().firstElement();
+			DNetconfObject parent = (DNetconfObject) getParents().firstElement();
 			parent.addXMLDataModelTail(sb,indent-NETCONF_FORMAT_TAB_LENGTH,state);
 		}
 		return indent;

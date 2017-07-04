@@ -1,12 +1,9 @@
 package org.dvlyyon.nbi.g30;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 import org.dvlyyon.nbi.helper.DHelperObject;
-import org.dvlyyon.nbi.CliStub;
 import org.dvlyyon.nbi.CommonEngineImpl;
 import org.dvlyyon.nbi.CommonFunctionImpl;
 import org.dvlyyon.nbi.DObject;
@@ -92,7 +89,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 					NBIAdapterInf cliAdapter = new G30NetconfImpl();
 					((G30CliStub)cli).setAdapter(cliAdapter);
 				} else if (isODLInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30ODLImpl();
+					NBIAdapterInf cliAdapter = new G30OdlImpl();
 					((G30CliStub)cli).setAdapter(cliAdapter);
 				} else if (isRestconfInterface(intfType)) {
 					NBIAdapterInf cliAdapter = new G30RestconfImpl();
@@ -142,7 +139,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 					cli = new G30NetconfImpl();
 					ret = cli.login(ap);
 				} else if (isODLInterface(intfType)) {
-					cli = new G30ODLImpl();
+					cli = new G30OdlImpl();
 					ret = cli.login(ap);
 				} else if (isRestconfInterface(intfType)) {
 					cli = new G30RestconfImpl();
@@ -176,7 +173,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 		if (CommonUtils.isConfirmed(value)) {
 			obj = new DHelperObject();
 		} else {
-			obj = new DODLBaseObject();
+			obj = new DOdlObject();
 		}
 		obj.setName(name);
 		obj.setType(type);

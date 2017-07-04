@@ -22,28 +22,28 @@ import org.dvlyyon.nbi.util.RunState.State;
 
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class G30ODLImpl extends CliStub implements NBIAdapterInf {
+public class G30OdlImpl extends CliStub implements NBIAdapterInf {
 	
 	NBIObjectInf node = null;
 	OdlRestconfClientInf client = null;
 	private boolean format = false;
 	
-	public final Log log = LogFactory.getLog(G30ODLImpl.class);
+	public final Log log = LogFactory.getLog(G30OdlImpl.class);
 	public final NetconfXMLParser parser = new NetconfXMLParser();
 
 	public final String COMMAND = "ODL_RESTCONF_CMD:-> ";
 	public final String RESPONSE = "ODL_RESTCONF_RESP:<- ";
 	
 	@Override
-	public CommandPatternListInf parseAction(NBIObjectInf obj,
+	public CommandPatternListInf parseAction(NBIMultiProtocolsObjectInf obj,
 			String actionName, String[] params, RunState state, int actType) {
 		parser.setActionName(actionName);
-		parser.setObject((DNetconfBaseObject)obj);
+		parser.setObject((DNetconfObject)obj);
 		return obj.parseAction(actionName, params, state, actType, NBI_TYPE_ODL);
 	}
 
 	@Override
-	public String toGetResponse(NBIObjectInf obj, String actionName,
+	public String toGetResponse(NBIMultiProtocolsObjectInf obj, String actionName,
 			CommandPatternListInf cmd, RunState state) {
 		// TODO Auto-generated method stub
 		return obj.toGetResponse(actionName, cmd, state, NBI_TYPE_ODL);

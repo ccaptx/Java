@@ -17,14 +17,14 @@ public class G30CliStub extends CliStub implements NBIAdapterInf {
 	}
 	
 	@Override
-	public CommandPatternListInf parseAction(NBIObjectInf obj,
+	public CommandPatternListInf parseAction(NBIMultiProtocolsObjectInf obj,
 			String actionName, String[] params, RunState state, int actType) {
 		// TODO Auto-generated method stub
 		return adapter.parseAction(obj, actionName, params, state, actType);
 	}
 
 	@Override
-	public String toGetResponse(NBIObjectInf obj, String actionName,
+	public String toGetResponse(NBIMultiProtocolsObjectInf obj, String actionName,
 			CommandPatternListInf cmd, RunState state) {
 		// TODO Auto-generated method stub
 		return adapter.toGetResponse(obj, actionName, cmd, state);

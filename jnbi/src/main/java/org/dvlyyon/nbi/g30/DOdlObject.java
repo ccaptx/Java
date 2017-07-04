@@ -15,11 +15,11 @@ import org.dvlyyon.nbi.util.RunState.State;
 
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class DODLBaseObject extends DNetconfBaseObject {
+public class DOdlObject extends DNetconfObject {
 	
 	public static final String RESTCONF_CONSOLE = "isRestconfConsole";
 	
-	private static final Logger logger = Logger.getLogger(DODLBaseObject.class.getName());
+	private static final Logger logger = Logger.getLogger(DOdlObject.class.getName());
 	private StringBuilder sb = new StringBuilder();
 	private String interfaceType = NBI_TYPE_RESTCONF;
 	
@@ -27,7 +27,7 @@ public class DODLBaseObject extends DNetconfBaseObject {
 		if (isNode()) {
 			return getPrefix() + ":" + getNodeName();
 		} else {
-			DODLBaseObject parent = (DODLBaseObject) getParents().firstElement();
+			DOdlObject parent = (DOdlObject) getParents().firstElement();
 			return parent.getURI() + "/" + getLocalURI();
 		}
 	}
@@ -38,14 +38,14 @@ public class DODLBaseObject extends DNetconfBaseObject {
 			logger.fine("attrInfo is null for key "+key);
 			return keyValuePair.get(key);
 		} else {
-			DNetconfBaseObject obj = (DNetconfBaseObject) manager.getObject(attrInfo.value);
+			DNetconfObject obj = (DNetconfObject) manager.getObject(attrInfo.value);
 			if (obj == null) {
 				logger.fine("Cannot get object based on name "+attrInfo.value);
 				return keyValuePair.get(key);
 			}
 			else {
 				logger.fine("rebuild RESTCONF instance ID for object "+attrInfo.value);
-				return ((DNetconfBaseObject)obj).getNetconfInstanceID(false);
+				return ((DNetconfObject)obj).getNetconfInstanceID(false);
 			}
 		}
 		
@@ -54,7 +54,7 @@ public class DODLBaseObject extends DNetconfBaseObject {
 	protected String getLocalURI() {
 		StringBuffer sb = new StringBuffer();
 		if (isNode()) {
-			sb.append(((DNetconfBaseObject)this.getAncester()).getPrefix()+":"+this.getNodeName());
+			sb.append(((DNetconfObject)this.getAncester()).getPrefix()+":"+this.getNodeName());
 		} else {
 			sb.append(this.getNodeName());
 		}
@@ -83,7 +83,7 @@ public class DODLBaseObject extends DNetconfBaseObject {
 	
 	protected String getParentURI() {
 		if (isNode()) { return "";}
-		DODLBaseObject parent = (DODLBaseObject) getParents().firstElement();
+		DOdlObject parent = (DOdlObject) getParents().firstElement();
 		return parent.getURI();
 	}
 	
@@ -93,7 +93,7 @@ public class DODLBaseObject extends DNetconfBaseObject {
 		if (netActName == null) netActName = actionName;
 		String nbiModuleName = actObj.getProperty(NetconfConstants.META_NETCONF_NBI_MODULE_NAME);
 		if (nbiModuleName == null)
-			nbiModuleName =	((DNetconfBaseObject)getAncester()).getNBIModuleName();
+			nbiModuleName =	((DNetconfObject)getAncester()).getNBIModuleName();
 		return nbiModuleName+":"+netActName;
 	}
 	
@@ -108,10 +108,10 @@ public class DODLBaseObject extends DNetconfBaseObject {
 		String prefix = this.getMetaData(NetconfConstants.META_NETCONF_PREFIX);
 		String namespace = this.getMetaData(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (namespace == null) {
-			namespace = ((DNetconfBaseObject)getAncester()).getNamespace();
+			namespace = ((DNetconfObject)getAncester()).getNamespace();
 		}
 		if (prefix == null)
-			prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+			prefix = ((DNetconfObject)getAncester()).getPrefix();
 		
 		if (nodeType !=null && ((this.isNetconfContainerNode() || this.isNetconfListNode()))) {
 			if (prefix != null && namespace != null) {
@@ -134,7 +134,7 @@ public class DODLBaseObject extends DNetconfBaseObject {
 
 		String prefix = this.getMetaData(NetconfConstants.META_NETCONF_PREFIX);
 		if (prefix == null)
-			prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
+			prefix = ((DNetconfObject)getAncester()).getPrefix();
 		sb.append("</"+prefix+ ":" + nodeName + ">\n");
 		return true;
 	}
@@ -152,9 +152,9 @@ public class DODLBaseObject extends DNetconfBaseObject {
 		String netActName = "input";
 		String nbiNS = actObj.getProperty(NetconfConstants.META_NETCONF_NAMESPACE);
 		if (nbiNS == null)
-			nbiNS =	((DNetconfBaseObject)getAncester()).getNBINamespace();
-		String prefix = ((DNetconfBaseObject)getAncester()).getPrefix();
-		String namespace = ((DNetconfBaseObject)getAncester()).getNamespace();
+			nbiNS =	((DNetconfObject)getAncester()).getNBINamespace();
+		String prefix = ((DNetconfObject)getAncester()).getPrefix();
+		String namespace = ((DNetconfObject)getAncester()).getNamespace();
 		String xmlNS = "xmlns:"+prefix+"=\""+namespace+"\"";
 		sb.append("<"+netActName + " ");
 		if (nbiNS == null) {

@@ -27,7 +27,7 @@ import org.dvlyyon.nbi.CLICommandPatternList;
 
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class DBaseObject extends DObject {
+public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 
 	protected Compiler compiler = new Compiler();
 	private static final Logger logger = Logger.getLogger(DBaseObject.class.getName());
@@ -520,6 +520,7 @@ public class DBaseObject extends DObject {
 		
 	}
 	
+	@Override
 	public String toGetResponse(String actionName, CommandPatternListInf cmd, RunState state, String intfType) {
 //		if (!intfType.equals(CATS_DRIVER_NBI_TYPE_CLI_SSH)) {
 //			state.setResult(State.ERROR);
@@ -686,6 +687,7 @@ public class DBaseObject extends DObject {
 		return null;
 	}
 	
+	@Override
 	public CommandPatternListInf parseAction(String actionName,
 			String[] params, RunState state, int actType, String intfType) {
 		state.clear();

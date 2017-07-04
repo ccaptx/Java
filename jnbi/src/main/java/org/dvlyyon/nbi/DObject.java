@@ -885,20 +885,5 @@ public class DObject implements NBIObjectInf {
 	public boolean onlyIncludeInternalAction() {
 		String value = this.getMetaData(OBJECT_TYPE_ATTRIBUTE_ONLY_INTERNAL_ACTIONS);
 		return CommonUtils.isConfirmed(value);
-	}
-
-	@Override
-	public CommandPatternListInf parseAction(String actionName,
-			String[] params, RunState state, int actType, String nbiTypeCliSsh) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String toGetResponse(String actionName, CommandPatternListInf cmd,
-			RunState state, String nbiTypeCliSsh) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+	}	
 }

@@ -20,8 +20,6 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
-
 public class G30RestconfImpl extends CliStub implements NBIAdapterInf {
 	DObject node = null;
 	RestconfClientInf client = null;
@@ -34,15 +32,15 @@ public class G30RestconfImpl extends CliStub implements NBIAdapterInf {
 	public final String RESPONSE = "RESTCONF_RESP:<- ";
 	
 	@Override
-	public CommandPatternListInf parseAction(NBIObjectInf obj,
+	public CommandPatternListInf parseAction(NBIMultiProtocolsObjectInf obj,
 			String actionName, String[] params, RunState state, int actType) {
 		parser.setActionName(actionName);
-		parser.setObject((DNetconfBaseObject)obj);
+		parser.setObject((DNetconfObject)obj);
 		return obj.parseAction(actionName, params, state, actType, NBI_TYPE_RESTCONF);
 	}
 
 	@Override
-	public String toGetResponse(NBIObjectInf obj, String actionName,
+	public String toGetResponse(NBIMultiProtocolsObjectInf obj, String actionName,
 			CommandPatternListInf cmd, RunState state) {
 		// TODO Auto-generated method stub
 		return obj.toGetResponse(actionName, cmd, state, NBI_TYPE_RESTCONF);
