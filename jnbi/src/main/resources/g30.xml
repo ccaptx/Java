@@ -136,7 +136,7 @@
 		support: to which interface the attribute works
 -->
 <platform name="DCI" release="R1.0"> 
-  <property name="entry-point" value="stty -echo; java -jar dci.jar DCICli.xml"/>  
+  <property name="entry-point" value="stty -echo; bin/jnbi g30.xml"/>  
   <property name="ip-addr" value="localhost"/>  
   <property name="user-id" value="dci"/>  
   <property name="password" value="Dci4523"/>  

@@ -37,6 +37,11 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
+compileJava {
+	exclude ('org/dvlyyon/nbi/cxt/*.java',
+			 'org/dvlyyon/nbi/tools/**/*.java')
+}
+
 jar {
     from configurations.runtime
     manifest {
