@@ -1,3 +1,6 @@
+plugins {
+    id "org.hidetake.ssh" version "2.9.0"
+}
 apply plugin: 'java'
 apply plugin: 'application'
 
@@ -43,6 +46,7 @@ compileJava {
 }
 
 jar {
+    exclude('*.jar')
     from configurations.runtime
     manifest {
         attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
@@ -52,3 +56,24 @@ jar {
 }
 
 mainClassName = 'org.dvlyyon.nbi.CommonDriverImpl'
+
+remotes {
+    host1 {
+        host = '172.29.22.165'
+        user = 'dci'
+        password = 'Dci4523'
+    }
+}
+
+task deployNBI {
+    doLast {
+        ssh.run {
+            session(remotes.host1) {
+                put from: 'build/install/'+project.getName(), into: '.'
+                execute 'chmod u+x '+ project.getName()+'/bin/'+project.getName()
+            }
+        }
+    }
+}
+
+deployNBI.dependsOn installDist
