@@ -6,7 +6,12 @@ apply plugin: 'application'
 
 task increaseBuildNumber {
     def versionPropsFile = file('version.properties')
-    
+    def mainVersion = "1.0."
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        println 'Build cxt project'
+        versionPropsFile = file('versionCxt.properties')
+    }
+
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
     
@@ -16,7 +21,7 @@ task increaseBuildNumber {
     
         versionProps['build_number']=code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
-        def version = "1.0" + "." + code.toString()
+        def version =  "${mainVersion}." + code.toString()
         project.setVersion(version)
     }
 }
@@ -27,21 +32,42 @@ repositories {
 }
 
 dependencies {
-    compile project(':jnetconf')
-    compile 'commons-logging:commons-logging:1.2'
-    compile 'commons-net:commons-net:3.6'
     compile 'org.dom4j:dom4j:2.0.0'
-    compile 'org.jdom:jdom2:2.0.6'
-    compile 'ch.ethz.ganymed:ganymed-ssh2:262'
-    compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.5.3'
-    compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
-    compile group:'com.jcraft', name:'jsch', version:'0.1.53'
-    compile 'org.snmp4j:snmp4j:2.5.6'
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        compile 'commons-net:commons-net:3.6'
+    } else {
+        compile project(':jnetconf')
+        compile 'commons-logging:commons-logging:1.2'
+        compile 'org.jdom:jdom2:2.0.6'
+        compile 'ch.ethz.ganymed:ganymed-ssh2:262'
+        compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.5.3'
+        compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
+        compile group:'com.jcraft', name:'jsch', version:'0.1.53'
+        compile 'org.snmp4j:snmp4j:2.5.6'
+    }
     testCompile 'junit:junit:4.+'
 }
 
+compileJava {
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        exclude ('org/dvlyyon/nbi/cxt/*.java',
+             'org/dvlyyon/nbi/tools/**/*.java')
+    } else {
+        exclude ('org/dvlyyon/nbi/g30/*.java',
+                 'org/dvlyyon/nbi/tools/**/*.java',
+                 'org/dvlyyon/nbi/protocol/**/*.java',
+                 'org/dvlyyon/nbi/util/XML.java',
+                 'org/dvlyyon/nbi/helper')
+    } 
+}
+
+
 jar {
-    exclude('*.jar','*.sh','*.html')
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        exclude('*.jar','*.sh','*.html','cxt*.xml','log4j*.xml')
+    } else {
+        exclude('*.jar','*.sh','*.html','g30*.xml','log4j*.xml')
+    }
     from configurations.runtime
     manifest {
         attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
