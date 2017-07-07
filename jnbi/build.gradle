@@ -40,13 +40,8 @@ dependencies {
     testCompile 'junit:junit:4.+'
 }
 
-compileJava {
-	exclude ('org/dvlyyon/nbi/cxt/*.java',
-			 'org/dvlyyon/nbi/tools/**/*.java')
-}
-
 jar {
-    exclude('*.jar')
+    exclude('*.jar','*.sh','*.html')
     from configurations.runtime
     manifest {
         attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
@@ -69,8 +64,10 @@ task deployNBI {
     doLast {
         ssh.run {
             session(remotes.host1) {
-                put from: 'build/install/'+project.getName(), into: '.'
-                execute 'chmod u+x '+ project.getName()+'/bin/'+project.getName()
+                def pjName = project.getName()
+                execute "if [[ -f ${pjName}/lib/${pjName}*.jar ]]; then rm ${pjName}/lib/${pjName}*.jar; fi"
+                put from: "build/install/${pjName}", into: '.'
+                execute "chmod u+x ${pjName}/bin/${pjName}"
             }
         }
     }
