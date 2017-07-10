@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,8 @@ import org.apache.commons.net.telnet.SuppressGAOptionHandler;
 import org.apache.commons.net.telnet.TelnetClient;
 import org.apache.commons.net.telnet.TelnetNotificationHandler;
 import org.apache.commons.net.telnet.TerminalTypeOptionHandler;
-
+import org.dvlyyon.nbi.protocols.BlockingConsumer;
+import org.dvlyyon.nbi.protocols.StreamPair;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 

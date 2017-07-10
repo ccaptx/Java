@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 public class TransceiverFactory {
 	public static TransceiverInf get(String className) {

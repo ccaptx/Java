@@ -1,7 +1,4 @@
-package org.dvlyyon.nbi.protocols;
-
-import org.dvlyyon.nbi.protocols.ssh.SSHConnectInf;
-
+package org.dvlyyon.nbi.protocols.ssh;
 
 public class SSHClientFactory {
 	public static String DEFAULT_SSH_CLIENT_CLASS = "org.dvlyyon.nbi.protocols.ssh.SSHConnectJsch";

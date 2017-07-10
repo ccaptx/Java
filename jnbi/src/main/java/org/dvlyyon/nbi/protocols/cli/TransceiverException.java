@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 public class TransceiverException extends Exception {
 	String    response;

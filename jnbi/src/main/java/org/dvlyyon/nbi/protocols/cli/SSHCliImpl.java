@@ -1,7 +1,10 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dvlyyon.nbi.protocols.BlockingConsumer;
+import org.dvlyyon.nbi.protocols.LoginException;
+import org.dvlyyon.nbi.protocols.StreamPair;
 import org.dvlyyon.nbi.protocols.ssh.SSHConnectInf;
 import org.dvlyyon.nbi.util.LogUtils;
 

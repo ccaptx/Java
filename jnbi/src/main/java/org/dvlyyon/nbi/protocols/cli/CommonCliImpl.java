@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +15,8 @@ import org.dvlyyon.nbi.CLICommandPatternList;
 import org.dvlyyon.nbi.CliInterface;
 import org.dvlyyon.nbi.CommandPatternInf;
 import org.dvlyyon.nbi.CommandPatternListInf;
+import org.dvlyyon.nbi.protocols.BlockingConsumer;
+import org.dvlyyon.nbi.protocols.LoginException;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;

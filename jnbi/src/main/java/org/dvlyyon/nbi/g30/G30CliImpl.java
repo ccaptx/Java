@@ -10,7 +10,7 @@ import org.dvlyyon.nbi.NBIObjectInf;
 import org.dvlyyon.nbi.g30.NBIAdapterInf;
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.protocols.LoginException;
-import org.dvlyyon.nbi.protocols.SSHCliImpl;
+import org.dvlyyon.nbi.protocols.cli.SSHCliImpl;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.LogUtils;
 import org.dvlyyon.nbi.util.RunState;

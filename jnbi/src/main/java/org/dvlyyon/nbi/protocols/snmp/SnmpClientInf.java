@@ -17,13 +17,13 @@ public interface SnmpClientInf {
 	static final String SNMP_AGENT_ADDRESS 	= "ipAddress";
 	static final String SNMP_AGENT_PORT 	= "snmpPort";
 	static final String SNMP_VERSION		= "snmpVersion";
-	static final String SNMP_TRANSPORT		= "transportProtocol";
-	static final String SNMP_SECURITY_NAME	= "securityName";
-	static final String SNMP_SECURITY_LEVEL	= "securityLevel";
-	static final String SNMP_AUTH_PROTOCOL	= "authProtocol";
-	static final String SNMP_AUTH_KEY		= "authKey";
-	static final String SNMP_PRIV_PROTOCOL  = "privProtocol";
-	static final String SNMP_PRIV_KEY		= "privKey";
+	static final String SNMP_TRANSPORT		= "snmpTransportProtocol";
+	static final String SNMP_SECURITY_NAME	= "snmpSecurityName";
+	static final String SNMP_SECURITY_LEVEL	= "snmpSecurityLevel";
+	static final String SNMP_AUTH_PROTOCOL	= "snmpAuthProtocol";
+	static final String SNMP_AUTH_KEY		= "snmpAuthKey";
+	static final String SNMP_PRIV_PROTOCOL  = "snmpPrivProtocol";
+	static final String SNMP_PRIV_KEY		= "snmpPrivKey";
 	static final String SNMP_VB_SEPARATOR   = "\n";
 	static final String SNMP_KV_SEPARATOR	= ">>";
 	

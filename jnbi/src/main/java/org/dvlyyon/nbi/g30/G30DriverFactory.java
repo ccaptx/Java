@@ -64,7 +64,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 	}
 
 	boolean isSnmpInterface(String intf) {
-		return intf.equalsIgnoreCase(supportedIntfType[RESTCONF_INDEX]);
+		return intf.equalsIgnoreCase(supportedIntfType[SNMP_INDEX]);
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 		if (CommonUtils.isConfirmed(value)) {
 			obj = new DHelperObject();
 		} else {
-			obj = new DOdlObject();
+			obj = new DSnmpObject();
 		}
 		obj.setName(name);
 		obj.setType(type);
@@ -202,6 +202,11 @@ public class G30DriverFactory implements DriverFactoryInf {
 		DObjectAction actType = objType.getAction(actionName);
 		String infType = node.getAttributeValue(NODE_CONTEXT_ATTRIBUTE_INTERFACE_TYPE);
 		if (infType==null) infType = NBI_TYPE_CLI_SSH;
+		
+		String objInfType = objType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
+		String actInfType = actType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
+		
+		String defaultSupporRule = objModel.getProperty(infType+"Default");
 		String autoSwitch = node.getAttributeValue(NODE_CONTEXT_ATTRIBUTE_AUTO_SWITCH);
 		if (CommonUtils.isConfirmed(autoSwitch)) {
 			String supportedInfType = objType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
@@ -216,7 +221,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 		}
 		return infType;
 	}
-
+	
 	@Override
 	public String[] getSupportedInterfaceType() {
 		// TODO Auto-generated method stub

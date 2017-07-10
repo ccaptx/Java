@@ -15,7 +15,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-public class DSnmpObject extends DBaseObject {
+public class DSnmpObject extends DOdlObject {
 	public static final String SNMP_CONSOLE = "isSnmpConsole";
 	public static final String SNMP_CMD_GET = "__get";
 	public static final String SNMP_CMD_WALK = "__walk";

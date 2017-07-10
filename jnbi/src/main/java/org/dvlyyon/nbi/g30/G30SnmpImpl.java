@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi.g30;
 
-import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_NETCONF;
+import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_SNMP;
 
 import java.util.Map;
 import java.util.Properties;
@@ -16,7 +16,7 @@ import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.NBIObjectInf;
 import org.dvlyyon.nbi.SNIMetadata;
 import org.dvlyyon.nbi.netconf.NetconfCommandPatternList;
-import org.dvlyyon.nbi.protocols.SnmpClientFactory;
+import org.dvlyyon.nbi.protocols.snmp.SnmpClientFactory;
 import org.dvlyyon.nbi.protocols.snmp.SnmpClientInf;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
@@ -34,13 +34,13 @@ public class G30SnmpImpl extends CliStub implements CliInterface, NBIAdapterInf 
 	@Override
 	public CommandPatternListInf parseAction(NBIMultiProtocolsObjectInf obj,
 			String actionName, String[] params, RunState state, int actType) {
-		return obj.parseAction(actionName, params, state, actType, NBI_TYPE_NETCONF);
+		return obj.parseAction(actionName, params, state, actType, NBI_TYPE_SNMP);
 	}
 
 	@Override
 	public String toGetResponse(NBIMultiProtocolsObjectInf obj, String actionName,
 			CommandPatternListInf cmd, RunState state) {
-		return obj.toGetResponse(actionName, cmd, state, NBI_TYPE_NETCONF);
+		return obj.toGetResponse(actionName, cmd, state, NBI_TYPE_SNMP);
 	}
 
 	Map<String,String> getContext(DObject node) {
@@ -77,7 +77,7 @@ public class G30SnmpImpl extends CliStub implements CliInterface, NBIAdapterInf 
         if (value != null) context.put(SNMP_PRIV_KEY, value);
 
         value = node.getAttributeValue(SNMP_TRANSPORT);
-        if (value != null) value = "udp";
+        if (value == null) value = "udp";
         context.put(SNMP_TRANSPORT, value);       
 
         return context;

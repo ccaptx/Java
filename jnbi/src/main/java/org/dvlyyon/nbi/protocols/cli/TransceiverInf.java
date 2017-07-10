@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.protocols;
+package org.dvlyyon.nbi.protocols.cli;
 
 import java.io.InputStream;
 import java.io.OutputStream;

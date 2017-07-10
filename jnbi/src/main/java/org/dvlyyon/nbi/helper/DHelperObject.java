@@ -67,7 +67,7 @@ public class DHelperObject extends DObject {
 			return c;
 		} catch (ClassNotFoundException e) {
 			try {
-				className = "coriant.cats.driver.helper."+className;
+				className = this.getClass().getPackage().getName()+"."+className;
 				c = Class.forName(className);
 				return c;
 			} catch (ClassNotFoundException ee) { //log only if cannot create a class

@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.protocols.ContextInfoException;
-import org.dvlyyon.nbi.protocols.HttpClientFactory;
+import org.dvlyyon.nbi.protocols.http.HttpClientFactory;
 import org.dvlyyon.nbi.protocols.http.HttpClientInf;
 import org.jdom2.Element;
 import org.jdom2.Namespace;

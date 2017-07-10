@@ -6,13 +6,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.protocols.ContextInfoException;
 import org.dvlyyon.nbi.protocols.LoginException;
-import org.dvlyyon.nbi.protocols.SFTPClientFactory;
-import org.dvlyyon.nbi.protocols.SSHClientFactory;
-import org.dvlyyon.nbi.protocols.TransceiverException;
-import org.dvlyyon.nbi.protocols.TransceiverFactory;
-import org.dvlyyon.nbi.protocols.TransceiverInf;
+import org.dvlyyon.nbi.protocols.cli.TransceiverException;
+import org.dvlyyon.nbi.protocols.cli.TransceiverFactory;
+import org.dvlyyon.nbi.protocols.cli.TransceiverInf;
+import org.dvlyyon.nbi.protocols.sftp.SFTPClientFactory;
 import org.dvlyyon.nbi.protocols.sftp.SFTPConnectInf;
 import org.dvlyyon.nbi.protocols.sftp.SFTPException;
+import org.dvlyyon.nbi.protocols.ssh.SSHClientFactory;
 import org.dvlyyon.nbi.protocols.ssh.SSHConnectInf;
 import org.dvlyyon.nbi.util.CommonUtils;
 

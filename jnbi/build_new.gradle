@@ -6,11 +6,11 @@ apply plugin: 'application'
 
 task increaseBuildNumber {
     def versionPropsFile = file('version.properties')
-    def mainVersion = "1.0"
-//    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
-//        println 'Build cxt project'
-//        versionPropsFile = file('versionCxt.properties')
-//    }
+    def mainVersion = "1.0."
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        println 'Build cxt project'
+        versionPropsFile = file('versionCxt.properties')
+    }
 
     if (versionPropsFile.canRead()) {
         def Properties versionProps = new Properties()
@@ -33,9 +33,9 @@ repositories {
 
 dependencies {
     compile 'org.dom4j:dom4j:2.0.0'
-//    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
         compile 'commons-net:commons-net:3.6'
-//    } else {
+    } else {
         compile project(':jnetconf')
         compile 'commons-logging:commons-logging:1.2'
         compile 'org.jdom:jdom2:2.0.6'
@@ -44,32 +44,30 @@ dependencies {
         compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
         compile group:'com.jcraft', name:'jsch', version:'0.1.53'
         compile 'org.snmp4j:snmp4j:2.5.6'
-//    }
+    }
     testCompile 'junit:junit:4.+'
 }
 
-//compileJava {
-//    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
-//        exclude ('org/dvlyyon/nbi/cxt/*.java',
-//             'org/dvlyyon/nbi/tools/**/*.java')
-//    } else {
-//        exclude ('org/dvlyyon/nbi/g30/*.java',
-//                 'org/dvlyyon/nbi/tools/**/*.java',
-//                 'org/dvlyyon/nbi/protocol/**/*.java',
-//                 'org/dvlyyon/nbi/util/XML.java',
-//                 'org/dvlyyon/nbi/helper')
-//    } 
-//}
+compileJava {
+    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
+        exclude ('org/dvlyyon/nbi/cxt/*.java',
+             'org/dvlyyon/nbi/tools/**/*.java')
+    } else {
+        exclude ('org/dvlyyon/nbi/g30/*.java',
+                 'org/dvlyyon/nbi/tools/**/*.java',
+                 'org/dvlyyon/nbi/protocol/**/*.java',
+                 'org/dvlyyon/nbi/util/XML.java',
+                 'org/dvlyyon/nbi/helper')
+    } 
+}
+
 
 jar {
-/*
     if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
         exclude('*.jar','*.sh','*.html','cxt*.xml','log4j*.xml')
     } else {
         exclude('*.jar','*.sh','*.html','g30*.xml','log4j*.xml')
     }
-*/
-    exclude('*.jar','*.sh','*.html')
     from configurations.runtime
     manifest {
         attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
@@ -93,7 +91,7 @@ task deployNBI {
         ssh.run {
             session(remotes.host1) {
                 def pjName = project.getName()
-                execute "if `ls ${pjName}/lib/${pjName}*.jar >/dev/null 2>&1` ; then rm ${pjName}/lib/${pjName}*.jar; fi"
+                execute "if [[ -f ${pjName}/lib/${pjName}*.jar ]]; then rm ${pjName}/lib/${pjName}*.jar; fi"
                 put from: "build/install/${pjName}", into: '.'
                 execute "chmod u+x ${pjName}/bin/${pjName}"
             }
