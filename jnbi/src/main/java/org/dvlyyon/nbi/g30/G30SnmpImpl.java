@@ -2,6 +2,7 @@ package org.dvlyyon.nbi.g30;
 
 import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_SNMP;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -135,7 +136,13 @@ public class G30SnmpImpl extends CliStub implements CliInterface, NBIAdapterInf 
 				break;
 			case DSnmpObject.SNMP_GETBULK:
 				oidList = getOidList(snmpCmd.getCommandAt(0));
-				result = client.getBulk(oidList,0,2);
+				String noRepeater = snmpCmd.getCommandAt(1);
+				int noRepeaterInt = CommonUtils.parseInt(noRepeater);
+				if (noRepeaterInt < 0) noRepeaterInt = 0;
+				String maxRepetition = snmpCmd.getCommandAt(2);
+				int maxRepetitionInt = CommonUtils.parseInt(maxRepetition);
+				if (maxRepetitionInt < 0) maxRepetitionInt = 1;
+				result = client.getBulk(oidList,noRepeaterInt,maxRepetitionInt);
 				state.setInfo(result);
 				break;
 			case DSnmpObject.SNMP_GETNEXT:
@@ -163,21 +170,28 @@ public class G30SnmpImpl extends CliStub implements CliInterface, NBIAdapterInf 
 	}
 	
 	private String [] getOidList(String oidList) {
+		log.trace("oidList:"+oidList);
 		if (!oidList.contains(DSnmpObject.OID_DELIMITER))
 			return new String [] {oidList};
 		int p1 = 0;
 		int p2 = oidList.length();
-		Vector <String> v = new Vector<String>();
-		while (p1 < oidList.length() && p2 > 0) {
+		ArrayList <String> v = new ArrayList<String>();
+		while (p1 < oidList.length()) {
 			p2 = oidList.indexOf(DSnmpObject.OID_DELIMITER,p1);
-			if (p1 < p2) v.add(oidList.substring(p1, p2));
-			p1 = p2+DSnmpObject.OID_DELIMITER.length();
+			if (p2 >= 0) {
+				if (p1 < p2) v.add(oidList.substring(p1, p2));
+				p1 = p2+DSnmpObject.OID_DELIMITER.length();
+			} else {
+				if (p1 < oidList.length()) {
+					String s = oidList.substring(p1,oidList.length());
+					if (!s.trim().isEmpty()) v.add(s);
+					break;
+				}
+			}
 		}
-		if (p1 < oidList.length() && p2 < 0) {
-			String s = oidList.substring(p1,oidList.length());
-			if (!s.trim().isEmpty()) v.add(s);
-		}
-		return (String [])v.toArray();
+		String [] result = new String [v.size()];
+		log.trace("oidList::"+v);
+		return v.toArray(result);
 	}
 
 	private void printSendingCommand(String cmd) {

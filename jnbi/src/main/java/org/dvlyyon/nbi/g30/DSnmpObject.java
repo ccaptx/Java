@@ -22,6 +22,9 @@ public class DSnmpObject extends DOdlObject {
 	public static final String SNMP_CMD_GETNEXT = "__getNext";
 	public static final String SNMP_CMD_GETBULK = "__getBulk";
 	public static final String OID_DELIMITER	= "::";
+	
+	public static final String BULK_NOREPEATER = "__noRepeater";
+	public static final String BULK_MAXREPETITION = "__maxRepetition";
 
 	public static final int SNMP_GET = 0;
 	public static final int SNMP_WALK = 1;
@@ -83,10 +86,34 @@ public class DSnmpObject extends DOdlObject {
 		throws CommandParseException {
 		StringBuilder oidList = new StringBuilder();
 		for (AttributeInfo attr:mappedAttrList) {
-			if (attr == null) continue;
+			if (attr == null ||
+				attr.getName().equals(BULK_NOREPEATER) ||
+				attr.getName().equals(BULK_MAXREPETITION)) continue;
 			oidList.append(OID_DELIMITER).append(attr.getValue());
 		}
 		return oidList.toString();
+	}
+	
+	private String getBulkNoRepeater(Vector<AttributeInfo> mappedAttrList) {
+		if (mappedAttrList == null) return "";
+		for (AttributeInfo attr:mappedAttrList) {
+			if (attr == null) continue;
+			if (attr.getName().equals(BULK_NOREPEATER))
+				return attr.getValue();
+		}
+		return "";
+		
+	}
+	
+	private String getBulkMaxRepetition(Vector<AttributeInfo> mappedAttrList) {
+		if (mappedAttrList == null) return "";
+		for (AttributeInfo attr:mappedAttrList) {
+			if (attr == null) continue;
+			if (attr.getName().equals(BULK_MAXREPETITION))
+				return attr.getValue();
+		}
+		return "";
+		
 	}
 	
 	private CommandPatternListInf translateSnmpGetCommand(
@@ -121,6 +148,10 @@ public class DSnmpObject extends DOdlObject {
 				oidList = getOidList(mappedAttrList);
 				cp = new NetconfCommandPattern(oidList);
 				cp.setCommandType(operator);
+				cmdList.add(cp);
+				cp = new NetconfCommandPattern(getBulkNoRepeater(mappedAttrList));
+				cmdList.add(cp);
+				cp = new NetconfCommandPattern(getBulkMaxRepetition(mappedAttrList));
 				cmdList.add(cp);
 				return cmdList;
 			case SNMP_WALK:

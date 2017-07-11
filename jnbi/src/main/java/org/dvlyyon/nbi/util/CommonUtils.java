@@ -265,4 +265,9 @@ public class CommonUtils {
 		s = CommonUtils.covertURIPath(s);
 		System.out.println(s);
 	}
+
+	public static boolean include(String actInfType, String infType) {
+		// TODO Auto-generated method stub
+		return (actInfType != null && actInfType.contains(infType));
+	}
 }

@@ -80,6 +80,10 @@ jar {
 
 mainClassName = 'org.dvlyyon.nbi.CommonDriverImpl'
 
+installDist {
+    exclude('log4j*.jar')
+}
+
 remotes {
     host1 {
         host = '172.29.22.165'

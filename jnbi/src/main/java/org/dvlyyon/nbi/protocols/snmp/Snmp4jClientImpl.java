@@ -172,7 +172,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	@Override
 	public String get(String[] oidList) throws IOException {
 		if (oidList == null || oidList.length <= 0) {
-			log.error("The OID list parameter cannot be null or empty");
+			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
 		}
 
@@ -208,7 +208,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	@Override
 	public String getNext(String[] oidList) throws IOException {
 		if (oidList == null || oidList.length <= 0) {
-			log.error("The OID list parameter cannot be null or empty");
+			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
 		}
 		// create the PDU
@@ -244,7 +244,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	@Override
 	public String getBulk(String[] oidList, int noRepeater, int maxRepetition) throws IOException {
 		if (oidList == null || oidList.length <= 0) {
-			log.error("The OID list parameter cannot be null or empty");
+			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
 		}
 		// create the PDU
@@ -293,7 +293,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	@Override
 	public String walk(String oid) throws IOException {
 		if (oid == null || oid.trim().isEmpty()) {
-			log.error("The oid cannot be null or empty");
+			log.error("The oid cannot be null or empty:"+oid);
 			throw new IllegalArgumentException("The oid cannot be null or empty");
 		}
 		StringBuilder sb = new StringBuilder();
@@ -393,7 +393,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 		TreeMap<String,String> context = new TreeMap<String,String>();
 		context.put(SNMP_AGENT_ADDRESS, "172.29.132.208");
 		context.put(SNMP_AGENT_PORT, "161");
-		context.put(SNMP_SECURITY_NAME, "administrator");
+		context.put(SNMP_SECURITY_NAME, "fff");
 		context.put(SNMP_TRANSPORT, "udp");
 		context.put(SNMP_VERSION, "3");
 		context.put(SNMP_SECURITY_LEVEL, SNMP_SECURITY_LEVEL_NOAUTHNOPRIV);
@@ -403,7 +403,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 				"1.8.6.1.4.1.42229.1.2.2"
 		};
 		System.out.println(client.getNext(oidList1));
-		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4.1.1"));
+		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4"));
 	}
 
 }

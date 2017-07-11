@@ -21,6 +21,7 @@ import org.dvlyyon.nbi.CliInterface;
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
 public class G30DriverFactory implements DriverFactoryInf {
+	static final String NOT_SUPPORTED_PRE = "NONE::";
 	
 	static final String [] supportedIntfType = 
 		{NBI_TYPE_CLI_SSH,
@@ -77,6 +78,10 @@ public class G30DriverFactory implements DriverFactoryInf {
 	@Override
 	public CliInterface createCliSession(String intfType, DObjectModel objModel, String cmd,
 			DObject ap, Vector<String> err) {
+		if (intfType.startsWith(NOT_SUPPORTED_PRE)) {
+			err.add(0,"The interface "+intfType.substring(NOT_SUPPORTED_PRE.length()) + " is not supported on current action.");
+			return null;
+		}
 		String ret = null;
 		CliInterface cli = null;
 		if (ap.isNode() || ap.isSession()) {
@@ -198,28 +203,42 @@ public class G30DriverFactory implements DriverFactoryInf {
 		if (actionName.startsWith(DRIVER_UNDO_ACTION_PRE)) 
 			return NBI_TYPE_CLI_SSH;
 		DObject node = obj.getAncester();
-		DObjectType objType = objModel.getObjectType(obj.getType());
-		DObjectAction actType = objType.getAction(actionName);
 		String infType = node.getAttributeValue(NODE_CONTEXT_ATTRIBUTE_INTERFACE_TYPE);
 		if (infType==null) infType = NBI_TYPE_CLI_SSH;
-		
-		String objInfType = objType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
-		String actInfType = actType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
-		
-		String defaultSupporRule = objModel.getProperty(infType+"Default");
+
+		if (supportInterface(infType, objModel, obj, actionName))
+			return infType;
+
 		String autoSwitch = node.getAttributeValue(NODE_CONTEXT_ATTRIBUTE_AUTO_SWITCH);
 		if (CommonUtils.isConfirmed(autoSwitch)) {
-			String supportedInfType = objType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
-			if (supportedInfType != null && !supportedInfType.equals(infType)) {//we support support missing or only one value
-				infType = supportedInfType;
-			} else if (supportedInfType == null) {
-				supportedInfType = actType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
-				if (supportedInfType != null && !supportedInfType.equals(infType)) {
-					infType = supportedInfType;
-				}
+			for (String iType:supportedIntfType) {
+				if (supportInterface(iType,objModel,obj,actionName))
+					return iType;
 			}
 		}
-		return infType;
+		return NOT_SUPPORTED_PRE+infType;
+	}
+	
+	
+	private boolean supportInterface(String infType, DObjectModel objModel, DObject obj, String actionName) {
+		DObjectType objType = objModel.getObjectType(obj.getType());
+		DObjectAction actType = objType.getAction(actionName);
+		String objInfType = objType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
+		String actInfType = actType.getProperty(OBJECT_TYPE_ATTRIBUTE_SUPPORT);
+		String defaultSupporRule = objModel.getProperty(infType+"Default");
+		if (CommonUtils.isConfirmedNo(defaultSupporRule)) {
+			if (!CommonUtils.include(objInfType,infType))
+				return false;
+			if (actInfType != null && !CommonUtils.include(actInfType,infType))
+				return false;
+			return true;
+		} else {
+			if (objInfType != null && !CommonUtils.include(objInfType,infType))
+				return false;
+			if (actInfType != null && !CommonUtils.include(actInfType,infType))
+				return false;
+			return true;
+		}
 	}
 	
 	@Override

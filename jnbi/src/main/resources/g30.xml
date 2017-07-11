@@ -152,12 +152,13 @@
   <property name="backout" value="enabled"/>  
   <property name="isStateful" value="yes"/>  
   <property name="separator" value="#CX#"/>  
+  <property name="snmpDefault" value="false"/> 
   <property name="endPattern" value="((^[\w-]*@.*[#&gt;]$)|(^.*:~\$$))"/>  
   <property name="errorPattern" value="^ERROR:.*$"/>  
   <property name="loginErrorPattern" value="^Could not connect:.*$"/>  
   <property name="rebootCmdPattern" value="^((restart|clear -?f? ?database)|(activate swimage)).*$"/>  
   <property name="escapeString" value="@POUND@-&gt;#"/>  
-  <property name="logLevel" value="debug"/>  
+  <property name="logLevel" value="trace"/>  
   <property name="logSourceFormat" value="simple"/>  
   <property name="modelRevision" value="4.2.3.390"/>  
   <product name="DCI" release="R1.0"/>  
@@ -2267,6 +2268,12 @@
       <attribute name="resp"/>
       <attribute name="objectOID">
         <value type="format" format="n1.n1.n1.n1.n1::n2.n2.n2"/>
+      </attribute>
+      <attribute name="__noRepeater">
+      	<value type="integer" range="1..100"/>
+      </attribute>
+      <attribute name="__maxRepetition">
+      	<value type="integer" range="1..100"/>
       </attribute>
     </action>
     <action type="cli" name="__walk" acttype="3">
