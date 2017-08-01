@@ -54,10 +54,10 @@ public interface SnmpClientInf {
 	 */
 	public void setContext(Map <String,String> context) throws ContextInfoException;
 	public void connect() throws IOException;
-	public String get(String [] OIDs) throws IOException;
-	public String getNext(String [] OIDs) throws IOException;
-	public String getBulk(String [] OIDs, int noRepeater, int maxRepetition) throws IOException;
-	public String walk(String oid) throws IOException;
+	public String get(String [] OIDs) throws IOException, SnmpResponseException;
+	public String getNext(String [] OIDs) throws IOException, SnmpResponseException;
+	public String getBulk(String [] OIDs, int noRepeater, int maxRepetition) throws IOException, SnmpResponseException;
+	public String walk(String oid) throws IOException, SnmpResponseException;
 	public void close() throws IOException;
 	boolean isConnected();
 }

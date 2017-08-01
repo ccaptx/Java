@@ -134,6 +134,27 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 			throw new ContextInfoException("Unsupported privacy protocl:"+protocol);
 	}
 	
+	private void checkResponseError(PDU responsePDU, String oidList[], Map<String,String> params) 
+			throws SnmpResponseException {
+		log.debug(responsePDU);
+		int errorStatus = responsePDU.getErrorStatus();
+		int errorIndex  = responsePDU.getErrorIndex();
+		SnmpResponseException exception = null;
+		assert errorStatus >= 0;
+		if (errorStatus != 0) {
+			exception = new SnmpResponseException(errorStatus);
+			exception.setResponse(responsePDU.getErrorStatusText());
+			exception.setParameters(params);
+			if (errorIndex != 0 && errorIndex-1 < oidList.length) {
+				exception.setErrorPoint(oidList[errorIndex-1]);
+			}
+		}
+		if (exception != null) {
+			log.error(exception);
+			throw exception;
+		}
+	}
+	
 	@Override
 	public void setContext(Map<String, String> context) throws ContextInfoException {
 		this.context = context;
@@ -170,7 +191,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	}
 
 	@Override
-	public String get(String[] oidList) throws IOException {
+	public String get(String[] oidList) throws IOException, SnmpResponseException {
 		if (oidList == null || oidList.length <= 0) {
 			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
@@ -188,10 +209,10 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 			log.error("The response is null");
 			throw new IOException("Connect SNMP agent with time out");
 		}
+		checkResponseError(responsePDU, oidList, null);
 		// extract the address used by the agent to send the response:
 		Address peerAddress = response.getPeerAddress();
 		log.debug(peerAddress.toString());
-		log.debug(responsePDU);
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (int i=0; i<responsePDU.size(); i++) {
@@ -206,7 +227,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	}
 
 	@Override
-	public String getNext(String[] oidList) throws IOException {
+	public String getNext(String[] oidList) throws IOException, SnmpResponseException {
 		if (oidList == null || oidList.length <= 0) {
 			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
@@ -224,10 +245,10 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 			log.error("The response is null");
 			throw new IOException("Connect SNMP agent with time out");
 		}
+		checkResponseError(responsePDU, oidList, null);
 		// extract the address used by the agent to send the response:
 		Address peerAddress = response.getPeerAddress();
 		log.debug(peerAddress.toString());
-		log.debug(responsePDU);
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (int i=0; i<responsePDU.size(); i++) {
@@ -242,7 +263,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	}
 
 	@Override
-	public String getBulk(String[] oidList, int noRepeater, int maxRepetition) throws IOException {
+	public String getBulk(String[] oidList, int noRepeater, int maxRepetition) throws IOException, SnmpResponseException {
 		if (oidList == null || oidList.length <= 0) {
 			log.error("The OID list parameter cannot be null or empty:"+oidList);
 			throw new IllegalArgumentException("the OID list parameter cannot be null or empty");
@@ -264,10 +285,13 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 			log.error("The response is null");
 			throw new IOException("Connect SNMP agent with time out");
 		}
+		Map <String,String> parameters = new TreeMap<String,String>();
+		parameters.put("noRepeater", String.valueOf(noRepeater));
+		parameters.put("maxRepetition", String.valueOf(maxRepetition));
+		checkResponseError(responsePDU, oidList, parameters);
 		// extract the address used by the agent to send the response:
 		Address peerAddress = response.getPeerAddress();
 		log.debug(peerAddress.toString());
-		log.debug(responsePDU);
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (int i=0; i<responsePDU.size(); i++) {
@@ -281,7 +305,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 		return sb.toString();
 	}
 	
-	private void walk(String oidPre, String oid, StringBuilder sb) throws IOException {
+	private void walk(String oidPre, String oid, StringBuilder sb) throws IOException, SnmpResponseException {
 		String nextVB 	= getNext(new String[]{oid});
 		sb.append(SNMP_VB_SEPARATOR).append(nextVB);
 		int    kvIndex  = nextVB.indexOf(SNMP_KV_SEPARATOR);
@@ -291,7 +315,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	}
 
 	@Override
-	public String walk(String oid) throws IOException {
+	public String walk(String oid) throws IOException, SnmpResponseException {
 		if (oid == null || oid.trim().isEmpty()) {
 			log.error("The oid cannot be null or empty:"+oid);
 			throw new IllegalArgumentException("The oid cannot be null or empty");
@@ -391,19 +415,24 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	public static void main(String argv[]) throws Exception {
 		Snmp4jClientImpl client = new Snmp4jClientImpl();
 		TreeMap<String,String> context = new TreeMap<String,String>();
-		context.put(SNMP_AGENT_ADDRESS, "172.29.132.208");
+		context.put(SNMP_AGENT_ADDRESS, "10.13.13.208");
 		context.put(SNMP_AGENT_PORT, "161");
-		context.put(SNMP_SECURITY_NAME, "fff");
+		context.put(SNMP_SECURITY_NAME, "l123");
 		context.put(SNMP_TRANSPORT, "udp");
 		context.put(SNMP_VERSION, "3");
-		context.put(SNMP_SECURITY_LEVEL, SNMP_SECURITY_LEVEL_NOAUTHNOPRIV);
+		context.put(SNMP_SECURITY_LEVEL, "noAuthNoPriv");
+		context.put(SNMP_AUTH_PROTOCOL, "SHA");
+		context.put(SNMP_AUTH_KEY, "e2e!Net4u#");
+		context.put(SNMP_PRIV_PROTOCOL, "DES");
+		context.put(SNMP_PRIV_KEY, "e2e!Net4u#");
 		client.setContext(context);
 		client.connect();
 		String [] oidList1 = {
-				"1.8.6.1.4.1.42229.1.2.2"
+				"1.3.6.1.4.1.42229.1.2.2.1.2.0"
 		};
+		System.out.println(client.get(oidList1));
 		System.out.println(client.getNext(oidList1));
-		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4"));
+//		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4"));
 	}
 
 }
