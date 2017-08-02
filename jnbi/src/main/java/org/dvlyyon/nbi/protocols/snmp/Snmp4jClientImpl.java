@@ -9,6 +9,8 @@ import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.protocols.ContextInfoException;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;
+import org.snmp4j.SNMP4JSettings;
+import org.snmp4j.SNMP4JSettings.ReportSecurityLevelStrategy;
 import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
@@ -51,7 +53,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	int snmpVersion;
 	int securityLevel;
 	int retries = 3;
-	int timeout = 5000;
+	int timeout = 5000000;
 
 	OID authProtocol = null;
 	OID privProtocol = null;
@@ -367,6 +369,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	}
 	
 	private void connectV3Agent() {
+		SNMP4JSettings.setReportSecurityLevelStrategy(ReportSecurityLevelStrategy.noAuthNoPrivIfNeeded);
 		USM usm = new USM(SecurityProtocols.getInstance(),
 				new OctetString(MPv3.createLocalEngineID()), 0);
 		SecurityModels.getInstance().addSecurityModel(usm);
@@ -415,13 +418,13 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 	public static void main(String argv[]) throws Exception {
 		Snmp4jClientImpl client = new Snmp4jClientImpl();
 		TreeMap<String,String> context = new TreeMap<String,String>();
-		context.put(SNMP_AGENT_ADDRESS, "10.13.13.208");
+		context.put(SNMP_AGENT_ADDRESS, "10.13.15.50");
 		context.put(SNMP_AGENT_PORT, "161");
-		context.put(SNMP_SECURITY_NAME, "l123");
+		context.put(SNMP_SECURITY_NAME, "administrator");
 		context.put(SNMP_TRANSPORT, "udp");
 		context.put(SNMP_VERSION, "3");
-		context.put(SNMP_SECURITY_LEVEL, "noAuthNoPriv");
-		context.put(SNMP_AUTH_PROTOCOL, "SHA");
+		context.put(SNMP_SECURITY_LEVEL, "authPriv");
+		context.put(SNMP_AUTH_PROTOCOL, "MD5");
 		context.put(SNMP_AUTH_KEY, "e2e!Net4u#");
 		context.put(SNMP_PRIV_PROTOCOL, "DES");
 		context.put(SNMP_PRIV_KEY, "e2e!Net4u#");
@@ -431,7 +434,7 @@ public class Snmp4jClientImpl implements SnmpClientInf {
 				"1.3.6.1.4.1.42229.1.2.2.1.2.0"
 		};
 		System.out.println(client.get(oidList1));
-		System.out.println(client.getNext(oidList1));
+//		System.out.println(client.getNext(oidList1));
 //		System.out.println(client.walk("1.3.6.1.4.1.42229.1.2.2.4"));
 	}
 
