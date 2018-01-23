@@ -1,1 +1,1 @@
-include "jstudy","jcommon","jnetconf", "jnbi"
+include "jstudy","jcommon","jnetconf", "jnbi", "jgnmi"

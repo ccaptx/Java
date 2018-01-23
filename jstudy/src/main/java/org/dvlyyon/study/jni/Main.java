@@ -1,3 +1,4 @@
+package org.dvlyyon.study.jni;
 /* vim:set shiftwidth=4 ts=8: */
 public class Main {
 	public native void toSVG(String graph, String fileName);
