@@ -7,14 +7,9 @@ import java.util.List;
 
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
-import gnmi.Gnmi.GetRequest;
-import gnmi.Gnmi.GetResponse;
-import gnmi.Gnmi.SetRequest;
-import gnmi.Gnmi.SetResponse;
 import gnmi.Gnmi.SubscribeRequest;
 import gnmi.Gnmi.SubscribeResponse;
 import gnmi.gNMIGrpc;
-import gnmi.GnmiCommonClient.GnmiResponse;
 import io.grpc.CallCredentials;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
