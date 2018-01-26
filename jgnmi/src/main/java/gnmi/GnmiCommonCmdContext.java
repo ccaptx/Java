@@ -1,6 +1,9 @@
 package gnmi;
 import static gnmi.GnmiHelper.checkFile;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -8,17 +11,19 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class GnmiCommonCmdContext implements GnmiCommonContextInf {
+public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 
 	protected CommandLine cmd;
 	
 	
-	public GnmiCommonCmdContext(String argv[]) {
+	public GnmiCommonCmdContext(String argv[]) throws Exception{
 		this.cmd = this.getCommandLine(argv);
+		this.checkCommandLine();
 	}
 	
-	public GnmiCommonCmdContext(CommandLine cmd) {
+	public GnmiCommonCmdContext(CommandLine cmd) throws Exception{
 		this.cmd = cmd;
+		this.checkCommandLine();
 	}
 	
 	@Override
@@ -27,6 +32,11 @@ public class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		return cmd.hasOption("clear_text");
 	}
 
+
+	@Override
+	public boolean needCredential() {
+		return cmd.hasOption("need_credential");
+	}
 
 	@Override
 	public String getServerCACertificate() {
@@ -69,6 +79,8 @@ public class GnmiCommonCmdContext implements GnmiCommonContextInf {
 	public String getEncoding() {
 		return cmd.getOptionValue("encoding","proto");
 	}
+	
+	public abstract String getCmdLineSyntax();
 
 	protected Options getOptions() {
 		Options options = new Options();
@@ -77,6 +89,9 @@ public class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		options.addOption(o);
 		o = new Option("c", "clear_text", false, 
 				"start server with insecure clear text transport");
+		options.addOption(o);
+		o = new Option("nc", "need_credential", false, 
+				"need user name and password information");
 		options.addOption(o);
 		o = new Option("s", "tls", false,
 				"start server over TLS which is default");
@@ -105,51 +120,56 @@ public class GnmiCommonCmdContext implements GnmiCommonContextInf {
 	}
 	
 
-    protected void checkCommandLine(CommandLine cmd) throws Exception {
-        if (!cmd.hasOption("clear_text")) {
-            String cc = cmd.getOptionValue("client_crt");
-            String ck = cmd.getOptionValue("client_key");
-            String sc = cmd.getOptionValue("server_crt");
-            if (sc == null) {
-            	throw new Exception((new StringBuilder())
-                    .append("server_crt must be set ")
-                    .append("if clear_text is not set")
-                    .toString());
-            }
-            checkFile(sc);
-            if (ck != null) checkFile(ck);
-            if (cc != null) checkFile(cc);
-        }
-        if (!cmd.hasOption("server_address")) {
-        	throw new Exception("server_address must be set");
-        }
-        String port = cmd.getOptionValue("port","50051");
-        try {
-            Integer.parseInt(port);
-        } catch (Exception e) {
-            throw new Exception((new StringBuilder())
-                    .append("post must be set a number value")
-                    .toString());
-        }
+    protected void checkCommandLine() throws Exception {
+    	if (needCredential()) {
+    		if (getUserName() == null || getPassword() == null) {
+    			throw new Exception("user_name and password must be set if setting need_credential");
+    		}
+    	}
     }
 
 	protected CommandLine getCommandLine(String [] args) {
 		Options options = getOptions();
 		CommandLineParser parser = new DefaultParser();
-		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd = null;
 		try {
 			cmd = parser.parse(options, args);
-			checkCommandLine(cmd);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			formatter.printHelp("java -cp xxx GnmiCient", options);
-			System.exit(1);
+			String errInfo = printErrorInfo(
+					e.getMessage(),
+					getCmdLineSyntax(),
+					-1,-1, null,
+					options
+					);
+			new Exception(errInfo);
 		}
 
 		return cmd;
 	}
 
+	protected String printErrorInfo(
+			String errorInfo, 
+			String cmdLineSyntax, 
+			int leftPad,
+			int descPad,
+			String footer,
+			Options options
+			) {
+		HelpFormatter formatter = new HelpFormatter();
+		StringWriter writer = new StringWriter();
+		formatter.printHelp(
+				new PrintWriter(writer,true), 
+				formatter.getWidth(), 
+				cmdLineSyntax,
+				errorInfo, 
+				options, 
+				leftPad < 0?formatter.getLeftPadding():leftPad,
+				descPad < 0?formatter.getDescPadding():descPad, 
+				footer, 
+				false);
+		return writer.toString();
+	}
+	
 	@Override
 	public int getServerPort() {
 		try {
