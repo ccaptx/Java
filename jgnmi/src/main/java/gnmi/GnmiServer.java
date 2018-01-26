@@ -162,45 +162,13 @@ public class GnmiServer {
 	}
 
 	private void start(CommandLine cmd) throws Exception {
-		/* The port on which the server should run */
-		int port = 50051;
-		File cert = new File("/home/david/ca/cert/coriant1.pem");
-		File priKey = new File("/home/david/ca/private/coriant1.key");
-		File clientCert = new File("/home/david/ca/cert/coriant1.pem");
-
-		//    This following code can implement 1-way server authentication	by using useTransportSecurity
-		//    server = ServerBuilder.forPort(port)
-		//    	.useTransportSecurity(cert, priKey)
-		//        .addService(new GreeterImpl())
-		//        .build()
-		//        .start();
-
-
-
-		// This following code can use 2-way server and client authentication
-		// The SslContext must be set own certificate and own private key, and 
-		// at the same time, add trust certificate from client if it is self-signed.
-		// You can set the client authentication is optional or required
-		// if required, the client must provide its certificate
 		AuthInterceptor interceptor = new AuthInterceptor();
 		BindableService gNMIImpl = getGnmiServer(cmd);
         server = startServer(cmd, gNMIImpl, interceptor);
         server.start();
-//		SslContext sslContext = GrpcSslContexts.forServer(cert,priKey)
-//				.trustManager(clientCert)
-//				.clientAuth(ClientAuth.OPTIONAL)
-//				.build();
-//		server = NettyServerBuilder.forPort(port).
-//				sslContext(sslContext)
-//				.addService(ServerInterceptors.intercept(gNMIImpl, 
-//						interceptor))
-//				.build()
-//				.start();
-//
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				// Use stderr here since the logger may have been reset by its JVM shutdown hook.
 				System.err.println("*** shutting down gRPC server since JVM is shutting down");
 				GnmiServer.this.stop();
 				System.err.println("*** server shut down");
@@ -540,8 +508,6 @@ public class GnmiServer {
 			call.close(Status.UNAUTHENTICATED.withDescription("Cannot pass authentication check!"), headers);
 			return new ServerCall.Listener<ReqT>() {
 			};
-			//			return Contexts.interceptCall(Context.current(),
-			//					call, headers, next);
 		}
 
 	}
