@@ -39,23 +39,10 @@ public class GnmiJsonClient extends GnmiCommonClient implements GnmiClientInf {
 		Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
 		stub = new GnmiJsonStub(newChannel);
 		credential = newCredential(context);
+		if (credential != null) {
+			stub = stub.withCallCredentials(credential);
+		} 	
 	}
-
-//	@Override
-//	public CapabilityResponse capacity() {
-//		CapabilityRequest request = CapabilityRequest.newBuilder().build();
-//
-//		CallOptions.Key<String> userName = CallOptions.Key.of("username", "administrator");
-//		CallOptions.Key<String> password = CallOptions.Key.of("password", "e2e!Net4u#");
-//		CallCredentials credential = newCredential(context);
-//
-//		CapabilityResponse response = stub
-//				.withOption(userName,"administrator")
-//				.withOption(password,"e2e!Net4u#")
-//				.withCallCredentials(credential)
-//				.capabilities(request);				
-//		return response;
-//	}
 	
 	@Override
 	public CapabilityResponse capacity() {
@@ -64,28 +51,35 @@ public class GnmiJsonClient extends GnmiCommonClient implements GnmiClientInf {
 
 		GnmiResponse <CapabilityResponse> myObserver =
 				new GnmiResponse<CapabilityResponse>();
-		if (credential != null) {
-			stub = stub.withCallCredentials(credential);
-		} 	
 		stub.capabilities(request, myObserver);
 		//		myObserver.run();
 		response = myObserver.getValue();
 		return response;
 	}
 
+//	@Override
+//	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
+//		GnmiResponse <SubscribeResponse> myObserver =
+//				new GnmiResponse<SubscribeResponse>();
+//		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(myObserver);
+//		requestStream.onNext(request);
+//		List<SubscribeResponse> result = new ArrayList<SubscribeResponse>();
+//		while (!myObserver.isCompleted() && !myObserver.isError()) {
+//			result.add(myObserver.getValue());
+//		}
+//		requestStream.onCompleted();
+//		return result;
+//	}
+
 	@Override
-	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
-		stub = stub.withCallCredentials(credential);
-		GnmiResponse <SubscribeResponse> myObserver =
-				new GnmiResponse<SubscribeResponse>();
-		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(myObserver);
-		requestStream.onNext(request);
-		List<SubscribeResponse> result = new ArrayList<SubscribeResponse>();
-		while (!myObserver.isCompleted() && !myObserver.isError()) {
-			result.add(myObserver.getValue());
-		}
-		requestStream.onCompleted();
-		return result;
+	public StreamObserver<SubscribeRequest> subscribe(StreamObserver<SubscribeResponse> response) {
+		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(response);
+		return requestStream;
+	}
+
+	@Override
+	public SubscriptionMgrInf subscribe() {
+		return new DefaultSubscriptionMgr(this);
 	}
 	
 	

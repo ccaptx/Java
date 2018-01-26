@@ -1,6 +1,5 @@
 package gnmi;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 import static gnmi.GnmiHelper.newCredential;
@@ -15,6 +14,8 @@ import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.ClientInterceptor;
 import io.grpc.ClientInterceptors;
+import io.grpc.Status;
+import io.grpc.stub.StreamObserver;
 
 public class GnmiBlockingClient extends GnmiCommonClient 
 	implements GnmiClientInf{
@@ -24,7 +25,7 @@ public class GnmiBlockingClient extends GnmiCommonClient
 	private CallCredentials credential;
 	
 	public GnmiBlockingClient(GnmiClientContextInf context) throws Exception{
-		this.context = context;
+		context = context;
 		Channel channel = GnmiHelper.getChannel(context);			
 		ClientInterceptor interceptor = newHeaderResponseInterceptor(context);
 		Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
@@ -49,10 +50,24 @@ public class GnmiBlockingClient extends GnmiCommonClient
 		return response;
 	}
 
+//	@Override
+//	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+
 	@Override
-	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	public StreamObserver<SubscribeRequest> subscribe(StreamObserver<SubscribeResponse> response) {
+		response.onError(Status.UNIMPLEMENTED
+		        .withDescription(String.format("Method %s cannot be implemented",
+		            "gnmi.subscribe for blocked mode"))
+		        .asRuntimeException());
+		return new NoopStreamObserver<SubscribeRequest>();
 	}
 
+	@Override
+	public SubscriptionMgrInf subscribe() {
+		return new DefaultSubscriptionMgr(this);
+	}
+	
 }

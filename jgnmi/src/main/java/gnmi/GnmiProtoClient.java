@@ -53,19 +53,30 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 	}
 
 	@Override
-	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
-		GnmiResponse <SubscribeResponse> myObserver =
-				new GnmiResponse<SubscribeResponse>();
-		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(myObserver);
-		requestStream.onNext(request);
-		List<SubscribeResponse> result = new ArrayList<SubscribeResponse>();
-		while (!myObserver.isCompleted() && !myObserver.isError()) {
-			SubscribeResponse response = myObserver.getValue();
-			result.add(response);
-			System.out.println(response);
-		}
-		requestStream.onCompleted();
-		return result;
+	public StreamObserver<SubscribeRequest> subscribe(StreamObserver<SubscribeResponse> response) {
+		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(response);
+		return requestStream;
 	}
+
+	@Override
+	public SubscriptionMgrInf subscribe() {
+		return new DefaultSubscriptionMgr(this);
+	}
+	
+
+//	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
+//		GnmiResponse <SubscribeResponse> myObserver =
+//				new GnmiResponse<SubscribeResponse>();
+//		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(myObserver);
+//		requestStream.onNext(request);
+//		List<SubscribeResponse> result = new ArrayList<SubscribeResponse>();
+//		while (!myObserver.isCompleted() && !myObserver.isError()) {
+//			SubscribeResponse response = myObserver.getValue();
+//			result.add(response);
+//			System.out.println(response);
+//		}
+//		requestStream.onCompleted();
+//		return result;
+//	}
 
 }

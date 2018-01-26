@@ -5,6 +5,7 @@ import static gnmi.GnmiHelper.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+import gnmi.Gnmi.CapabilityResponse;
 import gnmi.Gnmi.Path;
 import gnmi.Gnmi.PathElem;
 import gnmi.Gnmi.SubscribeRequest;
@@ -15,33 +16,21 @@ import gnmi.Gnmi.SubscriptionList;
 public class GnmiClient {
 	private static final Logger logger = Logger.getLogger(GnmiClient.class.getName());
 	
-//	private static class GnmiBlockingClient implements GnmiClientInf{
-//
-//		public GnmiBlockingClient(GnmiClientContextInf context) throws Exception{
-//			this.context = context;
-//			channel = getChannel(context);			
-//			ClientInterceptor interceptor = newHeaderResponseInterceptor(context);
-//			Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
-//			this.stub = gNMIGrpc.newBlockingStub(newChannel);
-//		}
-//
-//		public String capacity() {
-//			CapabilityRequest request = CapabilityRequest.newBuilder().build();
-//
-//			CallOptions.Key<String> userName = CallOptions.Key.of("username", "administrator");
-//			CallOptions.Key<String> password = CallOptions.Key.of("password", "e2e!Net4u#");
-//			CallCredentials credential = 
-//					newCredential("administrator","e2e!Net4u");
-//
-//			CapabilityResponse response = stub
-//					.withCallCredentials(credential)
-//					.withOption(userName,"administrator")
-//					.withOption(password,"e2e!Net4u#")
-//					.capabilities(request);				
-//			return response.toString();
-//		}
-//	}
-
+	private GnmiClientContextInf context;
+	private GnmiClientInf client;
+	
+	public GnmiClient(GnmiClientContextInf context) throws Exception{
+		this.context = context;
+		this.client = GnmiClientFactory.getInstance(context);
+	}
+	
+	public CapabilityResponse capacity(String format) {
+		return client.capacity();
+	}
+	
+	public SubscriptionMgrInf subscribe() {
+		return client.subscribe();
+	}
 
 	public static void main(String argv[]) throws Exception{
 		GnmiClientInf client;
@@ -75,9 +64,12 @@ public class GnmiClient {
 				.newBuilder()
 				.setSubscribe(list)
 				.build();
-		List<SubscribeResponse> response = client.subscribe(value);
-		for (SubscribeResponse r:response) {
-			System.out.println(r);
+		SubscriptionMgrInf mgr = client.subscribe();
+		mgr.subscribe(value);
+		Thread.currentThread().sleep(60*1000);
+		List<SubscribeResponse> responses = mgr.popResponses();
+		for (SubscribeResponse response:responses) {
+			System.out.println(response);
 		}
 //		client = new GnmiBlockingClient("10.13.12.216",50051);
 //		System.out.println(client.capacity());
