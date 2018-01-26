@@ -10,7 +10,7 @@ import org.apache.commons.cli.Options;
 
 public class GnmiClientCmdContext extends GnmiCommonCmdContext 
 								implements GnmiClientContextInf {
-	public GnmiClientCmdContext(String [] argv) {
+	public GnmiClientCmdContext(String [] argv) throws Exception {
 		super(argv);
 	}
 	
@@ -39,31 +39,31 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 	}
 
 	@Override
-    protected void checkCommandLine() throws Exception {
+	protected void checkCommandLine() throws Exception {
 		super.checkCommandLine();
-        if (!forceClearText()) {
-            String cc = this.getClientCACertificate();
-            String ck = this.getClientKey();
-            String sc = this.getServerCACertificate();
-            if (sc == null) {
-            	throw new Exception((new StringBuilder())
-                    .append("server_crt must be set ")
-                    .append("if clear_text is not set")
-                    .toString());
-            }
-            checkFile(sc);
-            if (ck != null) checkFile(ck);
-            if (cc != null) checkFile(cc);
-        }
-        if (this.getServerAddress() == null) {
-        	throw new Exception("server_address must be set");
-        }
-        int port = this.getServerPort();
-        if (port <= 0)
-            throw new Exception((new StringBuilder())
-                    .append("post must be set a number value")
-                    .toString());
-        }
-    }
-
+		if (!forceClearText()) {
+			String cc = this.getClientCACertificate();
+			String ck = this.getClientKey();
+			String sc = this.getServerCACertificate();
+			if (sc == null) {
+				throw new Exception(
+						(new StringBuilder())
+						.append("server_crt must be set ")
+						.append("if clear_text is not set")
+						.toString());
+			}
+			checkFile(sc);
+			if (ck != null) checkFile(ck);
+			if (cc != null) checkFile(cc);
+		}
+		if (this.getServerAddress() == null) {
+			throw new Exception("server_address must be set");
+		}
+		int port = this.getServerPort();
+		if (port <= 0)
+			throw new Exception((new StringBuilder())
+					.append("post must be set a number value")
+					.toString());
+	}
 }
+

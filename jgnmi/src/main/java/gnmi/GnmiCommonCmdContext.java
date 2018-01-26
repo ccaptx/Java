@@ -14,7 +14,7 @@ import org.apache.commons.cli.Options;
 public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 
 	protected CommandLine cmd;
-	
+	Options   options;
 	
 	public GnmiCommonCmdContext(String argv[]) throws Exception{
 		this.cmd = this.getCommandLine(argv);
@@ -129,7 +129,7 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
     }
 
 	protected CommandLine getCommandLine(String [] args) {
-		Options options = getOptions();
+		options = getOptions();
 		CommandLineParser parser = new DefaultParser();
 		CommandLine cmd = null;
 		try {
