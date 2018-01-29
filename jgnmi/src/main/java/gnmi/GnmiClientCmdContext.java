@@ -65,5 +65,15 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 					.append("post must be set a number value")
 					.toString());
 	}
+
+	@Override
+	public String getCmdLineSyntax() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("java -cp xxx gnmi.Gnmiclient [-c] -a server_address")
+		  .append(" -p server_port [-sc server_certificate] ")
+		  .append(" [-cc client_certificate] [-ck client_key] ")
+		  .append(" [-nc | --need_credential] ");
+		return sb.toString();
+	}
 }
 
