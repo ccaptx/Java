@@ -40,14 +40,9 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 		CapabilityRequest request = CapabilityRequest.newBuilder().build();
 		CapabilityResponse response = null;
 
-//		CallCredentials credential = newCredential(context);
 		GnmiResponse <CapabilityResponse> myObserver =
 				new GnmiResponse<CapabilityResponse>();
-//		if (credential != null) {
-//			stub = stub.withCallCredentials(credential);
-//		} 	
 		stub.capabilities(request, myObserver);
-//		myObserver.run();
 		response = myObserver.getValue();
 		return response;
 	}
@@ -62,21 +57,4 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 	public SubscriptionMgrInf subscribe() {
 		return new DefaultSubscriptionMgr(this);
 	}
-	
-
-//	public List<SubscribeResponse> subscribe(SubscribeRequest request) {
-//		GnmiResponse <SubscribeResponse> myObserver =
-//				new GnmiResponse<SubscribeResponse>();
-//		StreamObserver<SubscribeRequest> requestStream = stub.subscribe(myObserver);
-//		requestStream.onNext(request);
-//		List<SubscribeResponse> result = new ArrayList<SubscribeResponse>();
-//		while (!myObserver.isCompleted() && !myObserver.isError()) {
-//			SubscribeResponse response = myObserver.getValue();
-//			result.add(response);
-//			System.out.println(response);
-//		}
-//		requestStream.onCompleted();
-//		return result;
-//	}
-
 }

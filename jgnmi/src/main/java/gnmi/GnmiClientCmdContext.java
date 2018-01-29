@@ -69,10 +69,11 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 	@Override
 	public String getCmdLineSyntax() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("java -cp xxx gnmi.Gnmiclient [-c] -a server_address")
+		sb.append("java -cp xxx gnmi.Gnmiclient [-c | -clear_text] -a server_address")
 		  .append(" -p server_port [-sc server_certificate] ")
 		  .append(" [-cc client_certificate] [-ck client_key] ")
-		  .append(" [-nc | --need_credential] ");
+		  .append(" [-nc | --need_credential] ")
+		  .append(" -ohn");
 		return sb.toString();
 	}
 }

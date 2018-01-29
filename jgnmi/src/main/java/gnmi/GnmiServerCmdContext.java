@@ -10,11 +10,11 @@ import org.apache.commons.cli.Options;
 
 public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiServerContextInf {
 
-	public GnmiServerCmdContext(String[] argv) {
+	public GnmiServerCmdContext(String[] argv) throws Exception {
 		super(argv);
 	}
 
-	public GnmiServerCmdContext(CommandLine cmd) {
+	public GnmiServerCmdContext(CommandLine cmd) throws Exception {
 		super(cmd);
 	}
 	
@@ -30,8 +30,8 @@ public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiSe
 		Option o = new Option("sk", "server_key", true,
 				"TLS Server private key");
 		options.addOption(o);
-		o = new Option("ncc", "allow_no_client_auth", false,
-				"When set, server will request but not required a client certificate");
+		o = new Option("rcc", "require_client_certificate", false,
+				"When set, server will request and require a client certificate");
 		options.addOption(o);
 		
 		return options;
@@ -40,41 +40,47 @@ public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiSe
 	@Override
 	public boolean requireClientCert() {
 		// TODO Auto-generated method stub
-		return cmd.hasOption("allow_no_client_auth");
+		return cmd.hasOption("require_client_certificate");
 	}
 
 	@Override
-    protected void checkCommandLine(CommandLine cmd) throws Exception {
-        if (!cmd.hasOption("clear_text")) {
-            String sc = cmd.getOptionValue("server_crt");
-            String sk = cmd.getOptionValue("server_key");
-            String cc = cmd.getOptionValue("client_crt");
-            if (sc == null || sk == null)
-            	throw new Exception((new StringBuilder())
-                    .append("server_crt, server_key must be set ")
-                    .append("if clear_text is not set")
-                    .toString());
-            String ma = cmd.getOptionValue("allow_no_client_auth");
-            if (ma != null) { // must check client certificate                
-                if (cc == null)
-                    throw new Exception((new StringBuilder())
-                            .append("client_crt must be set ")
-                            .append("if allow_no_client_auth is not set")
-                            .toString());
-            }
-            checkFile(sc);
+    protected void checkCommandLine() throws Exception {
+        if (!this.forceClearText()) {
+        	String sc = this.getServerCACertificate();
+        	String sk = this.getServerKey();
+        	String cc = this.getClientCACertificate();
+        	if (sc == null || sk == null)
+        		throw new Exception((new StringBuilder())
+        				.append("server_crt, server_key must be set ")
+        				.append("if clear_text is not set")
+        				.toString());
+        	boolean requireCC = this.requireClientCert();
+        	if (requireCC && cc == null) { // must check client certificate                
+        		throw new Exception((new StringBuilder())
+        				.append("client_crt must be set ")
+        				.append("if require_client_certificat is set")
+        				.toString());
+        	}
+        	checkFile(sc);
             checkFile(sk);
             if (cc != null) checkFile(cc);
         }
 
-        String port = cmd.getOptionValue("port","50051");
-        try {
-            Integer.parseInt(port);
-        } catch (Exception e) {
+        int port = this.getServerPort();
+        if (port < 0)
             throw new Exception((new StringBuilder())
                     .append("post must be set a number value")
                     .toString());
-        }
     }
 
+	@Override
+	public String getCmdLineSyntax() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("java -cp xxx gnmi.GnmiServer [-c | -clear_text] ")
+		  .append(" -p server_port [-sc server_certificate] ")
+		  .append(" [-cc client_certificate] [-sk server_key] ")
+		  .append(" [-nc | --need_credential] ")
+		  .append(" -ohn");
+		return sb.toString();
+	}
 }

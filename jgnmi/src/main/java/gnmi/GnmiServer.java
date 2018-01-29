@@ -108,55 +108,60 @@ public class GnmiServer {
 		return gNMIImpl;
 	}
 	
-	private static Server startServer(
+	private Server getClearTextServer(
+				BindableService service,
+				AuthInterceptor interceptor,
+				int port) {
+		logger.info("create a server over TCP with clear text");
+		server = ServerBuilder
+				.forPort(port)
+				.addService(ServerInterceptors.intercept(service, 
+						interceptor))
+				.build();
+	    logger.info("Server started, listening on " + port);
+		return server;		
+	}
+	
+	private Server getTLSServer(
+			GnmiServerContextInf cmd, 
+            BindableService service,
+            AuthInterceptor interceptor) throws Exception {
+		
+		int port = cmd.getServerPort();
+
+		SslContextBuilder contextBuilder = GrpcSslContexts
+                .forServer(
+                		new File(cmd.getServerCACertificate()), 
+                		new File(cmd.getServerKey()));
+
+		if (cmd.getClientCACertificate() != null)
+			contextBuilder = 
+			contextBuilder.trustManager(new File(cmd.getClientCACertificate()));
+
+	
+        contextBuilder = cmd.requireClientCert()?
+            contextBuilder.clientAuth(ClientAuth.REQUIRE):
+            contextBuilder.clientAuth(ClientAuth.OPTIONAL);
+
+		server = NettyServerBuilder.forPort(port).
+				sslContext(contextBuilder.build())
+				.addService(ServerInterceptors.intercept(service, 
+						interceptor))
+				.build();
+		logger.info("Server started, listening on " + port);
+		return server;		
+	}
+	
+	private Server startServer(
 			GnmiServerContextInf cmd, 
             BindableService service,
             AuthInterceptor interceptor) throws Exception{
 		Server server = null;
 		int port = cmd.getServerPort();
 		if (cmd.forceClearText()) {
-			logger.info("create a server over TCP with clear text");
-			server = ServerBuilder
-					.forPort(port)
-					.addService(ServerInterceptors.intercept(service, 
-							interceptor))
-					.build();
-		    logger.info("Server started, listening on " + port);
-			return server;
+			return getClearTextServer(service,interceptor,port);
 		}
-		String serverCert = cmd.getServerCACertificate();
-        String serverKey  = cmd.getServerKey();
-        String clientCert = cmd.getClientCACertificate();
-		File cert = new File(serverCert);
-		File priKey = new File(serverKey);
-		File cCert = null;
-		if (clientCert!=null)
-			cCert = new File(clientCert);
-        
-		SslContext sslContext = null;
-		SslContextBuilder contextBuilder = GrpcSslContexts
-                .forServer(cert, priKey);
-
-        if (cmd.requireClientCert()) {
-            sslContext = contextBuilder
-                .trustManager(cCert)
-			    .clientAuth(ClientAuth.OPTIONAL)
-			    .build();
-        } else {
-            if (cCert != null) 
-            	contextBuilder = contextBuilder.trustManager(cCert);
-            sslContext = contextBuilder
-                .clientAuth(ClientAuth.REQUIRE)
-                .build();
-        }
-
-		server = NettyServerBuilder.forPort(port).
-				sslContext(sslContext)
-				.addService(ServerInterceptors.intercept(service, 
-						interceptor))
-				.build();
-		logger.info("Server started, listening on " + port);
-		return server;
+		return getTLSServer(cmd,service,interceptor);
 	}
 
 	private void start(GnmiServerContextInf cmd) throws Exception {
@@ -194,7 +199,11 @@ public class GnmiServer {
 	 */
 	public static void main(String[] args) throws Exception {
 		final GnmiServer server = new GnmiServer();
-		server.start(new GnmiServerCmdContext(args));
+		try {
+			server.start(new GnmiServerCmdContext(args));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 		server.blockUntilShutdown();
 	}
 

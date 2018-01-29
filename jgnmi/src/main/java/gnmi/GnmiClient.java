@@ -35,7 +35,7 @@ public class GnmiClient {
 	public static void main(String argv[]) throws Exception{
 		GnmiClientInf client;
 		client = GnmiClientFactory.getInstance(new GnmiClientCmdContext(argv));
-		System.out.println(client.capacity());
+//		System.out.println(client.capacity());
 		PathElem ne = newPathElem("ne",null);
 		PathElem shelf1  = newPathElem("shelf", new String [][]{{"shelf-id","1"}});
 		PathElem slot1 = newPathElem("slot", new String[][] {{"slot-id","1"}});
@@ -66,7 +66,7 @@ public class GnmiClient {
 				.build();
 		SubscriptionMgrInf mgr = client.subscribe();
 		mgr.subscribe(value);
-		Thread.currentThread().sleep(60*1000);
+		Thread.currentThread().sleep(10*1000);
 		List<SubscribeResponse> responses = mgr.popResponses();
 		for (SubscribeResponse response:responses) {
 			System.out.println(response);

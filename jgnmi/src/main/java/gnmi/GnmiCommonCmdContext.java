@@ -17,13 +17,12 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 	Options   options;
 	
 	public GnmiCommonCmdContext(String argv[]) throws Exception{
-		this.cmd = this.getCommandLine(argv);
-		this.checkCommandLine();
+		getCommandLine(argv);
 	}
 	
 	public GnmiCommonCmdContext(CommandLine cmd) throws Exception{
 		this.cmd = cmd;
-		this.checkCommandLine();
+		checkCommandLine();
 	}
 	
 	@Override
@@ -115,6 +114,12 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		o = new Option("pw", "password", true,
 				"password");
 		options.addOption(o);
+		o = new Option("mu", "meta_user_name", true,
+				"metadata for user name");
+		options.addOption(o);
+		o = new Option("mp", "meta_password", true,
+				"metadata for password");
+		options.addOption(o);
 		
 		return options;
 	}
@@ -128,12 +133,12 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
     	}
     }
 
-	protected CommandLine getCommandLine(String [] args) {
+	protected CommandLine getCommandLine(String [] args) throws Exception {
 		options = getOptions();
 		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = null;
 		try {
 			cmd = parser.parse(options, args);
+			this.checkCommandLine();
 		} catch (Exception e) {
 			String errInfo = printErrorInfo(
 					e.getMessage(),
@@ -141,7 +146,7 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 					-1,-1, null,
 					options
 					);
-			new Exception(errInfo);
+			throw new Exception(errInfo);
 		}
 
 		return cmd;

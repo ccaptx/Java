@@ -34,20 +34,23 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 			myQueue = new ArrayBlockingQueue<SubscribeResponse>(capacity);			 
 			myResponseObserver = new GnmiResponse<SubscribeResponse>();
 			myRequestObserver = client.subscribe(myResponseObserver);
-			new Runnable () {
+			new Thread(new Runnable () {
 				@Override
 				public void run() {
 					// TODO Auto-generated method stub
-					SubscribeResponse 
-					response = myResponseObserver.getValue();
-					try {
-						myQueue.put(response);
-					} catch (InterruptedException e) {
-						logger.log(Level.SEVERE, "Interrupted when put response", e);
+					while (	!myResponseObserver.isCompleted() && 
+							!myResponseObserver.isError()) {
+						SubscribeResponse 
+						response = myResponseObserver.getValue();
+						try {
+							myQueue.put(response);
+						} catch (InterruptedException e) {
+							logger.log(Level.SEVERE, "Interrupted when put response", e);
+						}
 					}
 				}
-
-			};
+			}, "subscription").start();;
+	
 		}
 
 		@Override
