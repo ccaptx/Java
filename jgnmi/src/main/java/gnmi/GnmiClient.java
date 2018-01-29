@@ -66,10 +66,12 @@ public class GnmiClient {
 				.build();
 		SubscriptionMgrInf mgr = client.subscribe();
 		mgr.subscribe(value);
-		Thread.currentThread().sleep(10*1000);
-		List<SubscribeResponse> responses = mgr.popResponses();
-		for (SubscribeResponse response:responses) {
-			System.out.println(response);
+		while (true) {
+			Thread.currentThread().sleep(10*1000);
+			List<SubscribeResponse> responses = mgr.popResponses();
+			for (SubscribeResponse response:responses) {
+				System.out.println(response);
+			}
 		}
 //		client = new GnmiBlockingClient("10.13.12.216",50051);
 //		System.out.println(client.capacity());

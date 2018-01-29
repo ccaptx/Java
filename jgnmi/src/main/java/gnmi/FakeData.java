@@ -83,6 +83,18 @@ public class FakeData {
 				.build();
 	}
 	
+	public static SubscribeResponse getOneUpdate(
+			String abc,
+			String abd,
+			String abde) {
+		MyUpdate [] u1 = {
+				new MyUpdate(new String [] {"a","b","c"},    abc, true),
+				new MyUpdate(new String[] {"a","b","d"},     abd, false),
+				new MyUpdate(new String[] {"a","b","d","e"}, abde, true)
+		};
+		return getResponse(u1);
+	}
+	
 	public static  List<SubscribeResponse> getAllCurrentData() {
 		MyUpdate [] u1 = {
 				new MyUpdate(new String [] {"a","b","c"}, "John Smith",true),

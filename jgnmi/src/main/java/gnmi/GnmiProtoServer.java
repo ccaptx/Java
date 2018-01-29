@@ -1,5 +1,6 @@
 package gnmi;
 
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,6 +61,23 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 					responseObserver.onNext(resp);
 				}
 				responseObserver.onNext(FakeData.getSyncComplete());
+				
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						while (true) {
+							try {
+								Thread.currentThread().sleep(30 * 1000);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+							logger.info("send one update notification");
+							responseObserver.onNext(
+									FakeData.getOneUpdate(
+											new Random().toString(), 
+											new Random().toString(),
+											new Random().toString()));						
+						}}},"data producer").start();
 			}
 
 			@Override

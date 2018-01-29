@@ -47,7 +47,6 @@ public class GnmiJsonServer implements BindableService {
 											StreamObserver<CapabilityResponse> responseObserver) {
 										getCapabilitiesMethod(request, responseObserver);
 									}
-
 								}))
 				.build();
 	}
