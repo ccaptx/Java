@@ -101,7 +101,7 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		o = new Option("sc", "server_crt", true,
 				"CA certificate file. Used to verify server TLS certificate.");
 		options.addOption(o);
-		o = new Option("p", "port", true,
+		o = new Option("p", "server_port", true,
 				"port ot listen on (default 50051)");
 		o.setType(int.class);
 		options.addOption(o);
@@ -179,7 +179,7 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 	public int getServerPort() {
 		try {
 			return Integer.parseInt(
-					cmd.getOptionValue("port","50051"));
+					cmd.getOptionValue("server_port","50051"));
 		} catch (Exception e) {
 			return -1;
 		}
