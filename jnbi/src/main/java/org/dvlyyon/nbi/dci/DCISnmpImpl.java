@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_SNMP;
 
@@ -25,8 +25,8 @@ import org.dvlyyon.nbi.util.RunState.State;
 
 import static org.dvlyyon.nbi.protocols.snmp.SnmpClientInf.*;
 
-public class G30SnmpImpl extends CliStub implements CliInterface, NBIAdapterInf  {
-	public final Log log = LogFactory.getLog(G30SnmpImpl.class);
+public class DCISnmpImpl extends CliStub implements CliInterface, NBIAdapterInf  {
+	public final Log log = LogFactory.getLog(DCISnmpImpl.class);
 	public final String COMMAND = "SNMP_CMD:-> ";
 	public final String RESPONSE = "SNMP_RESP:<- ";
 	

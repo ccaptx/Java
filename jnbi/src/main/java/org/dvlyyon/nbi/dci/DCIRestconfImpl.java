@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.Properties;
 import java.util.TreeMap;
@@ -20,12 +20,12 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-public class G30RestconfImpl extends CliStub implements NBIAdapterInf {
+public class DCIRestconfImpl extends CliStub implements NBIAdapterInf {
 	DObject node = null;
 	RestconfClientInf client = null;
 	private boolean format = false;
 	
-	public final Log log = LogFactory.getLog(G30RestconfImpl.class);
+	public final Log log = LogFactory.getLog(DCIRestconfImpl.class);
 	public final NetconfXMLParser parser = new NetconfXMLParser();
 
 	public final String COMMAND  = "RESTCONF_CMD:-> ";

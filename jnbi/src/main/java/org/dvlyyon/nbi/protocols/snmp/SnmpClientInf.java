@@ -8,7 +8,7 @@ import org.dvlyyon.nbi.protocols.ContextInfoException;
 /**
  * The {@code SNMPClientInf} defines a proprietary interface between NMS and SNMP engine.
  * It provides the basic SNMP operations with extra other operations  
- * @author david Yon
+ * @author dajun yang
  * @version 1.0
  * @since 1.0
  */

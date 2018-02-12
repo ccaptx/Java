@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.List;
 import java.util.Properties;
@@ -27,13 +27,13 @@ import static org.dvlyyon.nbi.CommonMetadata.*;
 import org.jdom2.Element;
 import org.dvlyyon.net.netconf.Client;
 
-public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterInf {
+public class DCINetconfImpl extends CliStub implements CliInterface, NBIAdapterInf {
 	
 	private static boolean refreshMetadata = false;
 	
 	Client client = null;
 
-	public final Log log = LogFactory.getLog(G30NetconfImpl.class);
+	public final Log log = LogFactory.getLog(DCINetconfImpl.class);
 	public final NetconfXMLParser parser = new NetconfXMLParser();
 	
 	public final String COMMAND = "NETCONF_CMD:-> ";
@@ -44,7 +44,7 @@ public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterI
 	private DObject node = null;
 	private String  sessionID = "NA";
 	
-	private G30NetconfNotificationInf   netconfNotifications = null;
+	private DCINetconfNotificationInf   netconfNotifications = null;
 	private NetconfNotificationListener netconfListener      = null;
 	
 	private NetconfValidationInf 		netconfValidation    = null;
@@ -234,13 +234,13 @@ public class G30NetconfImpl extends CliStub implements CliInterface, NBIAdapterI
 		String startTime   = 	(String)propertyList.get("__startTime");
 		String stopTime    = 	(String)propertyList.get("__stopTime");
 		String maxEvents   = 	(String)propertyList.get("__keepMaxEvents");
-		int maxEventsNum   =    G30NetconfNotification.DEFAUL_CACHE_SIZE;
+		int maxEventsNum   =    DCINetconfNotification.DEFAUL_CACHE_SIZE;
 		if (maxEvents != null) {
 			int num = CommonUtils.parseInt(maxEvents);
-			if (num >=100 && num <=G30NetconfNotification.DEFAUL_CACHE_SIZE)
+			if (num >=100 && num <=DCINetconfNotification.DEFAUL_CACHE_SIZE)
 				maxEventsNum = num;
 		}
-		netconfNotifications = new G30NetconfNotification(maxEventsNum);
+		netconfNotifications = new DCINetconfNotification(maxEventsNum);
 		netconfListener      = new NetconfNotificationListener(netconfNotifications);
 		client.startNotifications(streamValue, null, startTime, stopTime, netconfListener);
 		return true;

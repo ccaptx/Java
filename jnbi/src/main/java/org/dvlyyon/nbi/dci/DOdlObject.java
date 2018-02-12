@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.Vector;
 import java.util.logging.Logger;

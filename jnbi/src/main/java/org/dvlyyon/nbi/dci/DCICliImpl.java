@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -7,7 +7,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.dvlyyon.nbi.CommonMetadata.*;
 import org.dvlyyon.nbi.NBIObjectInf;
-import org.dvlyyon.nbi.g30.NBIAdapterInf;
+import org.dvlyyon.nbi.dci.NBIAdapterInf;
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.protocols.LoginException;
 import org.dvlyyon.nbi.protocols.cli.SSHCliImpl;
@@ -15,7 +15,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.LogUtils;
 import org.dvlyyon.nbi.util.RunState;
 
-public class G30CliImpl extends SSHCliImpl implements NBIAdapterInf {
+public class DCICliImpl extends SSHCliImpl implements NBIAdapterInf {
 	public static final String CLI_CMD_PREFIX = "cli_cmd:->";
 	public static final String CLI_RESP_PREFIX = "cli_RESP:->";
 	public static final String SEPARATOR = "#!#";
@@ -28,7 +28,7 @@ public class G30CliImpl extends SSHCliImpl implements NBIAdapterInf {
 	
 	protected NBIObjectInf node=null;
 	private int cliPort = 4183;
-	private Log log = LogFactory.getLog(G30CliImpl.class);
+	private Log log = LogFactory.getLog(DCICliImpl.class);
 	private boolean interactive = false;
 	private boolean format = false;
 	protected Pattern sessionPattern = null;
@@ -45,7 +45,7 @@ public class G30CliImpl extends SSHCliImpl implements NBIAdapterInf {
 		RunState rs = new RunState();
 		// TODO Auto-generated method stub
 		LogUtils.initRollingFileLog("driver", rs);
-		G30CliImpl dci = new G30CliImpl();
+		DCICliImpl dci = new DCICliImpl();
 		dci.setEndPatternList("^\\[.*\\]\\$$");
 		String ret = dci.login("172.21.3.9", "djyang", "sycamore");
 		if (!ret.equals("OK")) {

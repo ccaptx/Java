@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 
 import java.util.Properties;
@@ -22,13 +22,13 @@ import org.dvlyyon.nbi.util.RunState.State;
 
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class G30OdlImpl extends CliStub implements NBIAdapterInf {
+public class DCIOdlImpl extends CliStub implements NBIAdapterInf {
 	
 	NBIObjectInf node = null;
 	OdlRestconfClientInf client = null;
 	private boolean format = false;
 	
-	public final Log log = LogFactory.getLog(G30OdlImpl.class);
+	public final Log log = LogFactory.getLog(DCIOdlImpl.class);
 	public final NetconfXMLParser parser = new NetconfXMLParser();
 
 	public final String COMMAND = "ODL_RESTCONF_CMD:-> ";

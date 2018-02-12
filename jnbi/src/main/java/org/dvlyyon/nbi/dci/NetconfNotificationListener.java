@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.sql.Timestamp;
 
@@ -10,10 +10,10 @@ import org.dvlyyon.net.netconf.Capabilities;
 import org.dvlyyon.net.netconf.NotificationListenerIf;
 
 public class NetconfNotificationListener implements NotificationListenerIf {
-	G30NetconfNotificationInf queue;
+	DCINetconfNotificationInf queue;
 	protected final static Log logger = LogFactory.getLog(NetconfNotificationListener.class);
 	
-	public NetconfNotificationListener(G30NetconfNotificationInf eventQueue) {
+	public NetconfNotificationListener(DCINetconfNotificationInf eventQueue) {
 		queue = eventQueue;
 	}
 	@Override

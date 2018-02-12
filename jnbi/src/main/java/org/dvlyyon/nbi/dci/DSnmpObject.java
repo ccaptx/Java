@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import static org.dvlyyon.nbi.CommonMetadata.META_ACTION_ACTTYPE_GET;
 import static org.dvlyyon.nbi.CommonMetadata.META_ACTION_ACTTYPE_SET;

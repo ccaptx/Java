@@ -70,5 +70,4 @@ public class SnmpResponseException extends Exception {
 		this.parameters = params;
 	}
 
-
 }

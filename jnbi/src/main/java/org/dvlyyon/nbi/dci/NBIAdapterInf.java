@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.NBIObjectInf;

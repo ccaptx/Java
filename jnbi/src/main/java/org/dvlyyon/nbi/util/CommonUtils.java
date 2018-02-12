@@ -6,7 +6,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Vector;
 
-//import coriant.cats.driver.util.CommonConstants;
+//import org.dvlyyon.nbi.util.CommonConstants;
 
 
 public class CommonUtils {

@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.io.InputStream;
 import java.util.Vector;
@@ -20,7 +20,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.CliInterface;
 import static org.dvlyyon.nbi.CommonMetadata.*;
 
-public class G30DriverFactory implements DriverFactoryInf {
+public class DCIDriverFactory implements DriverFactoryInf {
 	static final String NOT_SUPPORTED_PRE = "NONE::";
 	
 	static final String [] supportedIntfType = 
@@ -88,26 +88,26 @@ public class G30DriverFactory implements DriverFactoryInf {
 			String debug = objModel.getProperty(OBJECT_MODEL_PROPERTY_SHOW_CLI_COMMAND_ONLY);
 			if (SNIMetadata.isStubCmd(cmd) ||
 					(debug!=null&&debug.trim().equalsIgnoreCase("yes"))) {
-				cli = new G30CliStub();
+				cli = new DCICliStub();
 				if (!isSupportedInterface(intfType)) {
 					err.add(0,"The " + intfType + " is not supported by DCI platform");
 					return null;					
 				}
 				if (isSSHCLIInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30CliImpl();
-					((G30CliStub)cli).setAdapter(cliAdapter);
+					NBIAdapterInf cliAdapter = new DCICliImpl();
+					((DCICliStub)cli).setAdapter(cliAdapter);
 				} else if (isNetconfInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30NetconfImpl();
-					((G30CliStub)cli).setAdapter(cliAdapter);
+					NBIAdapterInf cliAdapter = new DCINetconfImpl();
+					((DCICliStub)cli).setAdapter(cliAdapter);
 				} else if (isODLInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30OdlImpl();
-					((G30CliStub)cli).setAdapter(cliAdapter);
+					NBIAdapterInf cliAdapter = new DCIOdlImpl();
+					((DCICliStub)cli).setAdapter(cliAdapter);
 				} else if (isRestconfInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30RestconfImpl();
-					((G30CliStub)cli).setAdapter(cliAdapter);
+					NBIAdapterInf cliAdapter = new DCIRestconfImpl();
+					((DCICliStub)cli).setAdapter(cliAdapter);
 				} else if (isSnmpInterface(intfType)) {
-					NBIAdapterInf cliAdapter = new G30SnmpImpl();
-					((G30CliStub)cli).setAdapter(cliAdapter);
+					NBIAdapterInf cliAdapter = new DCISnmpImpl();
+					((DCICliStub)cli).setAdapter(cliAdapter);
 				} else {
 					err.add(0,"The " + intfType + " is not supported by DCI platform");
 					return null;					
@@ -119,7 +119,7 @@ public class G30DriverFactory implements DriverFactoryInf {
 					return null;					
 				}
 				if (isSSHCLIInterface(intfType)) {
-					cli = new G30CliImpl(); 
+					cli = new DCICliImpl(); 
 					String separator = objModel.getProperty(OBJECT_MODEL_PROPERTY_PATTERN_SEPARATOR);
 					if (separator!=null) cli.setPatternSeparator(separator);
 					String endPattern = objModel.getProperty(OBJECT_MODEL_PROPERTY_ENDPATTERN);
@@ -134,32 +134,32 @@ public class G30DriverFactory implements DriverFactoryInf {
 						return null;
 					}
 					String sshImpl = objModel.getProperty(OBJECT_MODEL_PROPERTY_SSH_IMPLEMENTATION);
-					if (sshImpl != null) ((G30CliImpl)cli).setSSHImpl(sshImpl);
+					if (sshImpl != null) ((DCICliImpl)cli).setSSHImpl(sshImpl);
 					String connectionType = objModel.getProperty(OBJECT_MODEL_PROPERTY_CONNECTION_TYPE);
 					if (connectionType == null) connectionType = "cli";
-					((G30CliImpl)cli).setConnectionType(connectionType);
+					((DCICliImpl)cli).setConnectionType(connectionType);
 					String conInfoPattern = objModel.getProperty(OBJECT_MODEL_PROPERTY_CONNECTION_INFO_PATTERN);
 					if (conInfoPattern != null) {
-						((G30CliImpl)cli).setConnectionInfoPattern(conInfoPattern);
+						((DCICliImpl)cli).setConnectionInfoPattern(conInfoPattern);
 					}
-					((G30CliImpl)cli).setLoginError(loginErrorPattern);
-					((G30CliImpl)cli).setRebootCmd(rebootCmdPattern);
-					((G30CliImpl)cli).setInteractiveMode(interactiveMode);
-					if (cliPort != null) ((G30CliImpl)cli).setCliPort(cliPort);
+					((DCICliImpl)cli).setLoginError(loginErrorPattern);
+					((DCICliImpl)cli).setRebootCmd(rebootCmdPattern);
+					((DCICliImpl)cli).setInteractiveMode(interactiveMode);
+					if (cliPort != null) ((DCICliImpl)cli).setCliPort(cliPort);
 					cli.setEndPatternList(endPattern);
 					cli.setErrorPatternList(errorPattern);
 					ret = cli.login(ap);
 				} else if (isNetconfInterface(intfType)) {
-					cli = new G30NetconfImpl();
+					cli = new DCINetconfImpl();
 					ret = cli.login(ap);
 				} else if (isODLInterface(intfType)) {
-					cli = new G30OdlImpl();
+					cli = new DCIOdlImpl();
 					ret = cli.login(ap);
 				} else if (isRestconfInterface(intfType)) {
-					cli = new G30RestconfImpl();
+					cli = new DCIRestconfImpl();
 					ret = cli.login(ap);
 				} else if (isSnmpInterface(intfType)) {
-					cli = new G30SnmpImpl();
+					cli = new DCISnmpImpl();
 					ret = cli.login(ap);
 				} else {
 					err.add(0,"The " + intfType + " is not supported by DCI platform");

@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.TreeMap;
 import java.util.regex.Pattern;
@@ -9,7 +9,7 @@ import org.dvlyyon.nbi.NBIObjectInf;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 
-public class G30CliStub extends CliStub implements NBIAdapterInf {
+public class DCICliStub extends CliStub implements NBIAdapterInf {
 	NBIAdapterInf adapter = null;
 	
 	public void setAdapter(NBIAdapterInf adapter) {

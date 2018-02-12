@@ -56,7 +56,7 @@ public class Configuration {
 	}
 	public static final String [][] properties = {
 		{"entry-point","stty -echo; java -jar cxt7090M.jar"},
-		{"factory","coriant.cats.driver.cxt7090.CXT7090DriverFactory"},
+		{"factory","org.dvlyyon.nbi.cxt7090.CXT7090DriverFactory"},
 		{"showCLICommandOnly","no"},
 		{"ip-addr","localhost"},
 		{"user-id","cxt7090m"},

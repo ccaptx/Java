@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -14,8 +14,8 @@ import org.dvlyyon.nbi.util.ThreadUtils;
 import org.dvlyyon.nbi.util.XMLUtils;
 import org.jdom2.Element;
 
-public class G30NetconfNotification implements G30NetconfNotificationInf {
-	private static final Log log = LogFactory.getLog(G30NetconfNotification.class);
+public class DCINetconfNotification implements DCINetconfNotificationInf {
+	private static final Log log = LogFactory.getLog(DCINetconfNotification.class);
 	private final static String NOTIF_NAMESPACE = "urn:ietf:params:xml:ns:netconf:notification:1.0";
 	
 	class Event {
@@ -72,11 +72,11 @@ public class G30NetconfNotification implements G30NetconfNotificationInf {
 	static final int DEFAUL_CACHE_SIZE=5000;
 	int maxSize = DEFAUL_CACHE_SIZE;
 	
-	public G30NetconfNotification() {
+	public DCINetconfNotification() {
 		notifications = new ArrayBlockingQueue<Event>(DEFAUL_CACHE_SIZE);
 	}
 	
-	public G30NetconfNotification(int capacity) {
+	public DCINetconfNotification(int capacity) {
 		maxSize = capacity;
 		notifications = new ArrayBlockingQueue<Event>(capacity);
 		log.info("EVENT THRESHOLD:"+capacity);

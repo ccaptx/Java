@@ -1,4 +1,4 @@
-package org.dvlyyon.nbi.g30;
+package org.dvlyyon.nbi.dci;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -288,14 +288,14 @@ public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (String param:mVars) {
-			if (param.equals(G30CliImpl.DRIVER_SESSION_IP_ADDRESS)) {
+			if (param.equals(DCICliImpl.DRIVER_SESSION_IP_ADDRESS)) {
 				if (first) {
 					sb.append(param+SNIMetadata.EQUAL+cli.getMyIPAddress());
 					first = false;
 				} else {
 					sb.append(SNIMetadata.CAMA+param+SNIMetadata.EQUAL+cli.getMyIPAddress());
 				}
-			} else if (param.equals(G30CliImpl.DRIVER_SESSION_ID)) {
+			} else if (param.equals(DCICliImpl.DRIVER_SESSION_ID)) {
 				if (first) {
 					sb.append(param+SNIMetadata.EQUAL+cli.getMySessionID());
 					first = false;
