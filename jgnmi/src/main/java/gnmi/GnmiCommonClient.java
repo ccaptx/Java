@@ -24,6 +24,10 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 		GnmiResponse <SubscribeResponse> 		myResponseObserver;
 		StreamObserver<SubscribeRequest> 		myRequestObserver;
 		ArrayBlockingQueue<SubscribeResponse>	myQueue;
+		
+		boolean isComplete = false;
+		boolean isError = false;
+		String	errorInfo = null;
 
 		public DefaultSubscriptionMgr(GnmiClientInf client) {
 			this(client, DEFAULT_MAX_CAPACITY);
@@ -42,11 +46,21 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 							!myResponseObserver.isError()) {
 						SubscribeResponse 
 						response = myResponseObserver.getValue();
+						if (response == null) {
+							continue;
+						}
 						try {
 							myQueue.put(response);
-						} catch (InterruptedException e) {
+						} catch (Exception e) {
 							logger.log(Level.SEVERE, "Interrupted when put response", e);
 						}
+					}
+					if (myResponseObserver.isCompleted()) {
+						isComplete = true;
+					}
+					if (myResponseObserver.isError()) {
+						isError = true;
+						errorInfo = myResponseObserver.getError();
 					}
 				}
 			}, "subscription").start();;
@@ -69,6 +83,21 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 		@Override
 		public void unsubscribe() {
 			myRequestObserver.onCompleted();			
+		}
+
+		@Override
+		public boolean isComplete() {
+			return isComplete;
+		}
+
+		@Override
+		public boolean isError() {
+			return isError;
+		}
+
+		@Override
+		public String getErrorInfo() {
+			return errorInfo;
 		}		
 	}
 
