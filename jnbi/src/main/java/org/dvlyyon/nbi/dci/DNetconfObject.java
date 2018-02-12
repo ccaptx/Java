@@ -22,7 +22,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DNetconfObject extends DBaseObject {
 	private static final String NETCONF_XML_BASE_PRE_NAMESPACE = NetconfConstants.NETCONF_XML_BASE_PRE_NAMESPACE;

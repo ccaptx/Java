@@ -15,9 +15,9 @@ import org.dvlyyon.nbi.model.DObjectAttributeGrp;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.CliInterface;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DBaseObject extends DObject {
 	
@@ -669,7 +669,7 @@ public class DBaseObject extends DObject {
 //			return "The response cannot be identified for command " + cmd + " on object " + this.getID();
 //		}
 //		return "OK:resp" + DUtil.EQUAL + response.substring(p1+cmd.length(), p2);
-		return "OK:resp" + SNIMetadata.EQUAL + response;
+		return "OK:resp" + SNIConstants.EQUAL + response;
 	}
 	
 	protected String toGetResponse(String cmd, Vector<String> buf) {
@@ -700,13 +700,13 @@ public class DBaseObject extends DObject {
     						String [] tokens = command.split(" ");
     						String param = tokens[tokens.length-1];
     						if (mVars.contains(param)) {
-    							if (first) sb.append(param+SNIMetadata.EQUAL+resps[i+1].trim());
-    							else sb.append(SNIMetadata.CAMA+param+SNIMetadata.EQUAL+resps[i+1].trim());
+    							if (first) sb.append(param+SNIConstants.EQUAL+resps[i+1].trim());
+    							else sb.append(SNIConstants.CAMA+param+SNIConstants.EQUAL+resps[i+1].trim());
     							first = false;
     						} else if(mTmpParams.size()>0){
     							if (this.mTmpParams.firstEntry().getValue().equals(param)){
-        							if (first) sb.append(DYNAMIC_ATTRIBUTE_NAME+SNIMetadata.EQUAL+resps[i+1].trim());
-        							else sb.append(SNIMetadata.CAMA+DYNAMIC_ATTRIBUTE_NAME+SNIMetadata.EQUAL+resps[i+1].trim());
+        							if (first) sb.append(DYNAMIC_ATTRIBUTE_NAME+SNIConstants.EQUAL+resps[i+1].trim());
+        							else sb.append(SNIConstants.CAMA+DYNAMIC_ATTRIBUTE_NAME+SNIConstants.EQUAL+resps[i+1].trim());
         							first = false;
     							}
     						}

@@ -1,8 +1,8 @@
 package org.dvlyyon.nbi.dci;
 
-import static org.dvlyyon.nbi.CommonMetadata.META_ACTION_ACTTYPE_GET;
-import static org.dvlyyon.nbi.CommonMetadata.META_ACTION_ACTTYPE_SET;
-import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_SNMP;
+import static org.dvlyyon.nbi.CommonConstants.META_ACTION_ACTTYPE_GET;
+import static org.dvlyyon.nbi.CommonConstants.META_ACTION_ACTTYPE_SET;
+import static org.dvlyyon.nbi.CommonConstants.NBI_TYPE_SNMP;
 
 import java.util.Vector;
 

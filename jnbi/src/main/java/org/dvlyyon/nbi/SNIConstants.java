@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi;
 
-public class SNIMetadata {
+public class SNIConstants {
 
 	public static final String DRIVER_API_CMD_DO = 			"do";
 	public static final String DRIVER_API_CMD_UNDO = 		"undo";
@@ -54,5 +54,10 @@ public class SNIMetadata {
 	public static final String CATS_MARKER_CMD_TO_DEVICE = 	"<##CATS_CMD2DEVICE##>";
 	public static final String ERROR_MSG_START = 			"error message:->";
 	public static final String ERROR_MSG_END = 				"<-:error message";
+
+	public static String formatErrorInfo(String error) {
+		String result = ERROR_MSG_START+error+ERROR_MSG_END;
+		return result;
+	}
 	
 }

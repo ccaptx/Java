@@ -13,7 +13,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DOdlObject extends DNetconfObject {
 	

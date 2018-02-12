@@ -6,7 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.express.ExpressionFormatException.ExpType;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public abstract class FunctionExpression extends Expression {
 	protected final static Log logger = LogFactory.getLog(FunctionExpression.class);

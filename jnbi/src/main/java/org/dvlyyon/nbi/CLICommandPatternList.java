@@ -3,7 +3,7 @@ package org.dvlyyon.nbi;
 import java.util.List;
 import java.util.Vector;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 import org.dvlyyon.nbi.util.AttributeInfo;
 

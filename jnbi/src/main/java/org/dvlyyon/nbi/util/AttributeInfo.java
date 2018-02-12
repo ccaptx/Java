@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi.util;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 import org.dvlyyon.nbi.model.DObjectAttribute;
 
 public class AttributeInfo {

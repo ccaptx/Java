@@ -11,11 +11,11 @@ import org.dvlyyon.nbi.DObjectManager;
 import org.dvlyyon.nbi.DriverEngineInf;
 import org.dvlyyon.nbi.DriverFactoryInf;
 import org.dvlyyon.nbi.DriverFunction;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.model.DObjectModel;
 import org.dvlyyon.nbi.CliInterface;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class CXTDriverFactory implements DriverFactoryInf {
 
@@ -39,7 +39,7 @@ public class CXTDriverFactory implements DriverFactoryInf {
 		CliInterface cli = null;
 		if (ap.isNode()) {
 			String debug = objModel.getProperty(OBJECT_MODEL_PROPERTY_SHOW_CLI_COMMAND_ONLY);
-			if (SNIMetadata.DRIVER_API_CMD_STUB.equals(cmd) ||
+			if (SNIConstants.DRIVER_API_CMD_STUB.equals(cmd) ||
 					(debug!=null&&debug.trim().equalsIgnoreCase("yes"))) {
 				cli = new CXTCliStub();
 				ret = cli.login(ap);

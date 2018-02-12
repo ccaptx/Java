@@ -31,14 +31,14 @@ public class CommonFunctionImpl implements DriverFunction {
 		if (params != null && !params.trim().equals("")) {
 			Vector<String> v = new Vector<String>();
 			int q = 0;
-			int p = params.indexOf(SNIMetadata.CAMA);
-			int n = SNIMetadata.CAMA.length();
+			int p = params.indexOf(SNIConstants.CAMA);
+			int n = SNIConstants.CAMA.length();
 			while (p > 0) {
 				if (print) System.out.println("CX7090MFunctions: funcName= '"+functionName+"', q= "+q+", p= "+p);
 				v.add(params.substring(q, p));
 				q = p+n;
 				if (q >= params.length()) break;
-				p = params.indexOf(SNIMetadata.CAMA, q);
+				p = params.indexOf(SNIConstants.CAMA, q);
 			}
 			if (q < params.length()) {
 				v.add(params.substring(q));

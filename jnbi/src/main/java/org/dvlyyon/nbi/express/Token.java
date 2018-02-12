@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi.express;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class Token {
 

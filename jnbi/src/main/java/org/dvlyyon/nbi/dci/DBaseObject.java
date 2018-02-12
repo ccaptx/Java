@@ -14,7 +14,7 @@ import org.dvlyyon.nbi.helper.HTable;
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.HelperEngine;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.model.DObjectAction;
 import org.dvlyyon.nbi.model.DObjectType;
 import org.dvlyyon.nbi.CliInterface;
@@ -25,7 +25,7 @@ import org.dvlyyon.nbi.util.RunState.State;
 import org.dvlyyon.nbi.CLICommandPattern;
 import org.dvlyyon.nbi.CLICommandPatternList;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 
@@ -290,17 +290,17 @@ public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 		for (String param:mVars) {
 			if (param.equals(DCICliImpl.DRIVER_SESSION_IP_ADDRESS)) {
 				if (first) {
-					sb.append(param+SNIMetadata.EQUAL+cli.getMyIPAddress());
+					sb.append(param+SNIConstants.EQUAL+cli.getMyIPAddress());
 					first = false;
 				} else {
-					sb.append(SNIMetadata.CAMA+param+SNIMetadata.EQUAL+cli.getMyIPAddress());
+					sb.append(SNIConstants.CAMA+param+SNIConstants.EQUAL+cli.getMyIPAddress());
 				}
 			} else if (param.equals(DCICliImpl.DRIVER_SESSION_ID)) {
 				if (first) {
-					sb.append(param+SNIMetadata.EQUAL+cli.getMySessionID());
+					sb.append(param+SNIConstants.EQUAL+cli.getMySessionID());
 					first = false;
 				} else {
-					sb.append(SNIMetadata.CAMA+param+SNIMetadata.EQUAL+cli.getMySessionID());
+					sb.append(SNIConstants.CAMA+param+SNIConstants.EQUAL+cli.getMySessionID());
 				}
 			} else {
 				return "The attribute "+param + " cannot be identified in action "+actionName + " for object "+getID();
@@ -503,19 +503,19 @@ public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 		String separator = "";
 		for (String result:this.tmpRsrvedOutputParams) {
 			if (result.equals(NATIVE_TABLE_ATTRIBUTE_SUM)) {
-				sb.append(separator+result+SNIMetadata.EQUAL+table.size());
+				sb.append(separator+result+SNIConstants.EQUAL+table.size());
 			} if (result.equals(NATIVE_TABLE_ATTRIBUTE_RESULT)) {
 				String filter = this.tmpRsrvedInputParams.get(NATIVE_TABLE_ATTRIBUTE_SELECT);
 				if (CommonUtils.isNullOrSpace(filter)) {
-					sb.append(separator+result+SNIMetadata.EQUAL+"''");
+					sb.append(separator+result+SNIConstants.EQUAL+"''");
 				} else {
 					String [] columns = filter.split(META_ACTION_OUTPUT_FORMAT_SEPARATOR);
 					String columnContents = table.getColumns(columns);
 					if (columnContents.trim().isEmpty()) columnContents="''";
-					sb.append(separator+result+SNIMetadata.EQUAL+columnContents);
+					sb.append(separator+result+SNIConstants.EQUAL+columnContents);
 				}
 			}
-			separator = SNIMetadata.CAMA;
+			separator = SNIConstants.CAMA;
 		}
 		
 	}
@@ -533,16 +533,16 @@ public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 			boolean includeResp = false;
 			StringBuilder sb = new StringBuilder();
 			if (mVars.contains(META_ATTRIBUTE_FIXED_ATTR)) {
-				sb.append(META_ATTRIBUTE_FIXED_ATTR + SNIMetadata.EQUAL + output);
+				sb.append(META_ATTRIBUTE_FIXED_ATTR + SNIConstants.EQUAL + output);
 				includeResp = true;
 			}
 			if (this.includeValidationAttribute()) {
-				if (includeResp) sb.append(SNIMetadata.CAMA);
-				sb.append(RESERVED_VALIDATE_RESULTE + SNIMetadata.EQUAL + state.getExtraInfo());
+				if (includeResp) sb.append(SNIConstants.CAMA);
+				sb.append(RESERVED_VALIDATE_RESULTE + SNIConstants.EQUAL + state.getExtraInfo());
 			}
 			if (includeNativeTableResultAttribute()) {
 				try {
-					if (includeResp) sb.append(SNIMetadata.CAMA);
+					if (includeResp) sb.append(SNIConstants.CAMA);
 					processTable(actionName, output, state,sb);
 				} catch (Exception e) {
 					logger.log(Level.SEVERE, "Exception when parsing expression", e);
@@ -639,13 +639,13 @@ public class DBaseObject extends DObject implements NBIMultiProtocolsObjectInf{
 			boolean first = true;
 			StringBuffer sb = new StringBuffer();
 			for (String var: mVars) {
-				if (first) sb.append(var+SNIMetadata.EQUAL+tmpAttrTable.get(var));
-				else sb.append(SNIMetadata.CAMA+var+SNIMetadata.EQUAL+tmpAttrTable.get(var));
+				if (first) sb.append(var+SNIConstants.EQUAL+tmpAttrTable.get(var));
+				else sb.append(SNIConstants.CAMA+var+SNIConstants.EQUAL+tmpAttrTable.get(var));
 				first = false;
 			}
 			if (this.includeValidationAttribute()) {
-				sb.append(SNIMetadata.CAMA).
-				   append(RESERVED_VALIDATE_RESULTE + SNIMetadata.EQUAL + state.getExtraInfo());
+				sb.append(SNIConstants.CAMA).
+				   append(RESERVED_VALIDATE_RESULTE + SNIConstants.EQUAL + state.getExtraInfo());
 			}
 			if (needAssign()) {
 				String result = assignAttributeTo(tmpAttrTable);

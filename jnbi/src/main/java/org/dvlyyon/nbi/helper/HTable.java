@@ -14,8 +14,8 @@ import org.dvlyyon.nbi.express.MultiLines;
 import org.dvlyyon.nbi.express.Operator;
 import org.dvlyyon.nbi.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.util.AttributeInfo;
-import static org.dvlyyon.nbi.CommonMetadata.*;
-import org.dvlyyon.nbi.SNIMetadata;
+import static org.dvlyyon.nbi.CommonConstants.*;
+import org.dvlyyon.nbi.SNIConstants;
 
 public class HTable extends HelperObject {
 	private static final Log logger = LogFactory.getLog(DHelperObject.class);
@@ -156,16 +156,16 @@ public class HTable extends HelperObject {
 					String value = getSimple(attr.getName(), table);
 					if (value == null && table !=null && table.size()>0) return "Cannot get attribute "+attr;
 					if (value == null) value = "''";
-					sb.append(attr.getName()).append(SNIMetadata.EQUAL).append(value).append(SNIMetadata.CAMA);
+					sb.append(attr.getName()).append(SNIConstants.EQUAL).append(value).append(SNIConstants.CAMA);
 				} 
 			}
 			String sum=NATIVE_TABLE_ATTRIBUTE_SUM;
 			if (object.containReservedOutputAttribute(sum)) {
-				sb.append(sum).append(SNIMetadata.EQUAL).append(table==null?0:table.size()).append(SNIMetadata.CAMA);
+				sb.append(sum).append(SNIConstants.EQUAL).append(table==null?0:table.size()).append(SNIConstants.CAMA);
 			}
 			String result="OK:";
-			if (sb.length()>SNIMetadata.CAMA.length()) {
-				result += sb.substring(0, sb.length()-SNIMetadata.CAMA.length());
+			if (sb.length()>SNIConstants.CAMA.length()) {
+				result += sb.substring(0, sb.length()-SNIConstants.CAMA.length());
 			}
 			return result;
 		} catch (Exception e) {

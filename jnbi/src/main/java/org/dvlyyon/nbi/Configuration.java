@@ -7,7 +7,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import java.util.Set;
 import java.util.TreeMap;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class Configuration {
 	private static TreeMap<String,String> stringMapping = new TreeMap<String,String>();

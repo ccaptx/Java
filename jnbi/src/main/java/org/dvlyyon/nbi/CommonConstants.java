@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi;
 
-public class CommonMetadata {
+public class CommonConstants {
 	public static final String OBJECT_MODEL_PROPERTY_REVISION = 			"modelRevision";
 	public static final String OBJECT_MODEL_PROPERTY_FACTORY = 				"factory";
 	public static final String OBJECT_MODEL_PROPERTY_ENDPATTERN=			"endPattern";

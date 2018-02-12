@@ -13,7 +13,7 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DObject implements NBIObjectInf {
 	public static final String PHY_ATTRIBUTE_NAME = "name";
@@ -499,7 +499,7 @@ public class DObject implements NBIObjectInf {
 	}
 	
 	protected boolean isReservedAttribute(String attrName) {
-		return CommonMetadata.isReservedAttribute(attrName);
+		return CommonConstants.isReservedAttribute(attrName);
 	}
 	
 	protected boolean isMappedAttribute(String attrName, String attrValue) {

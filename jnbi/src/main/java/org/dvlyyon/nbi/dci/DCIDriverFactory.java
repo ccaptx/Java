@@ -11,14 +11,14 @@ import org.dvlyyon.nbi.DObjectManager;
 import org.dvlyyon.nbi.DriverEngineInf;
 import org.dvlyyon.nbi.DriverFactoryInf;
 import org.dvlyyon.nbi.DriverFunction;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.model.DNetconfObjectModel;
 import org.dvlyyon.nbi.model.DObjectAction;
 import org.dvlyyon.nbi.model.DObjectModel;
 import org.dvlyyon.nbi.model.DObjectType;
 import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.CliInterface;
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class DCIDriverFactory implements DriverFactoryInf {
 	static final String NOT_SUPPORTED_PRE = "NONE::";
@@ -86,7 +86,7 @@ public class DCIDriverFactory implements DriverFactoryInf {
 		CliInterface cli = null;
 		if (ap.isNode() || ap.isSession()) {
 			String debug = objModel.getProperty(OBJECT_MODEL_PROPERTY_SHOW_CLI_COMMAND_ONLY);
-			if (SNIMetadata.isStubCmd(cmd) ||
+			if (SNIConstants.isStubCmd(cmd) ||
 					(debug!=null&&debug.trim().equalsIgnoreCase("yes"))) {
 				cli = new DCICliStub();
 				if (!isSupportedInterface(intfType)) {

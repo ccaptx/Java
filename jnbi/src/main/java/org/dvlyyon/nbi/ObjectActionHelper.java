@@ -2,7 +2,7 @@ package org.dvlyyon.nbi;
 
 import org.dvlyyon.nbi.model.DObjectAction;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class ObjectActionHelper {
 

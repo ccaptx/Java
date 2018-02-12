@@ -10,10 +10,10 @@ import org.dvlyyon.nbi.helper.HelperException.HelperExceptionType;
 import org.dvlyyon.nbi.util.AttributeInfo;
 import org.dvlyyon.nbi.util.RunState;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.HelperEngine;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 
 public class DHelperObject extends DObject {
 	protected Object helperObject = null;
@@ -164,7 +164,7 @@ public class DHelperObject extends DObject {
 			} catch (Exception e) {
 				return e.getMessage();
 			}
-			return "OK:"+META_ATTRIBUTE_FIXED_ATTR + SNIMetadata.EQUAL + result;
+			return "OK:"+META_ATTRIBUTE_FIXED_ATTR + SNIConstants.EQUAL + result;
 		}
 		return "OK";
 	}

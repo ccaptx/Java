@@ -16,9 +16,9 @@ import org.dvlyyon.nbi.util.CommonUtils;
 import org.dvlyyon.nbi.util.LogUtils;
 import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.RunState.State;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class CommonDriverImpl {
 	DriverEngineInf engine = null;
@@ -157,19 +157,19 @@ public class CommonDriverImpl {
     	String cmds = ""+transId+ " "+cmd+" \""+phyEntity+"\" \""+actionName+"\" \""+this.replaceDoubleQuotes(params)+"\"";
 		String ret = null;
 		Vector<String> err = new Vector<String>();
-		if (SNIMetadata.isDoCmd(cmd) || SNIMetadata.isStubCmd(cmd)) {
+		if (SNIConstants.isDoCmd(cmd) || SNIConstants.isStubCmd(cmd)) {
 			ret = engine.action(cmd, phyEntity, actionName, params);
-		} else if (SNIMetadata.isEndCmd(cmd)) {
+		} else if (SNIConstants.isEndCmd(cmd)) {
 			ret = engine.terminate();
-		} else if (SNIMetadata.isStartCaseCmd(cmd)) {
+		} else if (SNIConstants.isStartCaseCmd(cmd)) {
 			ret = engine.startCase();
-		} else if (SNIMetadata.isEndCaseCmd(cmd)) {
+		} else if (SNIConstants.isEndCaseCmd(cmd)) {
 			ret = engine.endCase();
-		} else if (SNIMetadata.isUndoCmd(cmd)) {
+		} else if (SNIConstants.isUndoCmd(cmd)) {
 			ret = engine.unDoAction(phyEntity, actionName, params);
-		} else if (SNIMetadata.isDefineCmd(cmd)) {
+		} else if (SNIConstants.isDefineCmd(cmd)) {
 			ret = engine.define(phyEntity);
-		} else if (SNIMetadata.isFunctionCmd(cmd)) {
+		} else if (SNIConstants.isFunctionCmd(cmd)) {
 			ret = engine.function(actionName, params, err);
 			if (ret == null) {
 				logger.info("Result of cmd "+cmd+", result:"+ret);
@@ -245,13 +245,13 @@ public class CommonDriverImpl {
 						default:
 							ret = "Invalid command format:" + line;								
 					}
-					if (cmd.length>1 && SNIMetadata.isFunctionCmd(cmd[1].trim())) {
+					if (cmd.length>1 && SNIConstants.isFunctionCmd(cmd[1].trim())) {
 						if (ret==null) ret = " ";
 						writer.replyFunction(ret);
 					} else 
 						writer.reply(ret);
 					logger.info("sent result: "+ret);
-					if (cmd.length>1 && SNIMetadata.isEndCmd(cmd[1].trim())) {
+					if (cmd.length>1 && SNIConstants.isEndCmd(cmd[1].trim())) {
 						break;
 					}
 				}

@@ -11,7 +11,7 @@ import org.dvlyyon.nbi.model.DObjectModel;
 import org.dvlyyon.nbi.model.DObjectType;
 import org.dvlyyon.nbi.util.CommonUtils;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class CommonEngineImpl implements DriverEngineInf{
 	String mPlatform = null;
@@ -69,7 +69,7 @@ public class CommonEngineImpl implements DriverEngineInf{
 	}
 	
 	public String envelopeErrorInfo(String errorInfo) {
-		return "\n"+SNIMetadata.ERROR_MSG_START+"\n"+errorInfo+"\n"+ SNIMetadata.ERROR_MSG_END;
+		return "\n"+SNIConstants.ERROR_MSG_START+"\n"+errorInfo+"\n"+ SNIConstants.ERROR_MSG_END;
 	}
 	
 	public CliInterface getConnection(DObject obj, String actionName) {
@@ -342,7 +342,7 @@ public class CommonEngineImpl implements DriverEngineInf{
 					key += intfType;
 				tc = mClis.get(key);
 				if (tc == null) {
-					tc = driverFactory.createCliSession(intfType, mObjectModel,SNIMetadata.DRIVER_API_CMD_DO, ap, err);
+					tc = driverFactory.createCliSession(intfType, mObjectModel,SNIConstants.DRIVER_API_CMD_DO, ap, err);
 					if (tc == null) return err.firstElement();
 					mClis.put(key, tc);
 				}

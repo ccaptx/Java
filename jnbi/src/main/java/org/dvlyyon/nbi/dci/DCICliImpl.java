@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 import org.dvlyyon.nbi.NBIObjectInf;
 import org.dvlyyon.nbi.dci.NBIAdapterInf;
 import org.dvlyyon.nbi.CommandPatternListInf;

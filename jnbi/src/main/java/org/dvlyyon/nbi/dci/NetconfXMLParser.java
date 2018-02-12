@@ -22,7 +22,7 @@ import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.XMLUtils;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 import org.jdom2.Element;
 import org.jdom2.Namespace;

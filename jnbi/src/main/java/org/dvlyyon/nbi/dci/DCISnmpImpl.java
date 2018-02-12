@@ -1,6 +1,6 @@
 package org.dvlyyon.nbi.dci;
 
-import static org.dvlyyon.nbi.CommonMetadata.NBI_TYPE_SNMP;
+import static org.dvlyyon.nbi.CommonConstants.NBI_TYPE_SNMP;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.dvlyyon.nbi.CliStub;
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.NBIObjectInf;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.netconf.NetconfCommandPatternList;
 import org.dvlyyon.nbi.protocols.snmp.SnmpClientFactory;
 import org.dvlyyon.nbi.protocols.snmp.SnmpClientInf;
@@ -196,8 +196,8 @@ public class DCISnmpImpl extends CliStub implements CliInterface, NBIAdapterInf 
 
 	private void printSendingCommand(String cmd) {
 		System.out.println(this.COMMAND +"\n" + 
-				SNIMetadata.CATS_MARKER_CMD_TO_DEVICE + cmd +
-				SNIMetadata.CATS_MARKER_CMD_TO_DEVICE);
+				SNIConstants.CATS_MARKER_CMD_TO_DEVICE + cmd +
+				SNIConstants.CATS_MARKER_CMD_TO_DEVICE);
 		log.info(cmd);
 	}
 

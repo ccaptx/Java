@@ -7,10 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dvlyyon.nbi.CliStub;
 import org.dvlyyon.nbi.CommandPatternListInf;
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.NBIObjectInf;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.netconf.NetconfCommandPatternList;
 import org.dvlyyon.nbi.netconf.NetconfConstants;
 import org.dvlyyon.nbi.protocols.ContextInfoException;
@@ -131,7 +131,7 @@ public class DCIRestconfImpl extends CliStub implements NBIAdapterInf {
 	}
 
 	private String formatErrorInfo(String error) {
-		String result = SNIMetadata.ERROR_MSG_START+error+SNIMetadata.ERROR_MSG_END;
+		String result = SNIConstants.ERROR_MSG_START+error+SNIConstants.ERROR_MSG_END;
 		log.info(error);
 		return result;
 	}

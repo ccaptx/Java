@@ -9,7 +9,7 @@ import org.dvlyyon.nbi.express.ExpressionFormatException.ExpType;
 import org.dvlyyon.nbi.helper.TableHelper;
 import org.dvlyyon.nbi.util.CommonUtils;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 
 public class Compiler {

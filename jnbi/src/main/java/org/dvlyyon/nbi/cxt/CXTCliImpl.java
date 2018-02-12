@@ -12,8 +12,8 @@ import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.ThreadUtils;
 import org.dvlyyon.nbi.util.RunState.State;
 import org.dvlyyon.nbi.CliInterface;
-import static org.dvlyyon.nbi.CommonMetadata.*;
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class CXTCliImpl extends TClient implements CliInterface {
 

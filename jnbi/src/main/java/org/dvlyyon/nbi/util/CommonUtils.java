@@ -4,10 +4,16 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
-//import org.dvlyyon.nbi.util.CommonConstants;
+import org.dvlyyon.nbi.CliInterface;
+import org.dvlyyon.nbi.CommonConstants;
 
+//import coriant.cats.utils.ArgsHandler;
 
 public class CommonUtils {
 
@@ -21,6 +27,7 @@ public class CommonUtils {
         try {
             filePath=URLDecoder.decode(url.getPath(),"utf-8");
         } catch (UnsupportedEncodingException e) {
+            //e.printStackTrace();
         	return null;
         }
 
@@ -41,10 +48,17 @@ public class CommonUtils {
     	}
     	return str;
     }
+    
     public static boolean isConfirmed(String str) {
     	return (str!=null && (str.equalsIgnoreCase("yes") || str.equalsIgnoreCase("true")));
     }
-    
+
+    public static boolean isConfirmed(String attr, String value) {
+    	return (attr != null && 
+    			value != null && 
+    			attr.equalsIgnoreCase(value));
+    }
+
     public static boolean isConfirmedNo(String str) {
     	return (str!=null && (str.equalsIgnoreCase("no") || str.equalsIgnoreCase("false")));
     }
@@ -77,8 +91,7 @@ public class CommonUtils {
     		int i = Integer.parseInt(str);
     		return i;
     	} catch (NumberFormatException e) {
-    		return -1;
-//    		return CommonConstants.ERROR_INT_METADATA_FORMAT_INVALID;
+    		return CommonConstants.ERROR_INT_METADATA_FORMAT_INVALID;
     	}
     }
 
@@ -87,8 +100,7 @@ public class CommonUtils {
             float f = Float.parseFloat(str);
             return f;
         } catch (NumberFormatException e) {
-        	return -1;
-//            return CommonConstants.ERROR_INT_METADATA_FORMAT_INVALID;
+            return CommonConstants.ERROR_INT_METADATA_FORMAT_INVALID;
         }
     }
 
@@ -229,6 +241,43 @@ public class CommonUtils {
 		return ret;
 	}
 	
+	public static void printInYAML(
+			StringBuilder sb, 
+			Map<String,Object> data, 
+			int indent) {
+		Set<Entry<String,Object>> entries = data.entrySet();
+		for (Entry<String,Object> entry:entries) {
+			String key = entry.getKey();
+			Object value = entry.getValue();
+			for (int i=0; i<indent*4; i++) sb.append(" ");
+			if (value instanceof List) {
+				sb.append(key).append(":\n");
+				printInYAML(sb,(List)value,indent+1);
+			} else if (value instanceof Map) {
+				sb.append(key).append(":\n");
+				printInYAML(sb,(Map<String,Object>)value,indent+1);
+			} else {
+				sb.append(key).append(": ").append(value.toString()).append("\n");
+			}  
+		}
+	}
+	
+	public static void printInYAML(StringBuilder sb, List data, int indent) {
+		for (Object item:data) {
+			for (int i=0; i<indent*4; i++) sb.append(" ");
+			if (item instanceof List) {
+				sb.append("- \n");
+				printInYAML(sb,(List)item,indent+1);
+			} else if (item instanceof Map) {
+				sb.append("- \n");
+				printInYAML(sb,(Map<String,Object>)item,indent+1);
+			} else {
+				sb.append("- ").append(item.toString()).append("\n");
+			}
+		}
+		
+	}
+
 	private static String[][] uriReservedChars= {
 		{"\\%", "%25", "%"},
 		{" ",   "%20", " "},
@@ -259,15 +308,15 @@ public class CommonUtils {
 		return uri;
 	}
 	
+	public static boolean include(String actInfType, String infType) {
+		// TODO Auto-generated method stub
+		return (actInfType != null && actInfType.contains(infType));
+	}
 	
 	public static void main (String argv[]) {
 		String s = "I don't know %10 (/-\"*+-,;=?#[]:@my.com!&)";
 		s = CommonUtils.covertURIPath(s);
 		System.out.println(s);
-	}
-
-	public static boolean include(String actInfType, String infType) {
-		// TODO Auto-generated method stub
-		return (actInfType != null && actInfType.contains(infType));
+		System.out.println("value: "+CommonUtils.removeDualQuote(""));
 	}
 }

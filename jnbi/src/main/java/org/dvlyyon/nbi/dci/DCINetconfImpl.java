@@ -10,7 +10,7 @@ import org.dvlyyon.nbi.CliStub;
 import org.dvlyyon.nbi.CommandPatternListInf;
 import org.dvlyyon.nbi.DObject;
 import org.dvlyyon.nbi.NBIObjectInf;
-import org.dvlyyon.nbi.SNIMetadata;
+import org.dvlyyon.nbi.SNIConstants;
 import org.dvlyyon.nbi.netconf.NetconfCommandPatternList;
 import org.dvlyyon.nbi.netconf.NetconfConstants;
 import org.dvlyyon.nbi.netconf.NetconfUtils;
@@ -22,7 +22,7 @@ import org.dvlyyon.nbi.util.RunState;
 import org.dvlyyon.nbi.util.XMLUtils;
 import org.dvlyyon.nbi.util.RunState.State;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 import org.jdom2.Element;
 import org.dvlyyon.net.netconf.Client;
@@ -338,19 +338,19 @@ public class DCINetconfImpl extends CliStub implements CliInterface, NBIAdapterI
 	private void printSendingCommand(String cmd) {
 		if (format)
 			System.out.println("<b>"+this.COMMAND+"</b>\n" + 
-					SNIMetadata.CATS_MARKER_CMD_TO_DEVICE +
+					SNIConstants.CATS_MARKER_CMD_TO_DEVICE +
 					CommonUtils.transSpecialChars(cmd) +
-					SNIMetadata.CATS_MARKER_CMD_TO_DEVICE);
+					SNIConstants.CATS_MARKER_CMD_TO_DEVICE);
 						
 		else
 			System.out.println(this.COMMAND +"\n" + 
-					SNIMetadata.CATS_MARKER_CMD_TO_DEVICE + cmd +
-					SNIMetadata.CATS_MARKER_CMD_TO_DEVICE);
+					SNIConstants.CATS_MARKER_CMD_TO_DEVICE + cmd +
+					SNIConstants.CATS_MARKER_CMD_TO_DEVICE);
 		log.info(cmd);
 	}
 	
 	private String formatErrorInfo(String error) {
-		String result = SNIMetadata.ERROR_MSG_START+error+SNIMetadata.ERROR_MSG_END;
+		String result = SNIConstants.ERROR_MSG_START+error+SNIConstants.ERROR_MSG_END;
 		log.info(result);
 		return result;
 	}

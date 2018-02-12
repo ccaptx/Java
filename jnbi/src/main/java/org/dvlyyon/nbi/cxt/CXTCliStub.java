@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import org.dvlyyon.nbi.CliStub;
 
-import static org.dvlyyon.nbi.CommonMetadata.*;
+import static org.dvlyyon.nbi.CommonConstants.*;
 
 public class CXTCliStub extends CliStub {
 	public String sendCommandAndReceive(String cmds, Vector<String> buf, int wait) {
