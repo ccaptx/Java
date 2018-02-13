@@ -3,6 +3,10 @@ import static gnmi.GnmiHelper.checkFile;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -16,13 +20,35 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 	protected CommandLine cmd;
 	Options   options;
 	
-	public GnmiCommonCmdContext(String argv[]) throws Exception{
+	public GnmiCommonCmdContext(String argv[]) 
+			throws Exception { 
 		getCommandLine(argv);
 	}
 	
-	public GnmiCommonCmdContext(CommandLine cmd) throws Exception{
+	public GnmiCommonCmdContext(CommandLine cmd) 
+			throws Exception{
 		this.cmd = cmd;
 		checkCommandLine();
+	}
+	
+	public GnmiCommonCmdContext(Map <String,Object> context, int optionType) 
+			throws Exception {
+		ArrayList<String> argv = new ArrayList<String>();
+		Set<Entry<String,Object>> entries = context.entrySet();
+		for (Entry<String,Object> entry:entries) {
+			String k = entry.getKey();
+			Object v = entry.getValue();
+			if (v.toString().equalsIgnoreCase("false") ||
+				v.toString().equalsIgnoreCase("no")) continue;
+			if (optionType == OPTION_TYPE_LONG) argv.add("--"+k);
+			if (v.toString().equalsIgnoreCase("true") ||
+				v.toString().equalsIgnoreCase("yes")) continue;
+			else
+				argv.add(v.toString());
+		}
+		String [] options = new String [argv.size()];
+		options = argv.toArray(options);
+		getCommandLine(options);
 	}
 	
 	@Override

@@ -3,6 +3,9 @@ package gnmi;
 import java.io.File;
 
 public interface GnmiCommonContextInf {
+	public final int	OPTION_TYPE_SHORT 	= 1;
+	public final int	OPTION_TYPE_LONG	= 2;
+	
 	public boolean 	forceClearText();
 	public boolean	needCredential();
 	public int		getServerPort();
