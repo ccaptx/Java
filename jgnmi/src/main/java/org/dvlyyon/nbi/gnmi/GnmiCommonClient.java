@@ -1,21 +1,43 @@
 package org.dvlyyon.nbi.gnmi;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import gnmi.Gnmi.SubscribeRequest;
 import gnmi.Gnmi.SubscribeResponse;
+import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
 
 public abstract class GnmiCommonClient implements GnmiClientInf {
 
-	private static final Logger logger = Logger.getLogger(GnmiCommonClient.class.getName());
+	private static final Logger logger = 
+			Logger.getLogger(GnmiCommonClient.class.getName());
+	protected ManagedChannel 		channel;
+	protected GnmiClientContextInf 	context;
 
+	public void close() throws IOException {
+		if (channel == null) return;
+		try {
+			channel.shutdownNow();
+			channel.awaitTermination(10, TimeUnit.SECONDS);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "Exception when shutdown channel", e);
+			throw new IOException (e.getMessage());
+		}
+	}
+	
+	public boolean isConnected() {
+		if (channel == null) return false;
+		return channel.isShutdown();
+	}
+	
 	protected static class DefaultSubscriptionMgr 
 	implements SubscriptionMgrInf {
 		private static final int DEFAULT_MAX_CAPACITY = 10000;

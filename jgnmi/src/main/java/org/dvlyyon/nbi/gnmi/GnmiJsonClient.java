@@ -30,12 +30,11 @@ import io.grpc.stub.StreamObserver;
 public class GnmiJsonClient extends GnmiCommonClient implements GnmiClientInf {
 
 	private org.dvlyyon.nbi.gnmi.GnmiJsonStub stub;
-	private GnmiClientContextInf context;
 	private final CallCredentials credential;
 
 	public GnmiJsonClient(GnmiClientContextInf context) throws Exception {
 		this.context = context;
-		ManagedChannel channel = GnmiHelper.getChannel(context);			
+		channel = GnmiHelper.getChannel(context);			
 		ClientInterceptor interceptor = newHeaderResponseInterceptor(context);
 		Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
 		stub = new GnmiJsonStub(newChannel);

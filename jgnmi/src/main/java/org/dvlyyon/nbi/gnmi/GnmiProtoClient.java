@@ -20,12 +20,11 @@ import io.grpc.stub.StreamObserver;
 public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 	
 	private gnmi.gNMIGrpc.gNMIStub stub;
-	private GnmiClientContextInf context;
 	private CallCredentials credential;
 	
 	public GnmiProtoClient(GnmiClientContextInf context) throws Exception {
 		this.context = context;
-		ManagedChannel channel = GnmiHelper.getChannel(context);			
+		channel = GnmiHelper.getChannel(context);			
 		ClientInterceptor interceptor = newHeaderResponseInterceptor(context);
 		Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
 		stub = gNMIGrpc.newStub(newChannel);

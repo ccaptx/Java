@@ -22,7 +22,6 @@ public class GnmiBlockingClient extends GnmiCommonClient
 	implements GnmiClientInf{
 	private static final Logger logger = Logger.getLogger(GnmiBlockingClient.class.getName());
 	private gnmi.gNMIGrpc.gNMIBlockingStub stub;
-	private GnmiClientContextInf context;
 	private CallCredentials credential;
 	
 	public GnmiBlockingClient(GnmiClientContextInf context) throws Exception{
