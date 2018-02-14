@@ -1,5 +1,5 @@
-package gnmi;
-import static gnmi.GnmiHelper.checkFile;
+package org.dvlyyon.nbi.gnmi;
+import static org.dvlyyon.nbi.gnmi.GnmiHelper.checkFile;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

@@ -1,4 +1,4 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 import java.io.File;
 import java.util.Map;

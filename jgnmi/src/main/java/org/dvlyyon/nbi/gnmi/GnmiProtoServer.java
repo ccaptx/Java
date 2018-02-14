@@ -1,9 +1,10 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import gnmi.gNMIGrpc;
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
 import gnmi.Gnmi.Encoding;

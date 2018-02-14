@@ -1,4 +1,4 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 public class GnmiClientFactory {
 	

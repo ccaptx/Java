@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;

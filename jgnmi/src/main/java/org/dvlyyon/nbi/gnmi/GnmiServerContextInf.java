@@ -1,7 +1,7 @@
 /**
  * 
  */
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 /**
  * @author david

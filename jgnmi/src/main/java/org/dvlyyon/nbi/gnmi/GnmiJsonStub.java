@@ -1,9 +1,10 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 import static io.grpc.stub.ClientCalls.asyncBidiStreamingCall;
 import static io.grpc.stub.ClientCalls.asyncUnaryCall;
 import static io.grpc.stub.ClientCalls.blockingUnaryCall;
 
+import gnmi.gNMIGrpc;
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
 import gnmi.Gnmi.SubscribeRequest;

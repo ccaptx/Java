@@ -1,6 +1,6 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
-import static gnmi.GnmiHelper.checkFile;
+import static org.dvlyyon.nbi.gnmi.GnmiHelper.checkFile;
 
 import java.io.File;
 

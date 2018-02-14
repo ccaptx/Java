@@ -1,7 +1,8 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
 import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 
+import gnmi.gNMIGrpc;
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
 import gnmi.Gnmi.Encoding;

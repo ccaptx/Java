@@ -1,10 +1,11 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
+
+import static org.dvlyyon.nbi.gnmi.GnmiHelper.newCredential;
+import static org.dvlyyon.nbi.gnmi.GnmiHelper.newHeaderResponseInterceptor;
 
 import java.util.logging.Logger;
 
-import static gnmi.GnmiHelper.newCredential;
-import static gnmi.GnmiHelper.newHeaderResponseInterceptor;
-
+import gnmi.gNMIGrpc;
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
 import gnmi.Gnmi.SubscribeRequest;

@@ -1,6 +1,6 @@
-package gnmi;
+package org.dvlyyon.nbi.gnmi;
 
-import static gnmi.GnmiHelper.*;
+import static org.dvlyyon.nbi.gnmi.GnmiHelper.*;
 
 import java.util.List;
 import java.util.logging.Logger;
