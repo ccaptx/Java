@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import gnmi.Gnmi.CapabilityResponse;
+import gnmi.Gnmi.Notification;
 import gnmi.Gnmi.Path;
 import gnmi.Gnmi.PathElem;
 import gnmi.Gnmi.SubscribeRequest;
 import gnmi.Gnmi.SubscribeResponse;
+import gnmi.Gnmi.SubscribeResponse.ResponseCase;
 import gnmi.Gnmi.Subscription;
 import gnmi.Gnmi.SubscriptionList;
 
@@ -70,6 +72,17 @@ public class GnmiClient {
 			Thread.currentThread().sleep(10*1000);
 			List<SubscribeResponse> responses = mgr.popResponses();
 			for (SubscribeResponse response:responses) {
+				ResponseCase rc = response.getResponseCase();
+				switch (rc) {
+				case UPDATE:
+					Notification ntf = response.getUpdate();
+					StringBuilder sb = new StringBuilder();
+					sb.append("timestamp:")
+					.append(ntf.getTimestamp());
+					if (ntf.getAlias() != null)
+					sb.append("\n").append("alias:").append(ntf.getAlias());
+					System.out.println(sb.toString());
+				}
 				System.out.println(response);
 			}
 		}
