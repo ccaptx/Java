@@ -79,7 +79,6 @@ public class GnmiClient {
 					StringBuilder sb = new StringBuilder();
 					sb.append("timestamp:")
 					.append(ntf.getTimestamp());
-					if (ntf.getAlias() != null)
 					sb.append("\n").append("alias:").append(ntf.getAlias());
 					System.out.println(sb.toString());
 				}
