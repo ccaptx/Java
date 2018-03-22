@@ -38,28 +38,35 @@ public class GnmiClient {
 		GnmiClientInf client;
 		client = GnmiClientFactory.getInstance(new GnmiClientCmdContext(argv));
 		System.out.println(client.capacity());
-		PathElem ne = newPathElem("ne",null);
-		PathElem shelf1  = newPathElem("shelf", new String [][]{{"shelf-id","1"}});
-		PathElem slot1 = newPathElem("slot", new String[][] {{"slot-id","1"}});
-		PathElem card = newPathElem("card",null);
-		PathElem st = newPathElem("statistics",null);
-		
+//		PathElem ne = newPathElem("ne",null);
+//		PathElem shelf1  = newPathElem("shelf", new String [][]{{"shelf-id","1"}});
+//		PathElem slot1 = newPathElem("slot", new String[][] {{"slot-id","1"}});
+//		PathElem card = newPathElem("card",null);
+//		PathElem st = newPathElem("statistics",null);
+//		
+//		Path p = Path.newBuilder()
+//				.addElem(ne)
+//				.addElem(shelf1)
+//				.addElem(slot1)
+//				.addElem(card)
+//				.addElem(st)
+//				.build();
 		Path p = Path.newBuilder()
-				.addElem(ne)
-				.addElem(shelf1)
-				.addElem(slot1)
-				.addElem(card)
-				.addElem(st)
+				.addElement("ne")
+				.addElement("shelf[shelf-id=1]")
+				.addElement("slot[slot-id=1]")
+				.addElement("card")
+				.addElement("statistics")
 				.build();
 		Subscription sub = Subscription
 				.newBuilder()
 				.setPath(p)
 				.setModeValue(2)
-				.setSampleInterval(0)
+				.setSampleInterval(3000000000L)
+				.setHeartbeatInterval(10000000)
 				.build();
 		SubscriptionList list = SubscriptionList.newBuilder()
 				.addSubscription(sub)
-				.setModeValue(2)
 				.setEncodingValue(4)
 				.build();
 		SubscribeRequest value = SubscribeRequest
@@ -70,7 +77,7 @@ public class GnmiClient {
 		SubscriptionMgrInf mgr = client.subscribe();
 		mgr.subscribe(value);
 		while (!mgr.isComplete() && !mgr.isError()) {
-			Thread.currentThread().sleep(10*1000);
+//			Thread.currentThread().sleep(10*1000);
 			List<SubscribeResponse> responses = mgr.popResponses();
 			for (SubscribeResponse response:responses) {
 				ResponseCase rc = response.getResponseCase();
