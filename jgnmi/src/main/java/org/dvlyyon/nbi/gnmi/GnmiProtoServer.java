@@ -43,32 +43,55 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 			io.grpc.stub.StreamObserver<SubscribeResponse> responseObserver) {
 		return new StreamObserver<SubscribeRequest>() {
 			boolean initialized = false;
+			boolean alias = false;
+			Thread myThread = null;
+			int receivedMessages = 0;
 			@Override
 			public void onNext(SubscribeRequest request) {
-				SubscriptionList slist = request.getSubscribe();
-
-				if (slist == null && !initialized) {
+				logger.info("received message number:"+ (++receivedMessages) + ", on ojbect:"+this);
+				SubscriptionList slist = null;
+				if (request.hasSubscribe()) {
+					slist = request.getSubscribe();
+					if (slist == null && !initialized) {
+						responseObserver.onError(Status.INVALID_ARGUMENT
+								.withDescription(String.format("Method %s is unimplemented",
+										"gnmi.subscribe"))
+								.asRuntimeException());
+					}
+					int subNum = slist.getSubscriptionCount();
+					for (int i=0; i<subNum; i++) {
+						Subscription sub = slist.getSubscription(0);
+					}
+					initialized = true;
+				} else if (request.hasAliases()) {
+					if (!initialized) {
+						responseObserver.onError(Status.INVALID_ARGUMENT
+								.withDescription("subscribe must be sent before alias")
+								.asRuntimeException());
+					}
+					alias = true;
+				} else if (request.hasPoll()) {
 					responseObserver.onError(Status.INVALID_ARGUMENT
-							.withDescription(String.format("Method %s is unimplemented",
-									"gnmi.subscribe"))
-							.asRuntimeException());
+							.withDescription("poll is unimplemented")
+							.asRuntimeException());					
 				}
-				int subNum = slist.getSubscriptionCount();
-				for (int i=0; i<subNum; i++) {
-					Subscription sub = slist.getSubscription(0);
-				}
-				// Respond with all previous notes at this location.
-				for (SubscribeResponse resp : FakeData.getAllCurrentData()) {
-					responseObserver.onNext(resp);
-				}
-				responseObserver.onNext(FakeData.getSyncComplete());
+
 				
-				new Thread(new Runnable() {
+				logger.info("receive request:"+request);
+				
+				if (myThread == null && initialized) {
+					// Respond with all previous notes at this location.
+					for (SubscribeResponse resp : FakeData.getAllCurrentData()) {
+						responseObserver.onNext(resp);
+					}
+					responseObserver.onNext(FakeData.getSyncComplete());
+					
+					myThread = new Thread(new Runnable() {
 					@Override
 					public void run() {
 						while (true) {
 							try {
-								Thread.currentThread().sleep(30 * 1000);
+								Thread.currentThread().sleep(10 * 1000);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -78,7 +101,9 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 											new Random().toString(), 
 											new Random().toString(),
 											new Random().toString()));						
-						}}},"data producer").start();
+						}}},"data producer");
+					myThread.start();
+				}
 			}
 
 			@Override

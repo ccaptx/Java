@@ -14,6 +14,7 @@ import gnmi.Gnmi.SubscribeResponse;
 import gnmi.Gnmi.SubscribeResponse.ResponseCase;
 import gnmi.Gnmi.Subscription;
 import gnmi.Gnmi.SubscriptionList;
+import gnmi.Gnmi.SubscriptionList.Mode;
 
 public class GnmiClient {
 	private static final Logger logger = Logger.getLogger(GnmiClient.class.getName());
@@ -37,7 +38,7 @@ public class GnmiClient {
 	public static void main(String argv[]) throws Exception{
 		GnmiClientInf client;
 		client = GnmiClientFactory.getInstance(new GnmiClientCmdContext(argv));
-		System.out.println(client.capacity());
+//		System.out.println(client.capacity());
 //		PathElem ne = newPathElem("ne",null);
 //		PathElem shelf1  = newPathElem("shelf", new String [][]{{"shelf-id","1"}});
 //		PathElem slot1 = newPathElem("slot", new String[][] {{"slot-id","1"}});
@@ -53,9 +54,13 @@ public class GnmiClient {
 //				.build();
 		Path p = Path.newBuilder()
 				.addElement("ne")
-				.addElement("shelf[shelf-id=1]")
+/*				.addElement("shelf[shelf-id=1]")
 				.addElement("slot[slot-id=1]")
 				.addElement("card")
+*/
+				.addElement("services")
+				.addElement("optical-interfaces")
+				.addElement("oms[oms-name=\'1/1.1/1\']")
 				.addElement("statistics")
 				.build();
 		Subscription sub = Subscription
@@ -63,11 +68,12 @@ public class GnmiClient {
 				.setPath(p)
 				.setModeValue(2)
 				.setSampleInterval(3000000000L)
-				.setHeartbeatInterval(10000000)
+//				.setHeartbeatInterval(10000000000L)
 				.build();
 		SubscriptionList list = SubscriptionList.newBuilder()
 				.addSubscription(sub)
 				.setEncodingValue(4)
+				.setMode(Mode.STREAM)
 				.build();
 		SubscribeRequest value = SubscribeRequest
 				.newBuilder()

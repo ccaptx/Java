@@ -190,7 +190,9 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 				try {
 					if (!completed && !error && queue.isEmpty()) 
 						this.wait();
-
+					if (error) {
+						new RuntimeException(this.errorInfo);
+					}
 					if (!queue.isEmpty()) return queue.poll();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
