@@ -14,6 +14,7 @@ import gnmi.Gnmi.SubscribeRequest;
 import gnmi.Gnmi.SubscribeResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
+import io.grpc.Context;
 
 public abstract class GnmiCommonClient implements GnmiClientInf {
 
@@ -104,7 +105,26 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 
 		@Override
 		public void unsubscribe() {
-			myRequestObserver.onCompleted();			
+			System.out.println("xxxxxxxxxxxxxxx==================xxxxxxxxxxxxxx");
+			myRequestObserver.onCompleted();	
+			myRequestObserver.onError(null);
+//			Context.CancellableContext withCancellation = Context.current().withCancellation();
+//			try {
+//				withCancellation.run(new Runnable() {
+//					public void run() {
+//						Context current = Context.current();
+//						while (!current.isCancelled()) {
+//							try {
+//								Thread.currentThread().sleep(100);
+//							} catch (Exception e) {
+//								logger.log(Level.SEVERE, "sleep interrupted", e);
+//							}
+//						}
+//					}
+//				});
+//			} finally {
+//				withCancellation.cancel(null);
+//			}
 		}
 
 		@Override

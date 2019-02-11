@@ -44,6 +44,7 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 		return new StreamObserver<SubscribeRequest>() {
 			boolean initialized = false;
 			boolean alias = false;
+			boolean stop = false;
 			Thread myThread = null;
 			int receivedMessages = 0;
 			@Override
@@ -89,7 +90,7 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 					myThread = new Thread(new Runnable() {
 					@Override
 					public void run() {
-						while (true) {
+						while (!stop) {
 							try {
 								Thread.currentThread().sleep(10 * 1000);
 							} catch (Exception e) {
@@ -108,11 +109,14 @@ public class GnmiProtoServer extends gNMIGrpc.gNMIImplBase {
 
 			@Override
 			public void onError(Throwable t) {
+				stop = true;
 				logger.log(Level.WARNING, "subscribe cancelled");
 			}
 
 			@Override
 			public void onCompleted() {
+				stop = true;
+				logger.log(Level.WARNING,"completed");
 				responseObserver.onCompleted();
 			}
 		};

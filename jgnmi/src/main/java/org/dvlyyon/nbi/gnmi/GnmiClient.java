@@ -54,13 +54,13 @@ public class GnmiClient {
 //				.build();
 		Path p = Path.newBuilder()
 				.addElement("ne")
-/*				.addElement("shelf[shelf-id=1]")
+				.addElement("shelf[shelf-id=1]")
 				.addElement("slot[slot-id=1]")
 				.addElement("card")
-*/
-				.addElement("services")
-				.addElement("optical-interfaces")
-				.addElement("oms[oms-name=\'1/1.1/1\']")
+
+//				.addElement("services")
+//				.addElement("optical-interfaces")
+//				.addElement("oms[oms-name=\'1/1.1/1\']")
 				.addElement("statistics")
 				.build();
 		Subscription sub = Subscription
@@ -81,6 +81,16 @@ public class GnmiClient {
 				.build();
 		System.out.println(value);
 		SubscriptionMgrInf mgr = client.subscribe();
+		new Thread(()-> {
+			try {
+			Thread.currentThread().sleep(1000*60*1);
+			System.out.print("try to unsubscribe");
+			mgr.unsubscribe();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+		
 		mgr.subscribe(value);
 		while (!mgr.isComplete() && !mgr.isError()) {
 //			Thread.currentThread().sleep(10*1000);
@@ -101,8 +111,10 @@ public class GnmiClient {
 		}
 		if (mgr.isError()) {
 			System.out.println(mgr.getErrorInfo());
-		}
-//		client = new GnmiBlockingClient("10.13.12.216",50051);
+		} else {
+			System.out.println("Completed");
+		} 
+		//		client = new GnmiBlockingClient("10.13.12.216",50051);
 //		System.out.println(client.capacity());
 	}
 }
