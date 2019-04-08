@@ -888,7 +888,7 @@ public class Client implements TransactionalResourceIf, ConfiguratorIf, HelloRes
     *
     * @return  new message ID for NETCONF message.
     */
-   private synchronized String getNextMessageId()
+   public synchronized String getNextMessageId()
    {
       String ret = "" + m_messageIdTracker;
       m_messageIdTracker = m_messageIdTracker.add(BigInteger.ONE);
