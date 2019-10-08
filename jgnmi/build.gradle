@@ -69,14 +69,14 @@ apply plugin: 'application'
 startScripts.enabled = false
 
 task gnmiClient(type: CreateStartScripts) {
-	mainClassName = 'gnmi.GnmiClient'
+	mainClassName = 'org.dvlyyon.nbi.gnmi.GnmiClient'
 	applicationName = 'gnmi-client'
 	outputDir = new File(project.buildDir, 'tmp')
 	classpath = jar.outputs.files + project.configurations.runtime
 }
 
 task gnmiServer(type: CreateStartScripts) {
-	mainClassName = 'gnmi.GnmiServer'
+	mainClassName = 'org.dvlyyon.nbi.gnmi.GnmiServer'
 	applicationName = 'gnmi-server'
 	outputDir = new File(project.buildDir, 'tmp')
 	classpath = jar.outputs.files + project.configurations.runtime
