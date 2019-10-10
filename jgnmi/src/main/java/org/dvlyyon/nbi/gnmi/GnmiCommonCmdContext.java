@@ -105,6 +105,11 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		return cmd.getOptionValue("encoding","proto");
 	}
 	
+	@Override
+	public String getEndpoint() {
+		return cmd.getOptionValue("end_point", "dialout");
+	}
+	
 	public abstract String getCmdLineSyntax();
 
 	protected Options getOptions() {
@@ -146,7 +151,8 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		o = new Option("mp", "meta_password", true,
 				"metadata for password");
 		options.addOption(o);
-		
+		o = new Option("ep","end_point", true,
+				"dialin or dialout");
 		return options;
 	}
 	

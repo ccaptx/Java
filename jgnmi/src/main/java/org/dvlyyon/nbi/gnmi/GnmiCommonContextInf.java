@@ -17,4 +17,5 @@ public interface GnmiCommonContextInf {
 	public String   getUserName();
 	public String   getPassword();
 	public String   getEncoding();
+	public String	getEndpoint();
 }

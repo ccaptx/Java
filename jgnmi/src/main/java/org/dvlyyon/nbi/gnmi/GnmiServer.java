@@ -93,6 +93,25 @@ public class GnmiServer {
 			throws Exception {
 		String encoding = null;
 		BindableService gNMIImpl = null;
+		encoding=cmd.getEndpoint();
+		
+		switch (encoding.toLowerCase()) {
+		case "dialin":
+			gNMIImpl = new GnmiProtoServer();
+			break;
+		case "dialout":
+			gNMIImpl = new GnmiDialOutProtoServer();
+			break;
+		default:
+			throw new Exception ("The encoding "+encoding + " is not supported!");
+		}
+		return gNMIImpl;
+	}
+		
+	private BindableService getDialinServer(GnmiServerContextInf cmd) 
+			throws Exception {
+		String encoding = null;
+		BindableService gNMIImpl = null;
 		encoding=cmd.getEncoding();
 		
 		switch (encoding.toLowerCase()) {
@@ -107,6 +126,7 @@ public class GnmiServer {
 		}
 		return gNMIImpl;
 	}
+	
 	
 	private Server getClearTextServer(
 				BindableService service,
