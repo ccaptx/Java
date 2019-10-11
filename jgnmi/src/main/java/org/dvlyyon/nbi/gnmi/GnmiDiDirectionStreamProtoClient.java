@@ -26,7 +26,7 @@ extends DefaultGnmiCommonClient implements BiDirectionStreamInf<T1, T2>, BiDirec
 //			mystub = mystub.withCallCredentials(credential);
 //		} 
 		this.channel = channel;
-		stub = stub;
+		this.stub = stub;
 		serviceName = action;
 	}
 
@@ -34,7 +34,7 @@ extends DefaultGnmiCommonClient implements BiDirectionStreamInf<T1, T2>, BiDirec
 	public StreamObserver<T1> openStream(GnmiStreamObserver<T2> outStream) 
 	throws Exception {
 		Class<?> cls = stub.getClass();
-		Method m = cls.getMethod(serviceName, outStream.getClass().getSuperclass());
+		Method m = cls.getMethod(serviceName, StreamObserver.class);//outStream.getClass().getSuperclass());
 		return (StreamObserver<T1>)m.invoke(stub, outStream);
 	}
 
