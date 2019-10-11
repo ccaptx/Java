@@ -17,7 +17,15 @@ public class GnmiDialOutProtoServer
 	extends gNMIDialOutGrpc.gNMIDialOutImplBase {
 	private static final Logger logger = Logger.getLogger(GnmiDialOutProtoServer.class.getName());
 
-	Map rpcMaps = new HashMap();
+	Map <String, StreamObserver<SubscribeResponse>>rpcMaps = null;
+	UpdateExcecutor worker = null;
+	
+	public GnmiDialOutProtoServer() {
+		rpcMaps = new HashMap<String,StreamObserver<SubscribeResponse>>();
+		worker = new UpdateExcecutor(rpcMaps);
+		Thread myThread = new Thread(worker);
+		myThread.start();
+	}
 	
 	class UpdateExcecutor implements Runnable {
 		Map rpcMaps;
@@ -36,7 +44,7 @@ public class GnmiDialOutProtoServer
 				boolean needWait = true;
 				if (updates != null) {
 					for (Object update:updates) {
-						Queue q = (Queue)update;
+						SubscribeStreamObserver q = (SubscribeStreamObserver)update;
 						for (Object obj = q.poll(); obj != null; obj = q.poll() ) {
 							System.out.println(obj);
 							needWait = false;
@@ -58,13 +66,21 @@ public class GnmiDialOutProtoServer
 	class SubscribeStreamObserver implements StreamObserver<SubscribeResponse> {
 		StreamObserver publishStreamObserver = null;
 		GnmiDialOutProtoServer listener;
-		Queue queue = null;
+		Queue <SubscribeResponse> queue = null;
 		
 		public SubscribeStreamObserver (StreamObserver publishStreamObserver, 
 				GnmiDialOutProtoServer listener) {
 			this.publishStreamObserver = publishStreamObserver;
 			this.listener = listener;
 			this.queue = new ConcurrentLinkedQueue();
+		}
+		
+		public SubscribeResponse poll() {
+			return queue.poll();
+		}
+		
+		public int size() {
+			return queue.size();
 		}
 		
 		@Override
@@ -92,7 +108,7 @@ public class GnmiDialOutProtoServer
 	{
 		 StreamObserver<SubscribeResponse> observer = new SubscribeStreamObserver(responseObserver,this);
 		 synchronized(rpcMaps) {
-		 	rpcMaps.put(observer.hashCode(), observer);
+		 	rpcMaps.put(String.valueOf(observer.hashCode()), observer);
 		 }
 		 return observer;
 	}
