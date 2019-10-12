@@ -48,7 +48,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -190,7 +192,7 @@ public class GnmiServer implements GnmiTransportListenerInf {
 	}
 
 	private void start(GnmiServerContextInf cmd) throws Exception {
-		AuthInterceptor interceptor = new AuthInterceptor(cmd);
+		AuthInterceptor interceptor = new AuthInterceptor(cmd, this);
 		BindableService gNMIImpl = getGnmiServer(cmd);
         server = startServer(cmd, gNMIImpl, interceptor);
         server.start();
@@ -233,10 +235,12 @@ public class GnmiServer implements GnmiTransportListenerInf {
 	}
 
 	class AuthInterceptor implements ServerInterceptor {
-		GnmiServerContextInf context;
+		private GnmiServerContextInf context;
+		private GnmiTransportListenerInf listener;
 		
-		public AuthInterceptor(GnmiServerContextInf context) {
+		public AuthInterceptor(GnmiServerContextInf context, GnmiTransportListenerInf gnmiServer) {
 			this.context = context;
+			this.listener = gnmiServer;
 		}
 
 		private boolean authenticateRequest(Metadata headers) {
@@ -265,6 +269,7 @@ public class GnmiServer implements GnmiTransportListenerInf {
 			SSLSession sslSession = call.getAttributes().get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
 			SocketAddress remoteIpAddress = call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 			logger.info("header received from client:" + headers);
+			String threadName = String.valueOf(Thread.currentThread().getId());
 			boolean success = authenticateRequest(headers);
 			if (success)
 				return next.startCall(call, headers);
@@ -283,7 +288,11 @@ public class GnmiServer implements GnmiTransportListenerInf {
 		}
 
 		public Attributes transportReady(Attributes transportAttrs) {
+			SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
+			String remoteClient = remoteIpAddress.toString();
+			listener.addSession(remoteClient);
 			return transportAttrs;
+			
 		}
 
 		/**
@@ -293,11 +302,32 @@ public class GnmiServer implements GnmiTransportListenerInf {
 		 * #transportReady} of the last executed filter.
 		 */
 		public void transportTerminated(Attributes transportAttrs) {
-			transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 			SSLSession sslSession = transportAttrs.get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
 			String sessionString = sslSession.toString();
 			SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 			String remoteClient = remoteIpAddress.toString();
+			listener.deleteSession(remoteClient);
+		}
+	}
+
+	private Map <String,GnmiSession> sessions = new HashMap<String,GnmiSession>();
+	@Override
+	public void addSession(String remoteClient) {
+		GnmiSession s = sessions.get(remoteClient);
+		if (s != null) {
+			logger.severe("Duplicated session ID: "+remoteClient);
+		}
+		s = new GnmiSession();
+		sessions.put(remoteClient, s);		
+	}
+
+	@Override
+	public void deleteSession(String remoteClient) {
+		GnmiSession s = sessions.remove(remoteClient);
+		if (s == null) {
+			logger.severe("NOT exist session ID: "+remoteClient);
+		} else {
+			s.close();
 		}
 	}
 }
