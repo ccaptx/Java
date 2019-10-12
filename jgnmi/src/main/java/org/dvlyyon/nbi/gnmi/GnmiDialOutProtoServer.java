@@ -90,7 +90,7 @@ public class GnmiDialOutProtoServer
 
 		@Override
 		public void onError(Throwable t) {
-			listener.onError(t, this.hashCode());
+			listener.onError(t, String.valueOf(this.hashCode()));
 			publishStreamObserver.onError(t);
 		}
 
@@ -114,7 +114,7 @@ public class GnmiDialOutProtoServer
 	}
 
 
-	public void onError(Throwable t, int hashcode) {
+	public void onError(Throwable t, String hashcode) {
 		synchronized (rpcMaps) {
 			rpcMaps.remove(hashcode);
 		}

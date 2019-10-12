@@ -20,6 +20,7 @@ import static io.grpc.stub.ServerCalls.asyncUnaryCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
 import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
+import io.grpc.Attributes;
 import io.grpc.BindableService;
 import io.grpc.Context;
 import io.grpc.Contexts;
@@ -33,6 +34,7 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.ServerInterceptors;
 import io.grpc.ServerServiceDefinition;
+import io.grpc.ServerTransportFilter;
 import io.grpc.Status;
 import io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.NettyServerBuilder;
@@ -44,6 +46,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -84,7 +87,7 @@ import gnmi.gNMIGrpc;
  * <p>If you are considering implementing your own serialization logic, contact the grpc team at
  * https://groups.google.com/forum/#!forum/grpc-io
  */
-public class GnmiServer {
+public class GnmiServer implements GnmiTransportListenerInf {
 	private static final Logger logger = Logger.getLogger(GnmiServer.class.getName());
 
 	private Server server;
@@ -137,6 +140,7 @@ public class GnmiServer {
 				.forPort(port)
 				.addService(ServerInterceptors.intercept(service, 
 						interceptor))
+				.addTransportFilter(new GnmiTransportFilter(this))
 				.build();
 	    logger.info("Server started, listening on " + port);
 		return server;		
@@ -167,6 +171,7 @@ public class GnmiServer {
 				sslContext(contextBuilder.build())
 				.addService(ServerInterceptors.intercept(service, 
 						interceptor))
+				.addTransportFilter(new GnmiTransportFilter(this))
 				.build();
 		logger.info("Server started, listening on " + port);
 		return server;		
@@ -258,6 +263,7 @@ public class GnmiServer {
 				Metadata headers,
 				ServerCallHandler<ReqT, RespT> next) {
 			SSLSession sslSession = call.getAttributes().get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
+			SocketAddress remoteIpAddress = call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 			logger.info("header received from client:" + headers);
 			boolean success = authenticateRequest(headers);
 			if (success)
@@ -267,5 +273,31 @@ public class GnmiServer {
 			};
 		}
 
+	}
+
+	class GnmiTransportFilter extends ServerTransportFilter {
+		GnmiTransportListenerInf listener;
+
+		public GnmiTransportFilter(GnmiTransportListenerInf gnmiServer) {
+			this.listener = gnmiServer;
+		}
+
+		public Attributes transportReady(Attributes transportAttrs) {
+			return transportAttrs;
+		}
+
+		/**
+		 * Called when a transport is terminated.  Default implementation is no-op.
+		 *
+		 * @param transportAttrs the effective transport attributes, which is what returned by {@link
+		 * #transportReady} of the last executed filter.
+		 */
+		public void transportTerminated(Attributes transportAttrs) {
+			transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
+			SSLSession sslSession = transportAttrs.get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
+			String sessionString = sslSession.toString();
+			SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
+			String remoteClient = remoteIpAddress.toString();
+		}
 	}
 }
