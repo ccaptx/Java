@@ -11,17 +11,21 @@ public class GnmiServerStreamObserver <T1,T2> implements StreamObserver<T1> {
 	Queue <T1> queue = null;
 
 	public GnmiServerStreamObserver(StreamObserver<T2> outStream,
-			GnmiRPCListener listener,
-			Queue <T1> queue) { //queue must be thread-safe
+			GnmiRPCListener<T1> listener) {
 		this.outStream = outStream;
 		this.listener = listener;
-		this.queue = queue;
+		this.queue = new ConcurrentLinkedQueue<T1>();
+	}
+	
+	@Override
+	public T1 poll() {
+		return queue.poll();
 	}
 	
 	@Override
 	public void onNext(T1 value) {
 		queue.offer(value);	
-		listener.onNext(value);
+		listener.onNext(value,String.valueOf(this.hashCode()));
 	}
 
 	@Override
