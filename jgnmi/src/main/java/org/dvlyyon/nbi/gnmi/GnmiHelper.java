@@ -92,6 +92,7 @@ public class GnmiHelper {
 	}
 	
 	public static CallCredentials newCredential(final GnmiClientContextInf context) {
+		if (!context.needCredential()) return null;
 		return new CallCredentials() {
 			@Override
 			public void applyRequestMetadata(

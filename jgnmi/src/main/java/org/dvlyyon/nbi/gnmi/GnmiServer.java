@@ -267,9 +267,10 @@ public class GnmiServer implements GnmiTransportListenerInf {
 				Metadata headers,
 				ServerCallHandler<ReqT, RespT> next) {
 			SSLSession sslSession = call.getAttributes().get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
-			SocketAddress remoteIpAddress = call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
+			String remoteIpAddress = call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR).toString();
 			logger.info("header received from client:" + headers);
 			String threadName = String.valueOf(Thread.currentThread().getId());
+			listener.prepareAcceptRPC(threadName,remoteIpAddress);
 			boolean success = authenticateRequest(headers);
 			if (success)
 				return next.startCall(call, headers);
@@ -313,12 +314,14 @@ public class GnmiServer implements GnmiTransportListenerInf {
 	private Map <String,GnmiSession> sessions = new HashMap<String,GnmiSession>();
 	@Override
 	public void addSession(String remoteClient) {
-		GnmiSession s = sessions.get(remoteClient);
-		if (s != null) {
-			logger.severe("Duplicated session ID: "+remoteClient);
+		synchronized (sessions) {
+			GnmiSession s = sessions.get(remoteClient);
+			if (s != null) {
+				logger.severe("Duplicated session ID: "+remoteClient);
+			}
+			s = new GnmiSession();
+			sessions.put(remoteClient, s);	
 		}
-		s = new GnmiSession();
-		sessions.put(remoteClient, s);		
 	}
 
 	@Override
@@ -329,5 +332,16 @@ public class GnmiServer implements GnmiTransportListenerInf {
 		} else {
 			s.close();
 		}
+	}
+
+	@Override
+	public void prepareAcceptRPC(String threadName, String sessionID) {
+		GnmiSession s = sessions.get(sessionID);
+		if (s == null) {
+			logger.severe("NOT exist session ID:" + sessionID);
+		} else {
+			s.prepareAcceptRPC(threadName);
+		}
+		
 	}
 }

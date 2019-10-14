@@ -96,7 +96,7 @@ public class GnmiDialOutProtoServer
 
 		@Override
 		public void onCompleted() {
-			listener.onCompleted(this.hashCode());
+			listener.onCompleted(String.valueOf(this.hashCode()));
 			publishStreamObserver.onCompleted();
 		}
 		
@@ -120,7 +120,7 @@ public class GnmiDialOutProtoServer
 		}
 	}
 
-	public void onCompleted(int hashcode) {
+	public void onCompleted(String hashcode) {
 		synchronized (rpcMaps) {
 			rpcMaps.remove(hashcode);
 		}

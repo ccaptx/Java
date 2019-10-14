@@ -6,4 +6,6 @@ public interface GnmiTransportListenerInf {
 
 	void deleteSession(String remoteClient);
 
+	void prepareAcceptRPC(String threadName, String sessionID);
+
 }
