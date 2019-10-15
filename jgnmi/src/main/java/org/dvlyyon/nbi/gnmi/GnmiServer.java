@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,7 +90,8 @@ import gnmi.gNMIGrpc;
  * <p>If you are considering implementing your own serialization logic, contact the grpc team at
  * https://groups.google.com/forum/#!forum/grpc-io
  */
-public class GnmiServer implements GnmiTransportListenerInf {
+public class GnmiServer 
+implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
 	private static final Logger logger = Logger.getLogger(GnmiServer.class.getName());
 
 	private Server server;
@@ -105,7 +107,7 @@ public class GnmiServer implements GnmiTransportListenerInf {
 			gNMIImpl = new GnmiProtoServer();
 			break;
 		case "dialout":
-			gNMIImpl = new GnmiDialOutProtoServer();
+			gNMIImpl = new GnmiDialOutProtoService(this);
 			break;
 		default:
 			throw new Exception ("The encoding "+encoding + " is not supported!");
@@ -311,37 +313,123 @@ public class GnmiServer implements GnmiTransportListenerInf {
 		}
 	}
 
-	private Map <String,GnmiSession> sessions = new HashMap<String,GnmiSession>();
+	private Map <String,GnmiSessionMgr> sessions = new HashMap<String,GnmiSessionMgr>();
+	private Map <String,GnmiSessionMgr> currentThreads = new HashMap<String,GnmiSessionMgr>();
+	private final static String ANONYMOUS_NAME = "AnonymousName";
+	
 	@Override
 	public void addSession(String remoteClient) {
 		synchronized (sessions) {
-			GnmiSession s = sessions.get(remoteClient);
+			GnmiSessionMgr s = sessions.get(remoteClient);
 			if (s != null) {
 				logger.severe("Duplicated session ID: "+remoteClient);
 			}
-			s = new GnmiSession();
+			s = new GnmiSessionMgr(remoteClient);
 			sessions.put(remoteClient, s);	
 		}
 	}
 
 	@Override
 	public void deleteSession(String remoteClient) {
-		GnmiSession s = sessions.remove(remoteClient);
-		if (s == null) {
-			logger.severe("NOT exist session ID: "+remoteClient);
-		} else {
-			s.close();
+		synchronized(sessions) {
+			GnmiSessionMgr s = sessions.remove(remoteClient);
+			if (s == null) {
+				logger.severe("NOT exist session ID: "+remoteClient);
+			} else {
+				s.close();
+			}
 		}
 	}
 
 	@Override
 	public void prepareAcceptRPC(String threadName, String sessionID) {
-		GnmiSession s = sessions.get(sessionID);
+		GnmiSessionMgr s = null;
+		synchronized (sessions) {
+			s = sessions.get(sessionID);
+		}
 		if (s == null) {
 			logger.severe("NOT exist session ID:" + sessionID);
 		} else {
 			s.prepareAcceptRPC(threadName);
 		}
+		synchronized (currentThreads) {
+			s = currentThreads.get(threadName);
+			if (s != null) {
+				logger.severe("NOT expected status for session: " + sessionID);
+			}
+			currentThreads.put(threadName, s);
+		}
+	}
+
+	@Override
+	public void registerRPC(String threadName, GnmiServerStreamObserver observer) {
+		synchronized (currentThreads) {
+			GnmiSessionMgr s = currentThreads.get(threadName);
+			if (s == null) {
+				logger.severe("NOT excepted status for regiester RPC");
+			} else {
+				s = new GnmiSessionMgr(ANONYMOUS_NAME);
+			}
+			s.registerRPC(observer);
+			currentThreads.remove(threadName);
+		}
 		
+	}
+
+	@Override
+	public Object pop() {
+		Object [] sessionList = null;
+		synchronized(sessions) {
+			Collection c = sessions.values();
+			sessionList = c.toArray();
+		}
+		if (sessionList != null) {
+			for (Object session:sessionList) {
+				GnmiSessionMgr sm = (GnmiSessionMgr)session;
+				Object obj = sm.pop();
+				if (obj != null) return obj;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Object pop(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			return mgr.pop();
+		}
+	}
+
+	@Override
+	public boolean isClosed(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			return mgr.isClosed();
+		}
+	}
+
+	@Override
+	public void shutdown(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			mgr.shutdown();
+		}
+	}
+
+	@Override
+	public Object pop(String sessionId, String streamId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			return mgr.pop(streamId);
+		}
 	}
 }
