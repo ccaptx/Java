@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -129,7 +130,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 
 	@Override
 	public void prepareAcceptRPC(String threadName, String sessionID) {
-		GnmiSessionMgr s = null;
+		GnmiSessionMgr s,ss = null;
 		synchronized (sessions) {
 			s = sessions.get(sessionID);
 		}
@@ -139,8 +140,8 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 			s.prepareAcceptRPC(threadName);
 		}
 		synchronized (currentThreads) {
-			s = currentThreads.get(threadName);
-			if (s != null) {
+			ss = currentThreads.get(threadName);
+			if (ss != null && ss != s) {
 				logger.severe("NOT expected status for session: " + sessionID);
 			}
 			currentThreads.put(threadName, s);
@@ -153,7 +154,6 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 			GnmiSessionMgr s = currentThreads.get(threadName);
 			if (s == null) {
 				logger.severe("NOT excepted status for regiester RPC");
-			} else {
 				s = new GnmiSessionMgr(ANONYMOUS_NAME);
 			}
 			s.registerRPC(observer);
@@ -301,20 +301,59 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 		@Override
 		public void run() {
 			while(true) {
-				Object update = server.pop();
-				printSetString(server.getSessions(),"Session");
-				if (update == null) {
+				System.out.println("Size of updates before retrieving:"+server.size());
+				boolean needWait = true;
+				Set<String> sessionIDs = server.getSessions();
+				if (sessionIDs != null && sessionIDs.size()>0) {
+					for (String sessionID:sessionIDs) {
+						Set<String> rpcs = server.getRPCs(sessionID);
+						if (rpcs != null && rpcs.size()>0) {
+							for (String rpc:rpcs) {
+								Object o = server.pop(sessionID,rpc);
+								if (o != null) {
+									needWait = false;
+									System.out.println(String.format("Session:%s, RPC:%s updates:\n %s", sessionID, rpc,o));
+								}
+							}
+						}
+					}
+				}
+
+				if (needWait) {
 					try {
-						Thread.currentThread().sleep(10 * 1000);
+						System.out.println("Wait 10s......");
+						System.out.println("Size of updates after retrieving:"+server.size());
+						Thread.sleep(10 * 1000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}					
-				} else {
-					System.out.println(update);
-				}
+				} 
 			}			
 		}
 	}
 
 
+	@Override
+	public int size() {
+		int size = 0;
+		synchronized(sessions) {
+			for (Entry<String,GnmiSessionMgr> entry:sessions.entrySet())
+				size += entry.getValue().size();
+		}
+		return size;
+	}
+
+	@Override
+	public int size(String sessionId) {
+		GnmiSessionMgr mgr = sessions.get(sessionId);
+		if (mgr == null) throw new RuntimeException("NO session:" + sessionId);
+		return mgr.size();
+	}
+
+	@Override
+	public int size(String sessionId, String streamId) {
+		GnmiSessionMgr mgr = sessions.get(sessionId);
+		if (mgr == null) throw new RuntimeException("NO session:" + sessionId);
+		return size(streamId);
+	}
 }

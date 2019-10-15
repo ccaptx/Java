@@ -386,4 +386,22 @@ public class GnmiServerOld implements GnmiTransportListenerInf, GnmiRPCListenerI
 			return mgr.getRPCs();
 		}
 	}
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int size(String sessionId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int size(String sessionId, String streamId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }

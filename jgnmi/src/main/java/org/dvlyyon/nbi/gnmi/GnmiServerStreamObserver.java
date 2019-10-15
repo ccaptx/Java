@@ -80,6 +80,11 @@ implements StreamObserver<T1>, GnmiConsumerInf<T1> {
 	public String getID() {
 		return name + String.valueOf(this.hashCode());
 	}
+
+	@Override
+	public int size() {
+		return queue.size();
+	}
 	
 
 }

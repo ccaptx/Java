@@ -82,4 +82,27 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 	public Set<String> getRPCs() {
 		return rpcMap.keySet();
 	}
+
+	@Override
+	public int size() {
+		Object [] streams = null;
+		synchronized(rpcMap) {
+			Collection c = rpcMap.values();
+			streams = c.toArray();
+		}
+		int size = 0;
+		if (streams != null) {
+			for (Object stream:streams) {
+				GnmiServerStreamObserver q = (GnmiServerStreamObserver)stream;
+				size += q.size();
+			}
+		}
+		return size;
+	}
+
+	@Override
+	public int size(String streamName) {
+		GnmiServerStreamObserver stream = rpcMap.get(streamName);
+		return stream.size();
+	}
 }
