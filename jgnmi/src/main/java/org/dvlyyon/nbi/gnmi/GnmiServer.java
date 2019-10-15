@@ -104,7 +104,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
 		
 		switch (encoding.toLowerCase()) {
 		case "dialin":
-			gNMIImpl = new GnmiProtoServer();
+			gNMIImpl = getDialInServer(cmd);
 			break;
 		case "dialout":
 			gNMIImpl = new GnmiDialOutProtoService(this);
@@ -115,7 +115,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
 		return gNMIImpl;
 	}
 		
-	private BindableService getDialinServer(GnmiServerContextInf cmd) 
+	private BindableService getDialInServer(GnmiServerContextInf cmd) 
 			throws Exception {
 		String encoding = null;
 		BindableService gNMIImpl = null;
