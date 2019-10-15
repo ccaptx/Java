@@ -3,9 +3,6 @@ package org.dvlyyon.nbi.gnmi;
 import java.io.File;
 import java.util.logging.Logger;
 
-import org.dvlyyon.nbi.gnmi.GnmiServer.AuthInterceptor;
-import org.dvlyyon.nbi.gnmi.GnmiServer.GnmiTransportFilter;
-
 import io.grpc.BindableService;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -19,7 +16,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 public class GnmiServerHelper {
 	private static final Logger logger = Logger.getLogger(GnmiServerHelper.class.getName());
 	
-	private BindableService getGnmiServer(GnmiServerContextInf cmd, GnmiRPCListenerInf listener) 
+	public static BindableService getGnmiServer(GnmiServerContextInf cmd, GnmiRPCListenerInf listener) 
 			throws Exception {
 		String encoding = null;
 		BindableService gNMIImpl = null;
@@ -38,7 +35,7 @@ public class GnmiServerHelper {
 		return gNMIImpl;
 	}
 		
-	private BindableService getDialInServer(GnmiServerContextInf cmd) 
+	private static BindableService getDialInServer(GnmiServerContextInf cmd) 
 			throws Exception {
 		String encoding = null;
 		BindableService gNMIImpl = null;

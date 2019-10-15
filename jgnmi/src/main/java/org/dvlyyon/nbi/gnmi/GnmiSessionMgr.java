@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.dvlyyon.nbi.gnmi.GnmiDialOutProtoServer.SubscribeStreamObserver;
@@ -75,5 +76,10 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 				throw new RuntimeException("No such rpc:" + streamName);
 			}
 		}
+	}
+	
+	@Override
+	public Set<String> getRPCs() {
+		return rpcMap.keySet();
 	}
 }

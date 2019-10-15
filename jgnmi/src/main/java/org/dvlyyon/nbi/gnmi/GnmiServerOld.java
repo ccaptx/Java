@@ -5,12 +5,10 @@ import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.net.ssl.SSLSession;
-
-import org.dvlyyon.nbi.gnmi.GnmiServer.AuthInterceptor;
-import org.dvlyyon.nbi.gnmi.GnmiServer.GnmiTransportFilter;
 
 import io.grpc.Attributes;
 import io.grpc.BindableService;
@@ -29,7 +27,7 @@ import io.grpc.netty.NettyServerBuilder;
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
 
-public class GnmiServerOld implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
+public class GnmiServerOld implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	private static final Logger logger = Logger.getLogger(GnmiServer.class.getName());
 
 	private Server server;
@@ -368,6 +366,24 @@ public class GnmiServerOld implements GnmiTransportListenerInf, GnmiRPCListenerI
 			if (mgr == null)
 				throw new RuntimeException("NOT identify session:" + sessionId);
 			return mgr.pop(streamId);
+		}
+	}
+
+	@Override
+	public Set<String> getSessions() {
+		Set<String> lst = null;
+		synchronized (sessions) {
+			lst = sessions.keySet();
+		}
+		return lst;
+	}
+
+	@Override
+	public Set<String> getRPCs(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null) throw new RuntimeException("Not exist for session:" + sessionId);
+			return mgr.getRPCs();
 		}
 	}
 }

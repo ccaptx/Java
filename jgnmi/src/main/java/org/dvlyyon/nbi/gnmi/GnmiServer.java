@@ -52,6 +52,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,6 +64,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.dvlyyon.nbi.gnmi.GnmiDialOutProtoServer.SubscribeStreamObserver;
 
 import gnmi.Gnmi.CapabilityRequest;
 import gnmi.Gnmi.CapabilityResponse;
@@ -91,227 +93,11 @@ import gnmi.gNMIGrpc;
  * https://groups.google.com/forum/#!forum/grpc-io
  */
 public class GnmiServer 
-implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
+implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	private static final Logger logger = Logger.getLogger(GnmiServer.class.getName());
 
 	private Server server;
 
-	private BindableService getGnmiServer(GnmiServerContextInf cmd) 
-			throws Exception {
-		String encoding = null;
-		BindableService gNMIImpl = null;
-		encoding=cmd.getEndpoint();
-		
-		switch (encoding.toLowerCase()) {
-		case "dialin":
-			gNMIImpl = getDialInServer(cmd);
-			break;
-		case "dialout":
-			gNMIImpl = new GnmiDialOutProtoService(this);
-			break;
-		default:
-			throw new Exception ("The encoding "+encoding + " is not supported!");
-		}
-		return gNMIImpl;
-	}
-		
-	private BindableService getDialInServer(GnmiServerContextInf cmd) 
-			throws Exception {
-		String encoding = null;
-		BindableService gNMIImpl = null;
-		encoding=cmd.getEncoding();
-		
-		switch (encoding.toLowerCase()) {
-		case "proto":
-			gNMIImpl = new GnmiProtoServer();
-			break;
-		case "json":
-			gNMIImpl = new GnmiJsonServer();
-			break;
-		default:
-			throw new Exception ("The encoding "+encoding + " is not supported!");
-		}
-		return gNMIImpl;
-	}
-	
-	
-	private Server getClearTextServer(
-				BindableService service,
-				AuthInterceptor interceptor,
-				int port) {
-		logger.info("create a server over TCP with clear text");
-		server = ServerBuilder
-				.forPort(port)
-				.addService(ServerInterceptors.intercept(service, 
-						interceptor))
-				.addTransportFilter(new GnmiTransportFilter(this))
-				.build();
-	    logger.info("Server started, listening on " + port);
-		return server;		
-	}
-	
-	private Server getTLSServer(
-			GnmiServerContextInf cmd, 
-            BindableService service,
-            AuthInterceptor interceptor) throws Exception {
-		
-		int port = cmd.getServerPort();
-
-		SslContextBuilder contextBuilder = GrpcSslContexts
-                .forServer(
-                		new File(cmd.getServerCACertificate()), 
-                		new File(cmd.getServerKey()));
-
-		if (cmd.getClientCACertificate() != null)
-			contextBuilder = 
-			contextBuilder.trustManager(new File(cmd.getClientCACertificate()));
-
-	
-        contextBuilder = cmd.requireClientCert()?
-            contextBuilder.clientAuth(ClientAuth.REQUIRE):
-            contextBuilder.clientAuth(ClientAuth.OPTIONAL);
-
-		server = NettyServerBuilder.forPort(port).
-				sslContext(contextBuilder.build())
-				.addService(ServerInterceptors.intercept(service, 
-						interceptor))
-				.addTransportFilter(new GnmiTransportFilter(this))
-				.build();
-		logger.info("Server started, listening on " + port);
-		return server;		
-	}
-	
-	private Server startServer(
-			GnmiServerContextInf cmd, 
-            BindableService service,
-            AuthInterceptor interceptor) throws Exception{
-		Server server = null;
-		int port = cmd.getServerPort();
-		if (cmd.forceClearText()) {
-			return getClearTextServer(service,interceptor,port);
-		}
-		return getTLSServer(cmd,service,interceptor);
-	}
-
-	private void start(GnmiServerContextInf cmd) throws Exception {
-		AuthInterceptor interceptor = new AuthInterceptor(cmd, this);
-		BindableService gNMIImpl = getGnmiServer(cmd);
-        server = startServer(cmd, gNMIImpl, interceptor);
-        server.start();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				System.err.println("*** shutting down gRPC server since JVM is shutting down");
-				GnmiServer.this.stop();
-				System.err.println("*** server shut down");
-			}
-		});
-	}
-
-	private void stop() {
-		if (server != null) {
-			server.shutdown();
-		}
-	}
-
-	/**
-	 * Await termination on the main thread since the grpc library uses daemon threads.
-	 */
-	private void blockUntilShutdown() throws InterruptedException {
-		if (server != null) {
-			server.awaitTermination();
-		}
-	}
-
-	/**
-	 * Main launches the server from the command line.
-	 */
-	public static void main(String[] args) throws Exception {
-		final GnmiServer server = new GnmiServer();
-		try {
-			server.start(new GnmiServerCmdContext(args));
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-		server.blockUntilShutdown();
-	}
-
-	class AuthInterceptor implements ServerInterceptor {
-		private GnmiServerContextInf context;
-		private GnmiTransportListenerInf listener;
-		
-		public AuthInterceptor(GnmiServerContextInf context, GnmiTransportListenerInf gnmiServer) {
-			this.context = context;
-			this.listener = gnmiServer;
-		}
-
-		private boolean authenticateRequest(Metadata headers) {
-			if (!context.needCredential()) return true;
-			
-			Metadata.Key<String> key = 
-					Metadata.Key.of(context.getMetaUserName(), 
-					Metadata.ASCII_STRING_MARSHALLER);
-			if (headers.containsKey(key) && 
-					headers.get(key).equals(context.getUserName())) {
-				key = 
-						Metadata.Key.of(context.getMetaPassword(), 
-						Metadata.ASCII_STRING_MARSHALLER);
-				if (headers.containsKey(key) && 
-						headers.get(key).equals(context.getPassword())) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Override
-		public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> call, 
-				Metadata headers,
-				ServerCallHandler<ReqT, RespT> next) {
-			SSLSession sslSession = call.getAttributes().get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
-			String remoteIpAddress = call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR).toString();
-			logger.info("header received from client:" + headers);
-			String threadName = String.valueOf(Thread.currentThread().getId());
-			listener.prepareAcceptRPC(threadName,remoteIpAddress);
-			boolean success = authenticateRequest(headers);
-			if (success)
-				return next.startCall(call, headers);
-			call.close(Status.UNAUTHENTICATED.withDescription("Cannot pass authentication check!"), headers);
-			return new ServerCall.Listener<ReqT>() {
-			};
-		}
-
-	}
-
-	class GnmiTransportFilter extends ServerTransportFilter {
-		GnmiTransportListenerInf listener;
-
-		public GnmiTransportFilter(GnmiTransportListenerInf gnmiServer) {
-			this.listener = gnmiServer;
-		}
-
-		public Attributes transportReady(Attributes transportAttrs) {
-			SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
-			String remoteClient = remoteIpAddress.toString();
-			listener.addSession(remoteClient);
-			return transportAttrs;
-			
-		}
-
-		/**
-		 * Called when a transport is terminated.  Default implementation is no-op.
-		 *
-		 * @param transportAttrs the effective transport attributes, which is what returned by {@link
-		 * #transportReady} of the last executed filter.
-		 */
-		public void transportTerminated(Attributes transportAttrs) {
-			SSLSession sslSession = transportAttrs.get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
-			String sessionString = sslSession.toString();
-			SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
-			String remoteClient = remoteIpAddress.toString();
-			listener.deleteSession(remoteClient);
-		}
-	}
 
 	private Map <String,GnmiSessionMgr> sessions = new HashMap<String,GnmiSessionMgr>();
 	private Map <String,GnmiSessionMgr> currentThreads = new HashMap<String,GnmiSessionMgr>();
@@ -432,4 +218,103 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiSessionNBIMgrInf {
 			return mgr.pop(streamId);
 		}
 	}
+	
+	@Override
+	public Set<String> getSessions() {
+		Set<String> lst = null;
+		synchronized (sessions) {
+			lst = sessions.keySet();
+		}
+		return lst;
+	}
+
+	@Override
+	public Set<String> getRPCs(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null) throw new RuntimeException("Not exist for session:" + sessionId);
+			return mgr.getRPCs();
+		}
+	}
+
+	private void start(GnmiServerContextInf cmd) throws Exception {
+		AuthInterceptor interceptor = new AuthInterceptor(cmd, this);
+		BindableService gNMIImpl = GnmiServerHelper.getGnmiServer(cmd,this);
+		ServerTransportFilter filter = new GnmiTransportFilter(this);
+        server = GnmiServerHelper.startServer(cmd, gNMIImpl, interceptor,filter);
+        server.start();
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				System.err.println("*** shutting down gRPC server since JVM is shutting down");
+				GnmiServer.this.stop();
+				System.err.println("*** server shut down");
+			}
+		});
+	}
+
+	private void stop() {
+		if (server != null) {
+			server.shutdown();
+		}
+	}
+
+	/**
+	 * Await termination on the main thread since the grpc library uses daemon threads.
+	 */
+	private void blockUntilShutdown() throws InterruptedException {
+		if (server != null) {
+			server.awaitTermination();
+		}
+	}
+
+	/**
+	 * Main launches the server from the command line.
+	 */
+	public static void main(String[] args) throws Exception {
+		final GnmiServer server = new GnmiServer();
+		try {
+			server.start(new GnmiServerCmdContext(args));
+			new Thread(new UpdateExecutor(server)).start();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		server.blockUntilShutdown();
+	}
+
+
+	static class UpdateExecutor implements Runnable {
+		GnmiServer server = null;
+
+		public UpdateExecutor(GnmiServer server) {
+			this.server = server;
+		}
+		
+		private void printSetString(Set<String> s, String title) {
+			if (s == null || s.size() == 0) return;
+			System.out.println(title + ":");
+			s.forEach(v->{
+				System.out.println("    "+v);
+			});
+		}
+		
+		@Override
+		public void run() {
+			while(true) {
+				Object update = server.pop();
+				printSetString(server.getSessions(),"Session");
+				if (update == null) {
+					try {
+						Thread.currentThread().sleep(10 * 1000);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}					
+				} else {
+					System.out.println(update);
+				}
+			}			
+		}
+	}
+
+
 }
