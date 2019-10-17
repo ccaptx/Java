@@ -32,8 +32,6 @@ public class GnmiTransportFilter extends ServerTransportFilter {
 	 * #transportReady} of the last executed filter.
 	 */
 	public void transportTerminated(Attributes transportAttrs) {
-		SSLSession sslSession = transportAttrs.get(Grpc.TRANSPORT_ATTR_SSL_SESSION);
-		String sessionString = sslSession.toString();
 		SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 		String remoteClient = remoteIpAddress.toString();
 		listener.deleteSession(remoteClient);
