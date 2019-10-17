@@ -1,16 +1,11 @@
 package org.dvlyyon.nbi.gnmi;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.dvlyyon.nbi.gnmi.GnmiDialOutProtoServer.SubscribeStreamObserver;
-
-import io.grpc.stub.StreamObserver;
 
 public class GnmiSessionMgr
 implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {

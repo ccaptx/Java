@@ -2,8 +2,6 @@ package org.dvlyyon.nbi.gnmi;
 
 import java.util.logging.Logger;
 
-import org.dvlyyon.nbi.gnmi.GnmiDialOutProtoServer.SubscribeStreamObserver;
-
 import gnmi.gNMIDialOutGrpc;
 import gnmi.Gnmi.SubscribeResponse;
 import io.grpc.stub.StreamObserver;
