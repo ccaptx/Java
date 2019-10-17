@@ -48,6 +48,7 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 				if (obj != null) return obj;
 			}
 		}
+		if (isClosed) rpcMap.clear();
 		return null;
 	}
 

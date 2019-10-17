@@ -66,7 +66,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	@Override
 	public void deleteSession(String remoteClient) {
 		synchronized(sessions) {
-			GnmiSessionMgr s = sessions.remove(remoteClient);
+			GnmiSessionMgr s = sessions.get(remoteClient);
 			if (s == null) {
 				logger.severe("NOT exist session ID: "+remoteClient);
 			} else {
@@ -149,7 +149,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	@Override
 	public void shutdown(String sessionId) {
 		synchronized(sessions) {
-			GnmiSessionMgr mgr = sessions.get(sessionId);
+			GnmiSessionMgr mgr = sessions.remove(sessionId);
 			if (mgr == null)
 				throw new RuntimeException("NOT identify session:" + sessionId);
 			mgr.shutdown();
