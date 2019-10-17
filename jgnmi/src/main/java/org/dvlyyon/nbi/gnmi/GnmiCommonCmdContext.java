@@ -153,6 +153,7 @@ public abstract class GnmiCommonCmdContext implements GnmiCommonContextInf {
 		options.addOption(o);
 		o = new Option("ep","end_point", true,
 				"dialin or dialout");
+		options.addOption(o);
 		return options;
 	}
 	
