@@ -16,71 +16,18 @@
 
 package org.dvlyyon.nbi.gnmi;
 
-import static io.grpc.stub.ServerCalls.asyncUnaryCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedStreamingCall;
-import static io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall;
 
-import io.grpc.Attributes;
-import io.grpc.BindableService;
-import io.grpc.Context;
-import io.grpc.Contexts;
-import io.grpc.Grpc;
-import io.grpc.Metadata;
-import io.grpc.Server;
-import io.grpc.ServerBuilder;
-import io.grpc.ServerCall;
-import io.grpc.ServerCall.Listener;
-import io.grpc.ServerCallHandler;
-import io.grpc.ServerInterceptor;
-import io.grpc.ServerInterceptors;
-import io.grpc.ServerServiceDefinition;
-import io.grpc.ServerTransportFilter;
-import io.grpc.Status;
-import io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.NettyServerBuilder;
-import io.grpc.stub.ServerCalls.UnaryMethod;
-import io.grpc.stub.StreamObserver;
-import io.netty.handler.ssl.ClientAuth;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.SSLSession;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.dvlyyon.nbi.gnmi.GnmiDialOutProtoServer.SubscribeStreamObserver;
-
-import gnmi.Gnmi.CapabilityRequest;
-import gnmi.Gnmi.CapabilityResponse;
-import gnmi.Gnmi.Encoding;
-import gnmi.Gnmi.ModelData;
-import gnmi.Gnmi.Notification;
-import gnmi.Gnmi.Path;
-import gnmi.Gnmi.PathElem;
-import gnmi.Gnmi.SubscribeRequest;
-import gnmi.Gnmi.SubscribeResponse;
-import gnmi.Gnmi.Subscription;
-import gnmi.Gnmi.SubscriptionList;
-import gnmi.Gnmi.TypedValue;
-import gnmi.Gnmi.Update;
-import gnmi.gNMIGrpc;
+import io.grpc.BindableService;
+import io.grpc.Server;
+import io.grpc.ServerTransportFilter;
 
 /**
  * Server that manages startup/shutdown of a {@code Greeter} server.
