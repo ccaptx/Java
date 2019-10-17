@@ -83,7 +83,7 @@ task gnmiServer(type: CreateStartScripts) {
 }
 
 task gnmiDialOutClient(type: CreateStartScripts) {
-	mainClassName = 'org.dvlyyon.nbi.gnmi.GnmiDailOutClient'
+	mainClassName = 'org.dvlyyon.nbi.gnmi.GnmiDialOutClient'
 	applicationName = 'gnmi-dialout-client'
 	outputDir = new File(project.buildDir, 'tmp')
 	classpath = jar.outputs.files + project.configurations.runtime
