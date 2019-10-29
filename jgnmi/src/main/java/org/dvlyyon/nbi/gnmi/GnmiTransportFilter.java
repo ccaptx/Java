@@ -1,9 +1,8 @@
 package org.dvlyyon.nbi.gnmi;
 
 import java.net.SocketAddress;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.net.ssl.SSLSession;
 
 import io.grpc.Attributes;
 import io.grpc.Grpc;
@@ -18,6 +17,10 @@ public class GnmiTransportFilter extends ServerTransportFilter {
 	}
 
 	public Attributes transportReady(Attributes transportAttrs) {
+		if (transportAttrs == null) {
+			logger.log(Level.SEVERE, "transportAttrs is null");
+			return transportAttrs;
+		}
 		SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 		String remoteClient = remoteIpAddress.toString();
 		listener.addSession(remoteClient);
@@ -32,6 +35,10 @@ public class GnmiTransportFilter extends ServerTransportFilter {
 	 * #transportReady} of the last executed filter.
 	 */
 	public void transportTerminated(Attributes transportAttrs) {
+		if (transportAttrs == null) {
+			logger.log(Level.SEVERE, "transportAttrs is null");
+			return;
+		}
 		SocketAddress remoteIpAddress = transportAttrs.get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR);
 		String remoteClient = remoteIpAddress.toString();
 		listener.deleteSession(remoteClient);
