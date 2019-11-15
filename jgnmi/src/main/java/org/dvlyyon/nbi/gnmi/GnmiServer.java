@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -203,6 +205,13 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	private void stop() {
 		if (server != null) {
 			server.shutdown();
+			try {
+				server.awaitTermination(1, TimeUnit.MINUTES);
+			} catch (Exception e) {
+				logger.log(Level.SEVERE,"Exception when shutdown server", e);
+			} finally {
+				server.shutdownNow();
+			}
 		}
 	}
 
@@ -221,8 +230,8 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	public static void main(String[] args) throws Exception {
 		final GnmiServer server = new GnmiServer();
 		try {
-			server.start(new GnmiServerCmdContext(args));
 			new Thread(new UpdateExecutor(server)).start();
+			server.start(new GnmiServerCmdContext(args));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
