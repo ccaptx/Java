@@ -12,7 +12,6 @@ import gnmi.Gnmi.SubscribeResponse;
 import io.grpc.CallOptions;
 import io.grpc.Channel;
 import io.grpc.MethodDescriptor;
-import io.grpc.protobuf.ProtoUtils;
 import io.grpc.stub.AbstractStub;
 
 public class GnmiJsonStub extends AbstractStub<GnmiJsonStub> {
@@ -21,16 +20,16 @@ public class GnmiJsonStub extends AbstractStub<GnmiJsonStub> {
 	CapabilityResponse> METHOD_CAPABILITIES =
 	gNMIGrpc.getCapabilitiesMethod()
 	.toBuilder(
-			ProtoUtils.jsonMarshaller(CapabilityRequest.getDefaultInstance()),
-			ProtoUtils.jsonMarshaller(CapabilityResponse.getDefaultInstance()))
+			JsonMarshaller.jsonMarshaller(CapabilityRequest.getDefaultInstance()),
+			JsonMarshaller.jsonMarshaller(CapabilityResponse.getDefaultInstance()))
 	.build();
 
 	static final MethodDescriptor<SubscribeRequest,
 	SubscribeResponse> METHODID_SUBSCRIBE =
 	gNMIGrpc.getSubscribeMethod()
 	.toBuilder(
-			ProtoUtils.jsonMarshaller(SubscribeRequest.getDefaultInstance()),
-			ProtoUtils.jsonMarshaller(SubscribeResponse.getDefaultInstance()))
+			JsonMarshaller.jsonMarshaller(SubscribeRequest.getDefaultInstance()),
+			JsonMarshaller.jsonMarshaller(SubscribeResponse.getDefaultInstance()))
 	.build();
 
 	protected GnmiJsonStub(Channel channel) {
