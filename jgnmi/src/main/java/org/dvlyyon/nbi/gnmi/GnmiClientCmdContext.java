@@ -3,6 +3,7 @@ package org.dvlyyon.nbi.gnmi;
 import static org.dvlyyon.nbi.gnmi.GnmiHelper.checkFile;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -14,6 +15,11 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 		super(argv);
 	}
 	
+	public GnmiClientCmdContext(Map<String, Object> context) 
+	throws Exception {
+		super(context, OPTION_TYPE_LONG);
+	}
+
 	@Override
 	public String getServerAddress() {
 		// TODO Auto-generated method stub
@@ -52,9 +58,9 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 						.append("if clear_text is not set")
 						.toString());
 			}
-			checkFile(sc);
-			if (ck != null) checkFile(ck);
-			if (cc != null) checkFile(cc);
+			GnmiHelper.checkFile(sc);
+			if (ck != null) GnmiHelper.checkFile(ck);
+			if (cc != null) GnmiHelper.checkFile(cc);
 		}
 		if (this.getServerAddress() == null) {
 			throw new Exception("server_address must be set");
@@ -73,7 +79,7 @@ public class GnmiClientCmdContext extends GnmiCommonCmdContext
 		  .append(" -p server_port [-sc server_certificate] ")
 		  .append(" [-cc client_certificate] [-ck client_key] ")
 		  .append(" [-nc | --need_credential] ")
-		  .append(" -ohn");
+		  .append(" -ohn host_name");
 		return sb.toString();
 	}
 }

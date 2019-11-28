@@ -3,9 +3,6 @@ package org.dvlyyon.nbi.gnmi;
 import java.io.IOException;
 
 import gnmi.Gnmi.CapabilityResponse;
-import gnmi.Gnmi.SubscribeRequest;
-import gnmi.Gnmi.SubscribeResponse;
-import io.grpc.stub.StreamObserver;
 
 public interface GnmiClientInf {
 
@@ -28,7 +25,5 @@ public interface GnmiClientInf {
 	public void close() throws IOException;
 	public boolean isConnected();
 	public CapabilityResponse capacity();
-	public SubscriptionMgrInf subscribe();
-    public StreamObserver<SubscribeRequest> 
-    	subscribe(StreamObserver<SubscribeResponse> response);
+	public SubscriptionInf subscribe();
 }

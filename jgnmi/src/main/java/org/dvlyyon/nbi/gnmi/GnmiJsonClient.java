@@ -78,7 +78,7 @@ public class GnmiJsonClient extends GnmiCommonClient implements GnmiClientInf {
 	}
 
 	@Override
-	public SubscriptionMgrInf subscribe() {
+	public SubscriptionInf subscribe() {
 		return new DefaultSubscriptionMgr(this);
 	}
 	

@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.SocketAddress;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -403,5 +404,53 @@ public class GnmiServerOld implements GnmiTransportListenerInf, GnmiRPCListenerI
 	public int size(String sessionId, String streamId) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	@Override
+	public void run() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List popAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List popAll(String sessionId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List popAll(String sessionId, String streamId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isClosed() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isError() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getErrorInfo() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
 	}
 }

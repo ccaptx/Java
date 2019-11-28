@@ -16,7 +16,8 @@ import io.grpc.ManagedChannel;
 import io.grpc.stub.StreamObserver;
 import io.grpc.Context;
 
-public abstract class GnmiCommonClient implements GnmiClientInf {
+public abstract class GnmiCommonClient 
+implements GnmiClientInf, GnmiClientInternalInf {
 
 	private static final Logger logger = 
 			Logger.getLogger(GnmiCommonClient.class.getName());
@@ -40,9 +41,9 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 	}
 	
 	protected static class DefaultSubscriptionMgr 
-	implements SubscriptionMgrInf {
+	implements SubscriptionInf {
 		private static final int DEFAULT_MAX_CAPACITY = 10000;
-		private GnmiClientInf 		client;
+		private GnmiClientInternalInf 		client;
 
 		GnmiResponse <SubscribeResponse> 		myResponseObserver;
 		StreamObserver<SubscribeRequest> 		myRequestObserver;
@@ -50,13 +51,17 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 		
 		boolean isComplete = false;
 		boolean isError = false;
+		boolean ignore	= false;
 		String	errorInfo = null;
+		long	sendTime  = 0;
 
-		public DefaultSubscriptionMgr(GnmiClientInf client) {
-			this(client, DEFAULT_MAX_CAPACITY);
+		public DefaultSubscriptionMgr(GnmiClientInternalInf client) {
+			this(client, DEFAULT_MAX_CAPACITY, null);
 		}
 
-		public DefaultSubscriptionMgr(GnmiClientInf client, int capacity) {
+		public DefaultSubscriptionMgr(GnmiClientInternalInf client, 
+				int capacity,
+				GnmiCredentialContextInf ccontext) {
 			this.client = client;
 			myQueue = new ArrayBlockingQueue<SubscribeResponse>(capacity);			 
 			myResponseObserver = new GnmiResponse<SubscribeResponse>();
@@ -90,6 +95,10 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 	
 		}
 
+		public DefaultSubscriptionMgr(GnmiClientInternalInf client, GnmiCredentialContextInf ccontext) {
+			this(client, DEFAULT_MAX_CAPACITY, ccontext);
+		}
+
 		@Override
 		public List<SubscribeResponse> popResponses() {
 			ArrayList<SubscribeResponse> 
@@ -100,6 +109,8 @@ public abstract class GnmiCommonClient implements GnmiClientInf {
 
 		@Override
 		public void subscribe(SubscribeRequest request) {
+			logger.finest(request.toString());
+			sendTime = System.currentTimeMillis();
 			myRequestObserver.onNext(request);
 		}
 

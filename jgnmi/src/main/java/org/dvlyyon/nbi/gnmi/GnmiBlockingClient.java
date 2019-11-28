@@ -66,7 +66,7 @@ public class GnmiBlockingClient extends GnmiCommonClient
 	}
 
 	@Override
-	public SubscriptionMgrInf subscribe() {
+	public SubscriptionInf subscribe() {
 		return new DefaultSubscriptionMgr(this);
 	}
 	

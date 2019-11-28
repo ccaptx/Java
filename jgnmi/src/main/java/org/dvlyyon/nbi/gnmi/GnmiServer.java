@@ -17,8 +17,10 @@
 package org.dvlyyon.nbi.gnmi;
 
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -47,14 +49,24 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	private static final Logger logger = Logger.getLogger(GnmiServer.class.getName());
 
 	private Server server;
-
+	private GnmiServerCmdContext context;
 
 	private Map <String,GnmiSessionMgr> sessions = new HashMap<String,GnmiSessionMgr>();
 	private Map <String,GnmiSessionMgr> currentThreads = new HashMap<String,GnmiSessionMgr>();
 	private final static String ANONYMOUS_NAME = "AnonymousName";
 	
+	public GnmiServer(GnmiServerCmdContext gnmiServerCmdContext) {
+		this.context = gnmiServerCmdContext;
+	}
+	
+	@Override
+	public void run () throws Exception {
+		start(context);
+	}
+
 	@Override
 	public void addSession(String remoteClient) {
+		if (sessions == null) return;
 		synchronized (sessions) {
 			GnmiSessionMgr s = sessions.get(remoteClient);
 			if (s != null) {
@@ -67,6 +79,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 
 	@Override
 	public void deleteSession(String remoteClient) {
+		if (sessions == null) return;
 		synchronized(sessions) {
 			GnmiSessionMgr s = sessions.get(remoteClient);
 			if (s == null) {
@@ -80,6 +93,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	@Override
 	public void prepareAcceptRPC(String threadName, String sessionID) {
 		GnmiSessionMgr s,ss = null;
+		if (sessions == null) return;
 		synchronized (sessions) {
 			s = sessions.get(sessionID);
 		}
@@ -99,6 +113,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 
 	@Override
 	public void registerRPC(String threadName, GnmiServerStreamObserver observer) {
+		if (currentThreads == null) return;
 		synchronized (currentThreads) {
 			GnmiSessionMgr s = currentThreads.get(threadName);
 			if (s == null) {
@@ -129,12 +144,40 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	}
 
 	@Override
+	public List popAll() {
+		Object [] sessionList = null;
+		synchronized(sessions) {
+			Collection c = sessions.values();
+			sessionList = c.toArray();
+		}
+		List result = new ArrayList();
+		if (sessionList != null) {
+			for (Object session:sessionList) {
+				GnmiSessionMgr sm = (GnmiSessionMgr)session;
+				List objs = sm.popAll();
+				if (objs != null) result.addAll(objs);
+			}
+		}
+		return result;
+	}
+
+	@Override
 	public Object pop(String sessionId) {
 		synchronized(sessions) {
 			GnmiSessionMgr mgr = sessions.get(sessionId);
 			if (mgr == null)
 				throw new RuntimeException("NOT identify session:" + sessionId);
 			return mgr.pop();
+		}
+	}
+
+	@Override
+	public List popAll(String sessionId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			return mgr.popAll();
 		}
 	}
 
@@ -148,6 +191,24 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 		}
 	}
 
+	@Override
+	public void shutdown() {
+		Object [] sessionList = null;
+		synchronized(sessions) {
+			Collection c = sessions.values();
+			sessionList = c.toArray();
+		}
+		if (sessionList != null) {
+			for (Object session:sessionList) {
+				GnmiSessionMgr sm = (GnmiSessionMgr)session;
+				sm.shutdown();
+			}
+		}
+		this.currentThreads=null;
+		this.sessions = null;
+		this.stop();
+	}
+	
 	@Override
 	public void shutdown(String sessionId) {
 		synchronized(sessions) {
@@ -168,6 +229,16 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 		}
 	}
 	
+	@Override
+	public List popAll(String sessionId, String streamId) {
+		synchronized(sessions) {
+			GnmiSessionMgr mgr = sessions.get(sessionId);
+			if (mgr == null)
+				throw new RuntimeException("NOT identify session:" + sessionId);
+			return mgr.popAll(streamId);
+		}
+	}
+
 	@Override
 	public Set<String> getSessions() {
 		Set<String> lst = null;
@@ -196,7 +267,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 			@Override
 			public void run() {
 				System.err.println("*** shutting down gRPC server since JVM is shutting down");
-				GnmiServer.this.stop();
+				GnmiServer.this.shutdown();
 				System.err.println("*** server shut down");
 			}
 		});
@@ -228,10 +299,10 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	 * Main launches the server from the command line.
 	 */
 	public static void main(String[] args) throws Exception {
-		final GnmiServer server = new GnmiServer();
+		final GnmiServer server = new GnmiServer(new GnmiServerCmdContext(args));
 		try {
-			new Thread(new UpdateExecutor(server)).start();
 			server.start(new GnmiServerCmdContext(args));
+			new Thread(new UpdateExecutor(server)).start();
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -259,27 +330,35 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 			while(true) {
 				System.out.println("Size of updates before retrieving:"+server.size());
 				boolean needWait = true;
-				Set<String> sessionIDs = server.getSessions();
-				if (sessionIDs != null && sessionIDs.size()>0) {
-					for (String sessionID:sessionIDs) {
-						Set<String> rpcs = server.getRPCs(sessionID);
-						if (rpcs != null && rpcs.size()>0) {
-							for (String rpc:rpcs) {
-								Object o = server.pop(sessionID,rpc);
-								if (o != null) {
-									needWait = false;
-									System.out.println(String.format("Session:%s, RPC:%s updates:\n %s", sessionID, rpc,o));
-								}
-							}
-						}
+				List updateList = server.popAll();
+				if (updateList != null && updateList.size()>0) {
+					for (Object o:updateList) {
+						System.out.println(o);
 					}
+					needWait = false;
+					System.out.println("Received updates: "+updateList.size());
 				}
+//				Set<String> sessionIDs = server.getSessions();
+//				if (sessionIDs != null && sessionIDs.size()>0) {
+//					for (String sessionID:sessionIDs) {
+//						Set<String> rpcs = server.getRPCs(sessionID);
+//						if (rpcs != null && rpcs.size()>0) {
+//							for (String rpc:rpcs) {
+//								Object o = server.pop(sessionID,rpc);
+//								if (o != null) {
+//									needWait = false;
+//									System.out.println(String.format("Session:%s, RPC:%s updates:\n %s", sessionID, rpc,o));
+//								}
+//							}
+//						}
+//					}
+//				}
 
 				if (needWait) {
 					try {
-						System.out.println("Wait 10s......");
+						System.out.println("Wait 5s......");
 						System.out.println("Size of updates after retrieving:"+server.size());
-						Thread.sleep(10 * 1000);
+						Thread.sleep(5 * 1000);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}					
@@ -311,5 +390,26 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 		GnmiSessionMgr mgr = sessions.get(sessionId);
 		if (mgr == null) throw new RuntimeException("NO session:" + sessionId);
 		return size(streamId);
+	}
+
+	@Override
+	public boolean isClosed() {
+		synchronized(sessions) {
+			if (sessions.size() == 0) return true;
+			for (Entry<String,GnmiSessionMgr> entry:sessions.entrySet()) {
+				if (!entry.getValue().isClosed()) return false;
+			}
+			return true;
+		}
+	}
+	
+	@Override
+	public boolean isError() {
+		return false;
+	}
+	
+	@Override
+	public String getErrorInfo() {
+		return "";
 	}
 }

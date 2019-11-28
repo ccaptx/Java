@@ -31,7 +31,7 @@ public class GnmiClient {
 		return client.capacity();
 	}
 	
-	public SubscriptionMgrInf subscribe() {
+	public SubscriptionInf subscribe() {
 		return client.subscribe();
 	}
 
@@ -80,7 +80,7 @@ public class GnmiClient {
 				.setSubscribe(list)
 				.build();
 		System.out.println(value);
-		SubscriptionMgrInf mgr = client.subscribe();
+		SubscriptionInf mgr = client.subscribe();
 		new Thread(()-> {
 			try {
 			Thread.currentThread().sleep(1000*60*1);

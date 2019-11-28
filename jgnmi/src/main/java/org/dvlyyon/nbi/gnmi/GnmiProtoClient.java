@@ -28,10 +28,12 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 		ClientInterceptor interceptor = newHeaderResponseInterceptor(context);
 		Channel newChannel = ClientInterceptors.intercept(channel, interceptor);
 		stub = gNMIGrpc.newStub(newChannel);
-		CallCredentials credential = newCredential(context);
-		if (credential != null) {
-			stub = stub.withCallCredentials(credential);
-		} 	
+		if (context.needCredential()) {
+			CallCredentials credential = newCredential(context);
+			if (credential != null) {
+				stub = stub.withCallCredentials(credential);
+			} 	
+		}
 	}
 
 	@Override
@@ -43,6 +45,10 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 				new GnmiResponse<CapabilityResponse>();
 		stub.capabilities(request, myObserver);
 		response = myObserver.getValue();
+		if (response == null) {
+			if (myObserver.isError())
+				throw new RuntimeException(myObserver.getError());
+		}
 		return response;
 	}
 
@@ -53,7 +59,7 @@ public class GnmiProtoClient extends GnmiCommonClient implements GnmiClientInf {
 	}
 
 	@Override
-	public SubscriptionMgrInf subscribe() {
+	public SubscriptionInf subscribe() {
 		return new DefaultSubscriptionMgr(this);
 	}
 }

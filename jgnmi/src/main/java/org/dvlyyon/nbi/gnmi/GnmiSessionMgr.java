@@ -1,8 +1,11 @@
 package org.dvlyyon.nbi.gnmi;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -48,8 +51,25 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 				if (obj != null) return obj;
 			}
 		}
-		if (isClosed) rpcMap.clear();
 		return null;
+	}
+
+	@Override
+	public List popAll() {
+		Object [] streams = null;
+		synchronized(rpcMap) {
+			Collection c = rpcMap.values();
+			streams = c.toArray();
+		}
+		List result = new ArrayList();
+		if (streams != null) {
+			for (Object stream:streams) {
+				GnmiServerStreamObserver q = (GnmiServerStreamObserver)stream;
+				List objs = q.pollAll();
+				if (objs != null) result.addAll(objs);
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -59,7 +79,12 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 
 	@Override
 	public void shutdown() {
-		rpcMap.clear();
+		synchronized(rpcMap) {
+			for (Entry<String, GnmiServerStreamObserver> entry:rpcMap.entrySet()) {
+				entry.getValue().close();
+			}
+			rpcMap.clear();
+		}
 	}
 
 	@Override
@@ -68,6 +93,18 @@ implements GnmiSessionSBIMgrInf,GnmiSessionInternalNBIMgrInf {
 			GnmiServerStreamObserver stream = rpcMap.get(streamName);
 			if (stream != null)
 				return stream.poll();
+			else {
+				throw new RuntimeException("No such rpc:" + streamName);
+			}
+		}
+	}
+	
+	@Override
+	public List popAll(String streamName) {
+		synchronized(rpcMap) {
+			GnmiServerStreamObserver stream = rpcMap.get(streamName);
+			if (stream != null)
+				return stream.pollAll();
 			else {
 				throw new RuntimeException("No such rpc:" + streamName);
 			}

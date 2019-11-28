@@ -5,7 +5,7 @@ import java.util.List;
 import gnmi.Gnmi.SubscribeRequest;
 import gnmi.Gnmi.SubscribeResponse;
 
-public interface SubscriptionMgrInf {
+public interface SubscriptionInf {
 	public void 					subscribe(SubscribeRequest request);
 	public void 					unsubscribe();
 	public boolean 					isComplete();

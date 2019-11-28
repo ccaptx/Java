@@ -117,6 +117,31 @@ public class GnmiHelper {
 		};
 	}
 
+	public static CallCredentials newCredential(final GnmiCredentialContextInf context) {
+		return new CallCredentials() {
+			@Override
+			public void applyRequestMetadata(
+					MethodDescriptor<?, ?> method, 
+					Attributes attrs,
+					Executor appExecutor, 
+					MetadataApplier applier) {
+				Metadata headers = new Metadata();
+				Metadata.Key<String> 
+				key = Metadata.Key.of(context.getMetaUserName(), 
+						Metadata.ASCII_STRING_MARSHALLER);
+				headers.put(key, context.getUserName());
+				key = Metadata.Key.of(context.getMetaPassword(), 
+						Metadata.ASCII_STRING_MARSHALLER);
+				headers.put(key, context.getPassword());
+				applier.apply(headers);
+			}
+			@Override
+			public void thisUsesUnstableApi() {
+				String s = "hello";
+			}
+		};
+	}
+	
 	public static PathElem newPathElem(String name, String [][] keys) {
 		PathElem.Builder b = PathElem.newBuilder()
 				.setName(name);

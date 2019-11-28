@@ -3,12 +3,15 @@ package org.dvlyyon.nbi.gnmi;
 import static org.dvlyyon.nbi.gnmi.GnmiHelper.checkFile;
 
 import java.io.File;
+import java.util.Map;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiServerContextInf {
+public class GnmiServerCmdContext 
+extends GnmiCommonCmdContext 
+implements GnmiServerContextInf {
 
 	public GnmiServerCmdContext(String[] argv) throws Exception {
 		super(argv);
@@ -18,6 +21,11 @@ public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiSe
 		super(cmd);
 	}
 	
+	public GnmiServerCmdContext(Map<String, Object> context) 
+	throws Exception {
+		super(context, OPTION_TYPE_LONG);
+	}
+
 	@Override
 	public String getServerKey() {
 		// TODO Auto-generated method stub
@@ -61,9 +69,9 @@ public class GnmiServerCmdContext extends GnmiCommonCmdContext implements GnmiSe
         				.append("if require_client_certificat is set")
         				.toString());
         	}
-        	checkFile(sc);
-            checkFile(sk);
-            if (cc != null) checkFile(cc);
+        	GnmiHelper.checkFile(sc);
+        	GnmiHelper.checkFile(sk);
+            if (cc != null) GnmiHelper.checkFile(cc);
         }
 
         int port = this.getServerPort();

@@ -1,5 +1,7 @@
 package org.dvlyyon.nbi.gnmi;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
@@ -30,6 +32,19 @@ implements StreamObserver<T1>, GnmiConsumerInf<T1> {
 	}
 	
 	@Override
+	public List pollAll() {
+		Object [] result = null;
+		synchronized(queue) {
+			result = queue.toArray();
+			queue.clear();
+		}
+		if (result == null) return null;
+		List  list = new ArrayList();
+		for (Object o:result) list.add(o);
+		return list;
+	}
+	
+	@Override
 	public void onNext(T1 value) {
 		queue.offer(value);	
 	}
@@ -53,6 +68,11 @@ implements StreamObserver<T1>, GnmiConsumerInf<T1> {
 		isCompleted = true;
 	}
 
+	@Override
+	public void close() {
+		outStream.onCompleted();
+	}
+	
 	@Override
 	public boolean isCompleted() {
 		return isCompleted;
