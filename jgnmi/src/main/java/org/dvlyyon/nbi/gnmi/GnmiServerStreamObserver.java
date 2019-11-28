@@ -51,26 +51,31 @@ implements StreamObserver<T1>, GnmiConsumerInf<T1> {
 
 	@Override
 	public void onError(Throwable t) {
-		logger.log(Level.SEVERE,"OnError:",t);
+		logger.info("Receive error from grpc layer");
 		StringBuilder sb = new StringBuilder();
 		sb.append(t.toString());
 		getCause(sb,t.getCause());
 		errorInfo = sb.toString();
-		outStream.onError(t);
-		outStream = null;
+		if (outStream != null) {
+		    outStream.onError(t);
+		    outStream = null;
+		};
 		isError = true;
 	}
 
 	@Override
 	public void onCompleted() {
-		outStream.onCompleted();
-		outStream = null;
+		if (outStream != null) {
+		    outStream.onCompleted();
+		    outStream = null;
+		}
 		isCompleted = true;
 	}
 
 	@Override
 	public void close() {
-		outStream.onCompleted();
+		if (outStream != null)
+		    outStream.onCompleted();
 	}
 	
 	@Override

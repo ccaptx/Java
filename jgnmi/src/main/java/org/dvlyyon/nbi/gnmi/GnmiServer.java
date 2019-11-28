@@ -54,6 +54,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	private Map <String,GnmiSessionMgr> sessions = new HashMap<String,GnmiSessionMgr>();
 	private Map <String,GnmiSessionMgr> currentThreads = new HashMap<String,GnmiSessionMgr>();
 	private final static String ANONYMOUS_NAME = "AnonymousName";
+	UpdateExecutor myWorker = null;
 	
 	public GnmiServer(GnmiServerCmdContext gnmiServerCmdContext) {
 		this.context = gnmiServerCmdContext;
@@ -62,6 +63,10 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	@Override
 	public void run () throws Exception {
 		start(context);
+	}
+	
+	public void setMyWork(UpdateExecutor myWork) {
+		this.myWorker = myWork;
 	}
 
 	@Override
@@ -194,6 +199,7 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 	@Override
 	public void shutdown() {
 		Object [] sessionList = null;
+		if (myWorker != null) myWorker.stop();
 		synchronized(sessions) {
 			Collection c = sessions.values();
 			sessionList = c.toArray();
@@ -302,19 +308,35 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 		final GnmiServer server = new GnmiServer(new GnmiServerCmdContext(args));
 		try {
 			server.start(new GnmiServerCmdContext(args));
-			new Thread(new UpdateExecutor(server)).start();
+			new Thread(new UpdateExecutor(server)).start();		
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		server.blockUntilShutdown();
 	}
 
+	static class MyWorker {
+		private UpdateExecutor myWorker = null;
+		public MyWorker (UpdateExecutor worker) {
+			myWorker = worker;
+		}
+		
+		public void start() {
+			new Thread(myWorker).start();
+		}
+		
+		public void stop() {
+			myWorker.stop();
+		}
+	}
 
 	static class UpdateExecutor implements Runnable {
 		GnmiServer server = null;
+		boolean stop = false;
 
 		public UpdateExecutor(GnmiServer server) {
 			this.server = server;
+			server.setMyWork(this);
 		}
 		
 		private void printSetString(Set<String> s, String title) {
@@ -325,18 +347,31 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 			});
 		}
 		
+		public void stop () {
+			System.out.println("Executor is shutdown");
+			stop = true;
+		}
+		
 		@Override
 		public void run() {
-			while(true) {
+			while(!stop) {
 				System.out.println("Size of updates before retrieving:"+server.size());
 				boolean needWait = true;
 				List updateList = server.popAll();
 				if (updateList != null && updateList.size()>0) {
+					int i = 0;
 					for (Object o:updateList) {
 						System.out.println(o);
+						if (o instanceof gnmi.Gnmi.SubscribeResponse) {
+							gnmi.Gnmi.SubscribeResponse resp = (gnmi.Gnmi.SubscribeResponse)o;
+							if (resp.getUpdate() != null) {
+							    i += resp.getUpdate().getUpdateCount();
+							}
+						}
 					}
 					needWait = false;
-					System.out.println("Received updates: "+updateList.size());
+					System.out.println("Received updates: "+updateList.size()+" -> " + i);
+					
 				}
 //				Set<String> sessionIDs = server.getSessions();
 //				if (sessionIDs != null && sessionIDs.size()>0) {
@@ -353,11 +388,10 @@ implements GnmiTransportListenerInf, GnmiRPCListenerInf, GnmiNBIMgrInf {
 //						}
 //					}
 //				}
-
-				if (needWait) {
+				if (needWait & !stop) {
 					try {
 						System.out.println("Wait 5s......");
-						System.out.println("Size of updates after retrieving:"+server.size());
+//						System.out.println("Size of updates after retrieving:"+server.size());
 						Thread.sleep(5 * 1000);
 					} catch (Exception e) {
 						e.printStackTrace();
