@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import gnmi.gNMIDialOutGrpc;
+import gnmi_dialout.gNMIDialoutGrpc;
 import gnmi.Gnmi.SubscribeResponse;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 
 public class GnmiDialOutProtoServer 
-	extends gNMIDialOutGrpc.gNMIDialOutImplBase {
+	extends gNMIDialoutGrpc.gNMIDialoutImplBase {
 	private static final Logger logger = Logger.getLogger(GnmiDialOutProtoServer.class.getName());
 
 	Map <String, StreamObserver<SubscribeResponse>>rpcMaps = null;
@@ -104,7 +104,7 @@ public class GnmiDialOutProtoServer
 	
 	@Override
 	public io.grpc.stub.StreamObserver<gnmi.Gnmi.SubscribeResponse> publish(
-		        io.grpc.stub.StreamObserver<gnmi.Gnmidialout.PublishResponse> responseObserver)
+		        io.grpc.stub.StreamObserver<gnmi_dialout.GnmiDialout11.PublishResponse> responseObserver)
 	{
 		 StreamObserver<SubscribeResponse> observer = new SubscribeStreamObserver(responseObserver,this);
 		 synchronized(rpcMaps) {

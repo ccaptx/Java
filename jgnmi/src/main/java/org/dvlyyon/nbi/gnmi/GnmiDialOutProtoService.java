@@ -2,12 +2,12 @@ package org.dvlyyon.nbi.gnmi;
 
 import java.util.logging.Logger;
 
-import gnmi.gNMIDialOutGrpc;
+import gnmi_dialout.gNMIDialoutGrpc;
 import gnmi.Gnmi.SubscribeResponse;
 import io.grpc.stub.StreamObserver;
-import gnmi.Gnmidialout.PublishResponse;
+import gnmi_dialout.GnmiDialout11.PublishResponse;
 
-public class GnmiDialOutProtoService extends gNMIDialOutGrpc.gNMIDialOutImplBase{
+public class GnmiDialOutProtoService extends gNMIDialoutGrpc.gNMIDialoutImplBase{
 	private static final Logger logger = Logger.getLogger(GnmiDialOutProtoServer.class.getName());
 	
 	GnmiRPCListenerInf listener;

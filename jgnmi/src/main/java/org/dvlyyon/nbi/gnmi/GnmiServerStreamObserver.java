@@ -46,7 +46,8 @@ implements StreamObserver<T1>, GnmiConsumerInf<T1> {
 	
 	@Override
 	public void onNext(T1 value) {
-		queue.offer(value);	
+//		queue.offer(value);	
+		System.out.println(value);
 	}
 
 	@Override
