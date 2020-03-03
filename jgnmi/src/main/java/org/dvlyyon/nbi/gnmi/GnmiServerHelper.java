@@ -1,6 +1,7 @@
 package org.dvlyyon.nbi.gnmi;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import io.grpc.BindableService;
@@ -61,8 +62,9 @@ public class GnmiServerHelper {
 				int port,
 				ServerTransportFilter filter) {
 		logger.info("create a server over TCP with clear text");
-		Server server = ServerBuilder
+		Server server = NettyServerBuilder
 				.forPort(port)
+				.permitKeepAliveTime(4, TimeUnit.MINUTES)
 				.addService(ServerInterceptors.intercept(service, 
 						interceptor))
 				.addTransportFilter(filter)
