@@ -16,6 +16,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import io.grpc.CallCredentials.RequestInfo;
 import io.grpc.ForwardingClientCall.SimpleForwardingClientCall;
 import io.grpc.ForwardingClientCallListener.SimpleForwardingClientCallListener;
 import io.grpc.netty.GrpcSslContexts;
@@ -32,7 +33,7 @@ public class GnmiHelper {
 					.forAddress(
 							context.getServerAddress(),
 							context.getServerPort())
-					.usePlaintext(true)
+					.usePlaintext()
 					.build();
 		} 
 
@@ -96,8 +97,9 @@ public class GnmiHelper {
 		return new CallCredentials() {
 			@Override
 			public void applyRequestMetadata(
-					MethodDescriptor<?, ?> method, 
-					Attributes attrs,
+					RequestInfo requestInfo,
+//					MethodDescriptor<?, ?> method, 
+//					Attributes attrs,
 					Executor appExecutor, 
 					MetadataApplier applier) {
 				Metadata headers = new Metadata();
@@ -121,8 +123,9 @@ public class GnmiHelper {
 		return new CallCredentials() {
 			@Override
 			public void applyRequestMetadata(
-					MethodDescriptor<?, ?> method, 
-					Attributes attrs,
+					RequestInfo requestInfo,
+//					MethodDescriptor<?, ?> method, 
+//					Attributes attrs,
 					Executor appExecutor, 
 					MetadataApplier applier) {
 				Metadata headers = new Metadata();

@@ -21,8 +21,8 @@ task increaseBuildNumber {
     
         versionProps['build_number']=code.toString()
         versionProps.store(versionPropsFile.newWriter(), null)
-        def version =  "${mainVersion}." + code.toString()
-        project.setVersion(version)
+        def myVersion =  "${mainVersion}." + code.toString()
+        project.setVersion(myVersion)
     }
 }
 
@@ -32,24 +32,25 @@ repositories {
 }
 
 dependencies {
-    compile 'org.dom4j:dom4j:2.0.0'
+    implementation 'org.dom4j:dom4j:2.0.0'
 //    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
-        compile 'commons-net:commons-net:3.6'
+        implementation 'commons-net:commons-net:3.6'
 //    } else {
-        compile project(':jnetconf')
-        compile 'commons-logging:commons-logging:1.2'
-        compile 'org.jdom:jdom2:2.0.6'
-        compile 'ch.ethz.ganymed:ganymed-ssh2:262'
-        compile group:'org.apache.httpcomponents', name:'httpclient', version:'4.5.3'
-        compile group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
-        compile group:'com.jcraft', name:'jsch', version:'0.1.53'
-        compile 'org.snmp4j:snmp4j:2.5.6'
-        compile 'jaxen:jaxen:1.1.6'
+        implementation project(':jcommon')
+        implementation project(':jnetconf')
+        implementation 'commons-logging:commons-logging:1.2'
+        implementation 'org.jdom:jdom2:2.0.6'
+        implementation 'ch.ethz.ganymed:ganymed-ssh2:262'
+        implementation group:'org.apache.httpcomponents', name:'httpclient', version:'4.5.3'
+        implementation group:'org.apache.httpcomponents', name:'httpcore', version:'4.4.6'
+        implementation group:'com.jcraft', name:'jsch', version:'0.1.53'
+        implementation 'org.snmp4j:snmp4j:2.5.6'
+        implementation 'jaxen:jaxen:1.1.6'
 //    }
-    testCompile 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.+'
 }
 
-//compileJava {
+//implementationJava {
 //    if (project.hasProperty('jnbiDist') && project.jnbiDist == 'cxt') {
 //        exclude ('org/dvlyyon/nbi/cxt/*.java',
 //             'org/dvlyyon/nbi/tools/**/*.java')
@@ -71,11 +72,10 @@ jar {
     }
 */
     exclude('*.jar','*.sh','*.html')
-    from configurations.runtime
     manifest {
         attributes ('Main-Class': 'org.dvlyyon.nbi.CommonDriverImpl',
-                    'Implementation-Version': version,
-                    'Class-Path': configurations.compile.collect { it.getName() }.join(' '))
+                    'Implementation-Version': archiveVersion,
+                    'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
     }
 }
 

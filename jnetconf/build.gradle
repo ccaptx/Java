@@ -6,9 +6,10 @@ repositories {
 }
 
 dependencies {
-    compile project(':jcommon')
-    compile 'commons-logging:commons-logging:1.2'
-    compile 'org.jdom:jdom2:2.0.6'
-    compile 'ch.ethz.ganymed:ganymed-ssh2:262'
-    testCompile 'junit:junit:4.+'
+    implementation project(':jcommon')
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'org.jdom:jdom2:2.0.6'
+    implementation 'ch.ethz.ganymed:ganymed-ssh2:262'
+    implementation 'com.eaio.uuid:uuid:3.2'
+    testImplementation 'junit:junit:4.+'
 }
