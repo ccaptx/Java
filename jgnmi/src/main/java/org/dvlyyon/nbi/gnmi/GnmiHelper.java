@@ -38,8 +38,11 @@ public class GnmiHelper {
 		} 
 
 		SslContextBuilder contextBuilder = GrpcSslContexts
-				.forClient()
-				.trustManager(new File(context.getServerCACertificate()));
+				.forClient();
+		String serverCrt = context.getServerCACertificate();
+		if (serverCrt != null) {
+				contextBuilder.trustManager(new File(context.getServerCACertificate()));
+		};
 		String clientCrt = context.getClientCACertificate();
 		String clientKey = context.getClientKey();
 		if ( clientCrt != null && clientKey != null) {
